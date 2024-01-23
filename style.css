@@ -55,8 +55,10 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background-color: #fff; /* Change button background to white on hover */
-  color: #000; /* Change button text color to black on hover */
+  background-color: #fff;
+  color: #000;
+  transform: scale(1.1); /* Scale up on hover */
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 .links {
@@ -77,8 +79,10 @@ button[type="submit"]:hover {
 }
 
 .links a:hover {
-  background-color: #fff; /* Change link background to white on hover */
-  color: #000; /* Change link text color to black on hover */
+  background-color: #fff;
+  color: #000;
+  transform: scale(1.1); /* Scale up on hover */
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 footer {
