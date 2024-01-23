@@ -6,10 +6,12 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Tektur', sans-serif;
+  font-weight: normal;
   line-height: 1.5;
-  background-color: #f2f2f2;
-  color: #333;
+  background: linear-gradient(to bottom, #e74c3c, #ffffff, #3498db) no-repeat; /* Red-white-blue gradient */
+  background-size: 100% 100vh; /* Covers the entire screen without repeating */
+  color: #fff;
   margin: 0;
 }
 
@@ -19,33 +21,22 @@ body {
   padding: 20px;
 }
 
-.logo-link {
-  display: inline-block;
-  margin-right: 20px;
-  margin-top: 10px;
-}
-
 .logo-link img {
   height: 80px;
   border-radius: 10px;
-}
-
-.search-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 30px;
 }
 
 .search-bar {
   width: 80%;
   padding: 10px;
   border-radius: 20px;
-  border: 2px solid #333;
+  border: 2px solid #fff;
+  background-color: rgba(255, 255, 255, 0.3); /* Semi-transparent white background */
 }
 
 .search-button {
-  background-color: #333;
-  color: #fff;
+  background-color: #fff;
+  color: #333;
   padding: 10px 20px;
   border: none;
   border-radius: 20px;
@@ -53,28 +44,20 @@ body {
   cursor: pointer;
 }
 
-.link-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-top: 30px;
-}
-
 .link-button {
   display: inline-block;
   padding: 10px 20px;
   border-radius: 20px;
   border: none;
-  background-color: #333;
-  color: #fff;
+  background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
+  color: #333;
   text-decoration: none;
   margin-bottom: 10px;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
 }
 
 .link-button:hover {
-  background-color: #666;
+  background-color: rgba(255, 255, 255, 0.7); /* Slightly darker semi-transparent white background on hover */
 }
 
 .quote-box {
@@ -86,36 +69,12 @@ body {
   font-style: italic;
   font-size: 24px;
   margin-bottom: 10px;
+  color: #fff;
 }
 
 .quote-author {
   font-weight: bold;
   font-size: 18px;
-}
-
-.dark {
-  background-color: #333;
-  color: #fff;
-}
-
-.dark .logo-link img {
-  border: 2px solid #fff;
-}
-
-.dark .search-bar {
-  border: 2px solid #fff;
-}
-
-.dark .link-button {
-  background-color: #fff;
-  color: #333;
-}
-
-.dark .link-button:hover {
-  background-color: #f2f2f2;
-}
-  
-.dark .footer {
   color: #fff;
 }
 
@@ -124,7 +83,7 @@ body {
   justify-content: space-between;
   margin-top: 50px;
   padding-top: 10px;
-  border-top: 2px solid #333;
+  border-top: 2px solid #fff;
   font-size: 12px;
 }
 
@@ -133,7 +92,7 @@ body {
 }
 
 .footer a {
-  color: #333;
+  color: #fff;
   text-decoration: none;
 }
 
