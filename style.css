@@ -9,12 +9,14 @@ body {
   font-family: 'Tektur', sans-serif;
   font-weight: normal;
   line-height: 1.5;
-  background: linear-gradient(to bottom, #e74c3c, #ffffff, #3498db) no-repeat;
+  background: linear-gradient(to bottom, #000000, #333333) no-repeat;
   background-size: 100% 100vh;
-  color: #000; /* Set text color to black */
+  color: #fff; /* Set text color to white */
+  overflow: hidden; /* Prevent scrolling on smaller screens */
 }
 
 .container {
+  width: 100%;
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
@@ -41,12 +43,12 @@ input[type="text"] {
   padding: 10px;
   border: 2px solid #fff;
   border-radius: 20px;
-  color: #000; /* Set text color to black */
+  color: #fff; /* Set text color to white */
 }
 
 button[type="submit"] {
-  background-color: #000; /* Set button background to black */
-  color: #fff; /* Set button text color to white */
+  background-color: #fff; /* Set button background to white */
+  color: #000; /* Set button text color to black */
   padding: 10px 20px;
   border: none;
   border-radius: 20px;
@@ -55,8 +57,8 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background-color: #fff;
-  color: #000;
+  background-color: #000; /* Change button background to black on hover */
+  color: #fff; /* Change button text color to white on hover */
   transform: scale(1.1); /* Scale up on hover */
   transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
@@ -75,12 +77,12 @@ button[type="submit"]:hover {
   margin: 5px;
   text-align: center;
   text-decoration: none;
-  color: #000; /* Set link text color to black by default */
+  color: #fff; /* Set link text color to white by default */
 }
 
 .links a:hover {
-  background-color: #fff;
-  color: #000;
+  background-color: #000; /* Change link background to black on hover */
+  color: #fff; /* Change link text color to white on hover */
   transform: scale(1.1); /* Scale up on hover */
   transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
@@ -88,7 +90,7 @@ button[type="submit"]:hover {
 footer {
   margin-top: 20px;
   text-align: center;
-  color: #000; /* Set footer text color to black */
+  color: #fff; /* Set footer text color to white */
 }
 
 /* Tablet styles */
