@@ -110,4 +110,15 @@ footer {
   .links a {
     flex: 0 0 100%;
   }
+
+  .iframe-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .iframe-container iframe {
+    width: calc(50% - 20px); /* Two iframes per row with margin */
+    margin: 10px;
+  }
 }

@@ -13,6 +13,7 @@
   <style>
     body {
       font-family: 'Staatliches', sans-serif; /* Use Staatliches font */
+      margin: 0; /* Remove default margin */
     }
 
     .container {
@@ -23,6 +24,26 @@
 
     .main-content {
       flex-grow: 1;
+      display: flex;
+      flex-wrap: wrap; /* Enable wrapping for child elements */
+    }
+
+    .main-content .feature-box {
+      flex: 0 0 100%; /* Full width on small screens, adjust as needed */
+      margin: 10px; /* Add margin between feature boxes */
+    }
+
+    .iframe-pair {
+      display: flex;
+      justify-content: space-between; /* Distribute space between iframes */
+      margin-bottom: 20px; /* Add margin between iframe pairs */
+    }
+
+    .iframe-container iframe {
+      width: 48%; /* Adjust width as needed, leaving some space for margins */
+      height: 300px;
+      border: 1px solid rgb(244, 244, 244);
+      box-sizing: border-box;
     }
 
     footer {
@@ -63,11 +84,18 @@
       </div>
       <!-- Additional feature boxes -->
       <div class="feature-box">
-        <h2>Vertrekstaat Assen</h2>
-        <p>Actuele Vertrekstaat van Station Assen.</p>
+        <h2>Vertrekstaten</h2>
+        <p>Hier de Actuele vertrekstaten van Station Assen, Roosendaal, Maastricht, Breda </p>
         <!-- Add more content as needed -->
         <div class="iframe-container">
-          <iframe src="https://treinposities.nl/embedvertrekstaat/assen" height="300" width="800" frameborder="0"></iframe>
+          <div class="iframe-pair">
+            <iframe src="https://treinposities.nl/embedvertrekstaat/assen" height="300" width="400" frameborder="0"></iframe>
+            <iframe src="https://treinposities.nl/embedvertrekstaat/roosendaal" height="300" width="400" frameborder="0"></iframe>
+          </div>
+          <div class="iframe-pair">
+            <iframe src='https://treinposities.nl/embedvertrekstaat/maastricht' height='300' width='400' frameborder='0'></iframe>
+            <iframe src='https://treinposities.nl/embedvertrekstaat/breda' height='300' width='400' frameborder='0'></iframe>
+          </div>
         </div>
       </div>
     </main>
