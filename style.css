@@ -43,7 +43,7 @@ input[type="text"] {
   padding: 10px;
   border: 2px solid #fff;
   border-radius: 20px;
-  color: #fff; /* Set text color to white */
+  color: #000; /* Set text color to black */
 }
 
 button[type="submit"] {
