@@ -4,7 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HS Interne site</title>
+  <!-- Link to Google Fonts API -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <!-- Additional styles for enhanced features -->
+  <style>
+    body {
+      font-family: 'Staatliches', sans-serif; /* Use Staatliches font */
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .main-content {
+      flex-grow: 1;
+    }
+
+    footer {
+      margin-top: auto;
+      text-align: left;
+    }
+
+    footer p {
+      margin: 5px 0;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -15,7 +44,7 @@
         </a>
       </div>
     </header>
-    <main>
+    <main class="main-content">
       <div class="search-bar">
         <form action="https://www.google.com/search">
           <input type="text" placeholder="Search..." name="q">
@@ -23,14 +52,23 @@
         </form>
       </div>
       <div class="links">
-        <a href="https://www.ns.nl/">NS</a>
-        <a href="https://www.nsinternational.com/">NS International</a>
-        <a href="https://treinposities.nl/">Treinposities NL</a>
-        <a href="https://www.nmbs.be/">NMBS</a>
-        <a href="https://trainmap.belgiantrain.be/">Trainmap BE</a>
-        <a href="https://www.haltelink.be/">Haltelink</a>
-        <a href="https://chat.openai.com/">GPT</a>
-        <a href="https://github.com/">Github</a>
+        <a href="https://www.ns.nl/" class="interactive-link">NS</a>
+        <a href="https://www.nsinternational.com/" class="interactive-link">NS International</a>
+        <a href="https://treinposities.nl/" class="interactive-link">Treinposities NL</a>
+        <a href="https://www.nmbs.be/" class="interactive-link">NMBS</a>
+        <a href="https://trainmap.belgiantrain.be/" class="interactive-link">Trainmap BE</a>
+        <a href="https://www.haltelink.be/" class="interactive-link">Haltelink</a>
+        <a href="https://chat.openai.com/" class="interactive-link">GPT</a>
+        <a href="https://github.com/" class="interactive-link">Github</a>
+      </div>
+      <!-- Additional feature boxes -->
+      <div class="feature-box">
+        <h2>Vertrekstaat Assen</h2>
+        <p>Actuele Vertrekstaat van Station Assen.</p>
+        <!-- Add more content as needed -->
+        <div class="iframe-container">
+          <iframe src="https://treinposities.nl/embedvertrekstaat/assen" height="300" width="800" frameborder="0"></iframe>
+        </div>
       </div>
     </main>
     <footer>

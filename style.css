@@ -5,14 +5,14 @@
   padding: 0;
 }
 
-body {
-  font-family: 'Tektur', sans-serif;
+body, html {
+  font-family: 'Staatliches', sans-serif; /* Use Staatliches font */
   font-weight: normal;
   line-height: 1.5;
   background: linear-gradient(to bottom, #000000, #333333) no-repeat;
-  background-size: 100% 100vh;
+  background-size: cover;
   color: #fff; /* Set text color to white */
-  overflow: hidden; /* Prevent scrolling on smaller screens */
+  overflow: auto; /* Enable scrolling for the entire site */
 }
 
 .container {
