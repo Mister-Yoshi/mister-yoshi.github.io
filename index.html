@@ -3,73 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HS Interne site</title>
-  <!-- Link to Google Fonts API -->
+  <title>HS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <!-- Additional styles for enhanced features -->
+  <link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary-color: #111;
+      --accent-color: #ffcc00;
+      --dark-bg: #000000;
+      --light-text: #f0f0f0;
+      --border-radius: 12px;
+    }
+
     body {
-      font-family: 'Staatliches', sans-serif; /* Use Staatliches font */
-      margin: 0; /* Remove default margin */
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #000000, #1a1a1a);
+      color: var(--light-text);
+    }
+
+    header {
+      background-color: var(--primary-color);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-link img {
+      height: 60px;
+      border-radius: var(--border-radius);
     }
 
     .container {
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      min-height: 100vh;
+    }
+
+    .search-bar {
+      display: flex;
+      justify-content: center;
+      padding: 30px 20px;
+    }
+
+    .search-bar input {
+      padding: 12px;
+      width: 300px;
+      font-size: 1rem;
+      border-radius: var(--border-radius) 0 0 var(--border-radius);
+      border: 1px solid #444;
+      background-color: #222;
+      color: var(--light-text);
+      outline: none;
+    }
+
+    .search-bar button {
+      padding: 12px 20px;
+      font-size: 1rem;
+      border: 1px solid #444;
+      border-left: none;
+      border-radius: 0 var(--border-radius) var(--border-radius) 0;
+      background-color: var(--accent-color);
+      color: #000;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .search-bar button:hover {
+      background-color: #e6b800;
+    }
+
+    .links {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .interactive-link {
+      margin: 10px;
+      padding: 12px 20px;
+      background-color: #111;
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      color: var(--accent-color);
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(255, 255, 255, 0.05);
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    .interactive-link:hover {
+      background-color: #222;
+      transform: translateY(-3px);
     }
 
     .main-content {
       flex-grow: 1;
-      display: flex;
-      flex-wrap: wrap; /* Enable wrapping for child elements */
+      padding: 20px;
     }
 
-    .main-content .feature-box {
-      flex: 0 0 100%; /* Full width on small screens, adjust as needed */
-      margin: 10px; /* Add margin between feature boxes */
+    .feature-box {
+      background-color: #111;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 1000px;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
     }
 
-    .iframe-pair {
+    .feature-box h2 {
+      font-family: 'Staatliches', cursive;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: var(--accent-color);
+    }
+
+    .iframe-container {
       display: flex;
-      justify-content: space-between; /* Distribute space between iframes */
-      margin-bottom: 20px; /* Add margin between iframe pairs */
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
     }
 
     .iframe-container iframe {
-      width: 48%; /* Adjust width as needed, leaving some space for margins */
+      flex: 1 1 45%;
+      min-width: 300px;
       height: 300px;
-      border: 1px solid rgb(244, 244, 244);
-      box-sizing: border-box;
+      border: none;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
     }
 
     footer {
-      margin-top: auto;
-      text-align: left;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-top: 4px solid var(--accent-color);
     }
 
     footer p {
-      margin: 5px 0;
+      margin: 8px 0;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <div class="header-left">
-        <a href="#" class="logo-link">
-          <img src="images/HS.jpg" alt="Hoggynesische Startpage">
-        </a>
-      </div>
+      <a href="#" class="logo-link">
+        <img src="images/HS.jpg" alt="Logo van HS">
+      </a>
     </header>
     <main class="main-content">
       <div class="search-bar">
         <form action="https://www.google.com/search">
-          <input type="text" placeholder="Search..." name="q">
-          <button type="submit">Search</button>
+          <input type="text" placeholder="Zoeken..." name="q">
+          <button type="submit">Zoek</button>
         </form>
       </div>
       <div class="links">
@@ -79,30 +168,24 @@
         <a href="https://www.nmbs.be/" class="interactive-link">NMBS</a>
         <a href="https://www.haltelink.be/" class="interactive-link">Haltelink</a>
         <a href="https://chat.openai.com/" class="interactive-link">GPT</a>
-        <a href="https://github.com/" class="interactive-link">Github</a>
+        <a href="https://github.com/" class="interactive-link">GitHub</a>
       </div>
-      <!-- Additional feature boxes -->
       <div class="feature-box">
         <h2>Vertrekstaten</h2>
-        <p>Hier de Actuele vertrekstaten van Station Assen, Roosendaal, Maastricht, Breda </p>
-        <!-- Add more content as needed -->
+        <p>Hier zie je de actuele vertrekstaten van Station Assen, Roosendaal, Maastricht en Breda:</p>
         <div class="iframe-container">
-          <div class="iframe-pair">
-            <iframe src="https://treinposities.nl/embedvertrekstaat/assen" height="300" width="400" frameborder="0"></iframe>
-            <iframe src="https://treinposities.nl/embedvertrekstaat/roosendaal" height="300" width="400" frameborder="0"></iframe>
-          </div>
-          <div class="iframe-pair">
-            <iframe src='https://treinposities.nl/embedvertrekstaat/maastricht' height='300' width='400' frameborder='0'></iframe>
-            <iframe src='https://treinposities.nl/embedvertrekstaat/breda' height='300' width='400' frameborder='0'></iframe>
-          </div>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/assen"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/roosendaal"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/maastricht"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/breda"></iframe>
         </div>
       </div>
     </main>
     <footer>
-      <p>Voor het plannen van reizen binnen België, gelieve NMBS te selecteren.</p>
-      <p>Voor het volgen van bussen, trams en metro's binnen België gelieve Haltelink te selecteren.</p>
-      <p>Voor het plannen van reizen binnen Nederland, gelieve NS te selecteren.</p>
-      <p>Voor het gedetailleerd volgen van treinen binnen Nederland, gelieve Treinposities te selecteren.</p>
+      <p>Gebruik NMBS voor reizen binnen België.</p>
+      <p>Gebruik Haltelink voor het volgen van bussen, trams en metro's in België.</p>
+      <p>Gebruik NS voor reizen binnen Nederland.</p>
+      <p>Gebruik Treinposities voor realtime treinposities in Nederland.</p>
       <p>&copy; 2024 Hoggynesische Spoorwegen. Alle rechten voorbehouden.</p>
     </footer>
   </div>
