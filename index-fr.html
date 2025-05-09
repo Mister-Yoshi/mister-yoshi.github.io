@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CFH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #111;
+      --accent-color: #ffcc00;
+      --dark-bg: #000000;
+      --light-text: #f0f0f0;
+      --border-radius: 12px;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #000000, #1a1a1a);
+      color: var(--light-text);
+    }
+
+    header {
+      background-color: var(--primary-color);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-link img {
+      height: 60px;
+      border-radius: var(--border-radius);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .search-bar {
+      display: flex;
+      justify-content: center;
+      padding: 30px 20px;
+    }
+
+    .search-bar input {
+      padding: 12px;
+      width: 300px;
+      font-size: 1rem;
+      border-radius: var(--border-radius) 0 0 var(--border-radius);
+      border: 1px solid #444;
+      background-color: #222;
+      color: var(--light-text);
+      outline: none;
+    }
+
+    .search-bar button {
+      padding: 12px 20px;
+      font-size: 1rem;
+      border: 1px solid #444;
+      border-left: none;
+      border-radius: 0 var(--border-radius) var(--border-radius) 0;
+      background-color: var(--accent-color);
+      color: #000;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .search-bar button:hover {
+      background-color: #e6b800;
+    }
+
+    .links {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .interactive-link {
+      margin: 10px;
+      padding: 12px 20px;
+      background-color: #111;
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      color: var(--accent-color);
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(255, 255, 255, 0.05);
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    .interactive-link:hover {
+      background-color: #222;
+      transform: translateY(-3px);
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+    }
+
+    .feature-box {
+      background-color: #111;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 1000px;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+    }
+
+    .feature-box h2 {
+      font-family: 'Staatliches', cursive;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: var(--accent-color);
+    }
+
+    .iframe-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+    }
+
+    .iframe-container iframe {
+      flex: 1 1 45%;
+      min-width: 300px;
+      height: 300px;
+      border: none;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
+    }
+
+    footer {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-top: 4px solid var(--accent-color);
+    }
+
+    footer p {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="#" class="logo-link">
+        <img src="/mnt/data/HS.jpg" alt="Logo de HS">
+      </a>
+    </header>
+    <main class="main-content">
+      <div class="search-bar">
+        <form action="https://www.google.com/search">
+          <input type="text" placeholder="Rechercher..." name="q">
+          <button type="submit">Chercher</button>
+        </form>
+      </div>
+      <div class="links">
+        <a href="https://www.ns.nl/" class="interactive-link">NS</a>
+        <a href="https://www.nsinternational.com/" class="interactive-link">NS International</a>
+        <a href="https://treinposities.nl/" class="interactive-link">Positions de train NL</a>
+        <a href="https://www.nmbs.be/" class="interactive-link">SNCB</a>
+        <a href="https://www.haltelink.be/" class="interactive-link">Haltelink</a>
+        <a href="https://chat.openai.com/" class="interactive-link">GPT</a>
+        <a href="https://github.com/" class="interactive-link">GitHub</a>
+        <a href="index.html" class="interactive-link">Nederlands</a>
+      </div>
+      <div class="feature-box">
+        <h2>Horaires de départ</h2>
+        <p>Consultez ici les horaires de départ en temps réel pour la gare d’Assen (<strong>NS</strong>) et les gares frontalières Roosendaal (<strong>NS International / SNCB</strong>), Maastricht (<strong>Arriva</strong>) et Breda (<strong>NS International / SNCB</strong>).</p>
+        <div class="iframe-container">
+          <iframe src="https://treinposities.nl/embedvertrekstaat/assen"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/roosendaal"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/maastricht"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/breda"></iframe>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <p><strong>SNCB</strong> : Utilisez la SNCB pour les trajets en Belgique.</p>
+      <p><strong>Haltelink</strong> : Suivez les bus, trams et métros en Belgique.</p>
+      <p><strong>NS</strong> : Utilisez NS pour les trajets aux Pays-Bas.</p>
+      <p><strong>Treinposities NL</strong> : Suivez les trains en temps réel aux Pays-Bas.</p>
+      <p>&copy; 2025 Chemins de fer hoggynésiens. Tous droits réservés.</p>
+    </footer>
+  </div>
+</body>
+</html>
