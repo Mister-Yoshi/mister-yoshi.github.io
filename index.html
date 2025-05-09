@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HS</title>
+  <title>HS Interne Site</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -46,33 +46,6 @@
       display: flex;
       justify-content: center;
       padding: 30px 20px;
-    }
-
-    .search-bar input {
-      padding: 12px;
-      width: 300px;
-      font-size: 1rem;
-      border-radius: var(--border-radius) 0 0 var(--border-radius);
-      border: 1px solid #444;
-      background-color: #222;
-      color: var(--light-text);
-      outline: none;
-    }
-
-    .search-bar button {
-      padding: 12px 20px;
-      font-size: 1rem;
-      border: 1px solid #444;
-      border-left: none;
-      border-radius: 0 var(--border-radius) var(--border-radius) 0;
-      background-color: var(--accent-color);
-      color: #000;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    .search-bar button:hover {
-      background-color: #e6b800;
     }
 
     .links {
@@ -146,30 +119,34 @@
       margin: 8px 0;
     }
   </style>
+
+  <!-- Voeg hier je eigen CSE-ID in -->
+  <script async src="https://cse.google.com/cse.js?cx=000450277397002794298:flexp8r_w8a"></script>
 </head>
 <body>
   <div class="container">
     <header>
       <a href="#" class="logo-link">
-        <img src="images/HS.jpg" alt="Logo van HS">
+        <img src="/mnt/data/HS.jpg" alt="Logo van HS">
       </a>
     </header>
+
     <main class="main-content">
+      <!-- Google Custom Search Engine zoekbalk -->
       <div class="search-bar">
-        <form action="https://www.google.com/search">
-          <input type="text" placeholder="Zoeken..." name="q">
-          <button type="submit">Zoek</button>
-        </form>
+        <div class="gcse-search"></div>
       </div>
+
       <div class="links">
         <a href="https://www.ns.nl/" class="interactive-link">NS</a>
         <a href="https://www.nsinternational.com/" class="interactive-link">NS International</a>
         <a href="https://treinposities.nl/" class="interactive-link">Treinposities NL</a>
-        <a href="https://www.belgiantrain.be/" class="interactive-link">NMBS</a>
+        <a href="https://www.nmbs.be/" class="interactive-link">NMBS</a>
         <a href="https://www.haltelink.be/" class="interactive-link">Haltelink</a>
-        <a href="https://chatgpt.com/" class="interactive-link">GPT</a>
+        <a href="https://chat.openai.com/" class="interactive-link">GPT</a>
         <a href="https://github.com/" class="interactive-link">GitHub</a>
       </div>
+
       <div class="feature-box">
         <h2>Vertrekstaten</h2>
         <p>Hier zie je de actuele vertrekstaten van Station Assen, Roosendaal, Maastricht en Breda:</p>
@@ -181,12 +158,16 @@
         </div>
       </div>
     </main>
+
     <footer>
-      <p>Gebruik NMBS voor reizen binnen België.</p>
-      <p>Gebruik Haltelink voor het volgen van bussen, trams en metro's in België.</p>
-      <p>Gebruik NS voor reizen binnen Nederland.</p>
-      <p>Gebruik Treinposities voor realtime treinposities in Nederland.</p>
-      <p>&copy; 2025 Hoggynesische Spoorwegen. Alle rechten voorbehouden.</p>
+      <p><strong>NS</strong>: Plan je reizen binnen Nederland.</p>
+      <p><strong>NS International</strong>: Voor internationale treinreizen.</p>
+      <p><strong>Treinposities.nl</strong>: Voor realtime treinvolging in Nederland.</p>
+      <p><strong>NMBS</strong>: Voor binnenlandse treinritten in België.</p>
+      <p><strong>Haltelink</strong>: Voor realtime bus, tram en metro info in België.</p>
+      <p><strong>GPT</strong>: Voor AI-hulp of brainstorms.</p>
+      <p><strong>GitHub</strong>: Voor het beheren of bekijken van codeprojecten.</p>
+      <p>&copy; 2024 Hoggynesische Spoorwegen. Alle rechten voorbehouden.</p>
     </footer>
   </div>
 </body>
