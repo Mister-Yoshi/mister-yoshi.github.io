@@ -1,10 +1,4 @@
 (function () {
-  function removeHeroMessages() {
-    document.querySelectorAll('.hero-message').forEach((element) => {
-      element.remove();
-    });
-  }
-
   function initHeaderWatcher() {
     const header = document.querySelector('header');
     if (!header) {
@@ -28,26 +22,17 @@
       ticking = false;
     };
 
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (!ticking) {
-          window.requestAnimationFrame(update);
-          ticking = true;
-        }
-      },
-      { passive: true }
-    );
-  }
-
-  function init() {
-    removeHeroMessages();
-    initHeaderWatcher();
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive: true });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
+    document.addEventListener('DOMContentLoaded', initHeaderWatcher, { once: true });
   } else {
-    init();
+    initHeaderWatcher();
   }
 })();
