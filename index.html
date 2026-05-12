@@ -569,14 +569,12 @@
     document.getElementById('txt-search-btn').textContent = t.searchBtn;
     document.getElementById('lbl-links').textContent = t.lblLinks;
     document.getElementById('lbl-boards').textContent = t.lblBoards;
-    document.getElementById('btn-ns').querySelector('div+*').textContent || null;
-    // Update link labels
-    setLinkText('btn-ns', '🚆', t.ns);
-    setLinkText('btn-nsi', '🌍', t.nsi);
-    setLinkText('btn-tp', '📡', t.tp);
+    setLinkText('btn-ns',   '🚆', t.ns);
+    setLinkText('btn-nsi',  '🌍', t.nsi);
+    setLinkText('btn-tp',   '📡', t.tp);
     setLinkText('btn-nmbs', '🇧🇪', t.nmbs);
-    setLinkText('btn-nmbsi', '🛤️', t.nmbsi);
-    setLinkText('btn-hsm', '💙', t.hsm);
+    setLinkText('btn-nmbsi','🛤️', t.nmbsi);
+    setLinkText('btn-hsm',  '💙', t.hsm);
     document.getElementById('txt-feature-title').textContent = t.feature;
     document.getElementById('txt-footer').innerHTML = `© 2026 <strong>${t.title.toUpperCase()}</strong> — ${currentLang === 'nl' ? 'PROTOCOL HS-X' : 'PROTOCOLE HS-X'}`;
     document.getElementById('langBtn').textContent = t.langBtn;
