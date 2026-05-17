@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Grensovergang Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --ns-yellow: #FFC917;
+    --ns-dark: #00235e;
+    --bg: #0f1423;
+    --surface: #182033;
+    --surface2: #222b40;
+    --border: rgba(255, 255, 255, 0.08);
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --success: #10b981;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --warning: #f59e0b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    background: var(--surface);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  .logo-box {
+    background: var(--ns-yellow);
+    color: var(--ns-dark);
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 4px 8px;
+    letter-spacing: 0.5px;
+    border-radius: 3px;
+  }
+
+  header h1 {
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.3px;
+  }
+
+  .main { padding: 20px 16px 40px; max-width: 480px; margin: 0 auto; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 13px;
+    background: var(--ns-yellow);
+    border-radius: 2px;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  input[type="text"], input[type="url"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 12px;
+  }
+
+  input[type="text"]:focus, input[type="url"]:focus {
+    border-color: var(--ns-yellow);
+  }
+
+  input[type="text"]::placeholder, input[type="url"]::placeholder {
+    color: var(--muted);
+    opacity: 0.5;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 13px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn:active { transform: scale(0.98); }
+
+  .btn-start {
+    background: var(--ns-yellow);
+    color: var(--ns-dark);
+  }
+
+  .btn-stop {
+    background: var(--danger);
+    color: #fff;
+    opacity: 0.9;
+  }
+
+  .btn-share {
+    background: transparent;
+    color: var(--ns-yellow);
+    border: 1px solid var(--ns-yellow);
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  .btn-share:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  .btn-test {
+    background: transparent;
+    color: var(--info);
+    border: 1px solid var(--info);
+    font-size: 13px;
+    padding: 10px;
+    margin-top: 8px;
+  }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .country-display {
+    text-align: center;
+    padding: 20px 0 14px;
+  }
+
+  .flag-big { font-size: 52px; line-height: 1; margin-bottom: 8px; }
+
+  .country-name {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ns-yellow);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  .country-since {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  .dot-green { background: var(--success); box-shadow: 0 0 6px var(--success); }
+  .dot-red { background: var(--danger); }
+  .dot-yellow { background: var(--ns-yellow); animation: pulse 1.5s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .tracking-indicator {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 8px 0 4px;
+  }
+
+  .log-list {
+    list-style: none;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .log-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    animation: fadeIn 0.4s ease;
+  }
+
+  .log-item:last-child { border-bottom: none; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .log-flag { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+
+  .log-info { flex: 1; }
+
+  .log-crossing {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .log-time {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    margin-top: 2px;
+  }
+
+  .log-sent {
+    font-size: 10px;
+    color: var(--success);
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .log-sent::before { content: '✓ '; }
+
+  .log-failed {
+    font-size: 10px;
+    color: var(--danger);
+    margin-top: 3px;
+  }
+
+  .empty-log {
+    text-align: center;
+    padding: 28px 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .train-divider {
+    text-align: center;
+    color: var(--muted);
+    font-size: 18px;
+    margin: 4px 0 10px;
+    opacity: 0.4;
+    letter-spacing: 2px;
+  }
+
+  .alert {
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  .alert-info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: var(--info); }
+  .alert-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); }
+  .alert-success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--success); }
+
+  .interval-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .interval-row label { margin-bottom: 0; white-space: nowrap; }
+
+  select {
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    flex: 1;
+  }
+
+  select:focus { border-color: var(--ns-yellow); }
+
+  .small-text {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: -6px;
+    margin-bottom: 12px;
+  }
+
+  .coords-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--success);
+    text-align: center;
+    margin-top: 6px;
+  }
+
+  .train-action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .btn-board {
+    background: rgba(16,185,129,0.1);
+    color: var(--success);
+    border: 1px solid rgba(16,185,129,0.35);
+    font-size: 14px;
+  }
+
+  .btn-board:not(:disabled):hover { background: rgba(16,185,129,0.18); }
+
+  .btn-exit {
+    background: rgba(239,68,68,0.08);
+    color: var(--danger);
+    border: 1px solid rgba(239,68,68,0.3);
+    font-size: 14px;
+  }
+
+  .btn-exit:not(:disabled):hover { background: rgba(239,68,68,0.15); }
+
+  .btn-board:disabled, .btn-exit:disabled { opacity: 0.25; cursor: not-allowed; }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--muted);
+    opacity: 0.6;
+  }
+
+  .vpn-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 13px 14px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    transition: border-color 0.4s;
+  }
+
+  .vpn-box.vpn-on { border-color: rgba(59,130,246,0.4); }
+  .vpn-box.vpn-off { border-color: rgba(16,185,129,0.25); }
+  .vpn-box.vpn-unknown { border-color: var(--border); }
+
+  .vpn-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .vpn-info { flex: 1; }
+
+  .vpn-status {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .vpn-status.on { color: var(--info); }
+  .vpn-status.off { color: var(--success); }
+  .vpn-status.unknown { color: var(--muted); }
+
+  .vpn-detail {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    margin-top: 2px;
+  }
+
+  .vpn-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .vpn-badge.on { background: rgba(59,130,246,0.15); color: var(--info); }
+  .vpn-badge.off { background: rgba(16,185,129,0.12); color: var(--success); }
+  .vpn-badge.unknown { background: rgba(107,117,137,0.2); color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-box">🚆</div>
+  <h1>Grensovergang Tracker</h1>
+</header>
+
+<div class="main">
+
+  <div class="alert alert-info" id="alertBox"></div>
+
+  <div class="card">
+    <div class="card-title">Huidige locatie</div>
+    <div class="country-display">
+      <div class="flag-big" id="flagBig">📍</div>
+      <div class="country-name" id="countryName">—</div>
+      <div class="country-since" id="countrySince">Start tracking om je land te zien</div>
+    </div>
+    <div id="coordsText" class="coords-text"></div>
+    <div class="train-divider">— — —</div>
+    <div class="tracking-indicator" id="trackingIndicator">
+      <span class="dot dot-red" id="trackingDot"></span>
+      <span id="trackingText">Niet actief</span>
+    </div>
+  </div>
+
+  <div class="vpn-box vpn-unknown" id="vpnBox">
+    <div class="vpn-icon" id="vpnIcon">🔒</div>
+    <div class="vpn-info">
+      <div class="vpn-status unknown" id="vpnStatus">VPN status onbekend</div>
+      <div class="vpn-detail" id="vpnDetail">Start tracking om te detecteren</div>
+    </div>
+    <div class="vpn-badge unknown" id="vpnBadge">—</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Discord webhook</div>
+    <label>Webhook URL</label>
+    <input type="url" id="webhookUrl" placeholder="https://discord.com/api/webhooks/..." />
+    <div class="small-text">Je vindt dit in je Discord server → Kanaalinstellingen → Integraties → Webhooks</div>
+    <label>Naam afzender</label>
+    <input type="text" id="senderName" placeholder="Internationaal Dispatch" />
+    <div class="interval-row">
+      <label>GPS interval</label>
+      <select id="intervalSelect">
+        <option value="15000">Elke 15 seconden</option>
+        <option value="30000" selected>Elke 30 seconden</option>
+        <option value="60000">Elke minuut</option>
+        <option value="120000">Elke 2 minuten</option>
+      </select>
+    </div>
+    <button class="btn btn-test" id="testBtn" onclick="testWebhook()">
+      Testbericht versturen
+    </button>
+  </div>
+
+  <button class="btn btn-start" id="mainBtn" onclick="toggleTracking()">
+    ▶ Start tracking
+  </button>
+
+  <button class="btn btn-share" id="shareBtn" onclick="manualShare()" disabled>
+    📤 Deel land/regio
+  </button>
+
+  <div class="train-action-row">
+    <button class="btn btn-board" id="boardBtn" onclick="trainAction('instap')" disabled>
+      🚆 Instappen
+    </button>
+    <button class="btn btn-exit" id="exitBtn" onclick="trainAction('uitstap')" disabled>
+      🚪 Uitstappen
+    </button>
+  </div>
+
+  <div class="card" style="margin-top: 14px;">
+    <div class="card-title">Grensovergangen</div>
+    <ul class="log-list" id="logList">
+      <li class="empty-log">Nog geen grensovergangen gedetecteerd</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>GPS-gebaseerd · VPN-detectie via IP vergelijking · Nominatim/OSM</footer>
+
+<script>
+  let tracking = false;
+  let watchId = null;
+  let currentCountry = null;
+  let currentCountryCode = null;
+  let sinceTime = null;
+  let lastNominatimCall = 0;
+  let crossingLog = [];
+  let lastLat = null;
+  let lastLon = null;
+  let intervalId = null;
+  let isQuerying = false;
+  let vpnActive = null;
+  let ipCountryCode = null;
+  let ipAddress = null;
+  let ipOrg = null;
+  let vpnCheckInterval = null;
+
+  const countryFlags = {
+    'NL': '🇳🇱', 'DE': '🇩🇪', 'BE': '🇧🇪', 'FR': '🇫🇷', 'LU': '🇱🇺', 'GB': '🇬🇧', 
+    'DK': '🇩🇰', 'PL': '🇵🇱', 'CH': '🇨🇭', 'AT': '🇦🇹', 'IT': '🇮🇹', 'ES': '🇪🇸',
+    'PT': '🇵🇹', 'CZ': '🇨🇿', 'SK': '🇸🇰', 'HU': '🇭🇺', 'NO': '🇳🇴', 'SE': '🇸🇪', 
+    'FI': '🇫🇮', 'EE': '🇪🇪', 'LV': '🇱🇻', 'LT': '🇱🇹', 'RO': '🇷🇴', 'BG': '🇧🇬',
+    'HR': '🇭🇷', 'SI': '🇸🇮', 'RS': '🇷🇸', 'GR': '🇬🇷', 'TR': '🇹🇷', 'UA': '🇺🇦', 
+    'US': '🇺🇸', 'CA': '🇨🇦', 'JP': '🇯🇵', 'CN': '🇨🇳', 'KR': '🇰🇷', 'IN': '🇮🇳'
+  };
+
+  const countryNames = {
+    'NL': 'Nederland', 'DE': 'Duitsland', 'BE': 'België', 'FR': 'Frankrijk',
+    'LU': 'Luxemburg', 'GB': 'Verenigd Koninkrijk', 'DK': 'Denemarken', 'PL': 'Polen', 
+    'CH': 'Zwitserland', 'AT': 'Oostenrijk', 'IT': 'Italië', 'ES': 'Spanje', 
+    'PT': 'Portugal', 'CZ': 'Tsjechië', 'SK': 'Slowakije', 'HU': 'Hongarije', 
+    'NO': 'Noorwegen', 'SE': 'Zweden', 'FI': 'Finland', 'GR': 'Griekenland', 
+    'TR': 'Turkije', 'US': 'Verenigde Staten', 'JP': 'Japan'
+  };
+
+  // NATIVE namen voor VPN weergave
+  const nativeCountryNames = {
+    'NL': 'Nederland', 'DE': 'Deutschland', 'BE': 'België/Belgique', 'FR': 'France',
+    'LU': 'Lëtzebuerg', 'GB': 'United Kingdom', 'DK': 'Danmark', 'PL': 'Polska',
+    'CH': 'Schweiz/Suisse', 'AT': 'Österreich', 'IT': 'Italia', 'ES': 'España',
+    'PT': 'Portugal', 'CZ': 'Česko', 'SK': 'Slovensko', 'HU': 'Magyarország',
+    'NO': 'Norge', 'SE': 'Sverige', 'FI': 'Suomi', 'EE': 'Eesti',
+    'LV': 'Latvija', 'LT': 'Lietuva', 'RO': 'România', 'BG': 'България',
+    'HR': 'Hrvatska', 'SI': 'Slovenija', 'RS': 'Србија', 'GR': 'Ελλάδα',
+    'TR': 'Türkiye', 'UA': 'Україна', 'US': 'United States', 'CA': 'Canada',
+    'JP': '日本', 'CN': '中国', 'KR': '대한민국', 'IN': 'भारत', 'BR': 'Brasil',
+    'AU': 'Australia', 'RU': 'Россия', 'ZA': 'South Africa', 'MX': 'México'
+  };
+
+  async function checkVpnStatus(gpsCode) {
+    const apis = [
+      async () => {
+        const r = await fetch('https://ipinfo.io/json');
+        if (!r.ok) throw new Error();
+        const d = await r.json();
+        const org = d.org ? d.org.replace(/^AS\d+\s*/,'') : null;
+        return { code: d.country?.toUpperCase(), ip: d.ip, org };
+      },
+      async () => {
+        const r = await fetch('https://freeipapi.com/api/json');
+        if (!r.ok) throw new Error();
+        const d = await r.json();
+        return { code: d.countryCode?.toUpperCase(), ip: d.ipAddress, org: d.isp || null };
+      }
+    ];
+    for (const api of apis) {
+      try {
+        const { code, ip, org } = await api();
+        if (!code) continue;
+        ipCountryCode = code;
+        ipAddress = ip;
+        ipOrg = org || null;
+        updateVpnUI(gpsCode);
+        return;
+      } catch (e) { continue; }
+    }
+    setVpnUnknown('IP-check mislukt — alle APIs onbereikbaar');
+  }
+
+  function getNativeLabel(code) {
+    return nativeCountryNames[code] || countryNames[code] || code;
+  }
+
+  function formatVpnString() {
+    if (vpnActive === true) {
+      const provider = ipOrg || 'Onbekende Provider';
+      const nativeLocation = getNativeLabel(ipCountryCode);
+      const flag = getFlag(ipCountryCode);
+      return `VPN Actief: ${provider} - ${nativeLocation} ${flag}`;
+    } else if (vpnActive === false) {
+      return 'Directe Verbinding (Geen VPN)';
+    }
+    return 'VPN Status Onbekend';
+  }
+
+  function updateVpnUI(gpsCode) {
+    if (!ipCountryCode || !gpsCode) { setVpnUnknown('Wachten op GPS...'); return; }
+    const box = document.getElementById('vpnBox');
+    const icon = document.getElementById('vpnIcon');
+    const status = document.getElementById('vpnStatus');
+    const detail = document.getElementById('vpnDetail');
+    const badge = document.getElementById('vpnBadge');
+    
+    const nativeLabel = getNativeLabel(ipCountryCode);
+    const provider = ipOrg || 'Onbekende provider';
+
+    if (ipCountryCode !== gpsCode) {
+      vpnActive = true;
+      box.className = 'vpn-box vpn-on';
+      icon.textContent = '🔐';
+      status.className = 'vpn-status on';
+      status.textContent = `${provider} — ${nativeLabel} ${getFlag(ipCountryCode)}`;
+      detail.textContent = `Beveiligde verbinding (IP: ${ipAddress})`;
+      badge.className = 'vpn-badge on';
+      badge.textContent = 'VPN AAN';
+    } else {
+      vpnActive = false;
+      box.className = 'vpn-box vpn-off';
+      icon.textContent = '🔓';
+      status.className = 'vpn-status off';
+      status.textContent = `Directe verbinding — ${provider}`;
+      detail.textContent = `Geen VPN gedetecteerd`;
+      badge.className = 'vpn-badge off';
+      badge.textContent = 'VPN UIT';
+    }
+  }
+
+  function setVpnUnknown(msg) {
+    document.getElementById('vpnBox').className = 'vpn-box vpn-unknown';
+    document.getElementById('vpnIcon').textContent = '🔒';
+    document.getElementById('vpnStatus').className = 'vpn-status unknown';
+    document.getElementById('vpnStatus').textContent = 'VPN status onbekend';
+    document.getElementById('vpnDetail').textContent = msg;
+    document.getElementById('vpnBadge').className = 'vpn-badge unknown';
+    document.getElementById('vpnBadge').textContent = '—';
+    vpnActive = null;
+  }
+
+  function loadSaved() {
+    const wh = localStorage.getItem('discord_webhook');
+    const sn = localStorage.getItem('sender_name');
+    const iv = localStorage.getItem('gps_interval');
+    if (wh) document.getElementById('webhookUrl').value = wh;
+    if (sn) document.getElementById('senderName').value = sn;
+    if (iv) document.getElementById('intervalSelect').value = iv;
+  }
+
+  function saveSettings() {
+    localStorage.setItem('discord_webhook', document.getElementById('webhookUrl').value);
+    localStorage.setItem('sender_name', document.getElementById('senderName').value);
+    localStorage.setItem('gps_interval', document.getElementById('intervalSelect').value);
+  }
+
+  function showAlert(msg, type = 'info') {
+    const box = document.getElementById('alertBox');
+    box.textContent = msg;
+    box.className = 'alert alert-' + type;
+    box.style.display = 'block';
+    setTimeout(() => { box.style.display = 'none'; }, 4000);
+  }
+
+  function formatTime(d) {
+    return d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  function getFlag(code) {
+    return countryFlags[code] || '🌍';
+  }
+
+  function getCountryLabel(code, name) {
+    return countryNames[code] || name || code;
+  }
+
+  async function reverseGeocode(lat, lon) {
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=3`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'nl', 'User-Agent': 'GrensovergangTracker/1.0' } });
+    if (!res.ok) throw new Error('Nominatim fout');
+    const data = await res.json();
+    return { code: data.address?.country_code?.toUpperCase(), name: data.address?.country };
+  }
+
+  async function sendDiscordEmbed(title, colorHex, fields, vpnText = '') {
+    const webhookUrl = document.getElementById('webhookUrl').value.trim();
+    if (!webhookUrl) return false;
+    const senderName = document.getElementById('senderName').value.trim() || 'Internationaal Dispatch';
+    saveSettings();
+
+    const colorDec = parseInt(colorHex.replace('#', ''), 16);
+    const embed = {
+      title: title,
+      color: colorDec,
+      timestamp: new Date().toISOString(),
+      footer: { text: vpnText ? `Netwerk: ${vpnText}` : 'Systeem Operationeel' },
+      fields: fields
+    };
+
+    try {
+      const res = await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: senderName, embeds: [embed] }) });
+      return res.ok;
+    } catch (e) { return false; }
+  }
+
+  async function testWebhook() {
+    const webhook = document.getElementById('webhookUrl').value.trim();
+    if (!webhook) { showAlert('Vul eerst een webhook URL in!', 'danger'); return; }
+    showAlert('Testbericht versturen...', 'info');
+    
+    const fields = [{ name: "Status", value: "✅ Verbinding Succesvol", inline: true }];
+    const ok = await sendDiscordEmbed('🔧 Systeem Test', '#3b82f6', fields);
+    
+    if (ok) showAlert('✓ Testbericht succesvol verzonden!', 'success');
+    else showAlert('✗ Versturen mislukt. Controleer je webhook URL.', 'danger');
+  }
+
+  function addToLog(fromCode, fromName, toCode, toName, lat, lon, discordOk) {
+    const now = new Date();
+    const item = { fromCode, fromName, toCode, toName, lat, lon, time: now, discordOk };
+    crossingLog.unshift(item);
+
+    const ul = document.getElementById('logList');
+    if (ul.querySelector('.empty-log')) ul.innerHTML = '';
+
+    const li = document.createElement('li');
+    li.className = 'log-item';
+    const fromFlag = fromCode ? getFlag(fromCode) : '🌍';
+    const toFlag = getFlag(toCode);
+    const fromLabel = fromCode ? getCountryLabel(fromCode, fromName) : 'Onbekend';
+    const toLabel = getCountryLabel(toCode, toName);
+    const discordStatus = discordOk ? `<div class="log-sent">Verstuurd naar Discord</div>` : `<div class="log-failed">Discord niet ingesteld of fout</div>`;
+    li.innerHTML = `
+      <div class="log-flag">${fromFlag}→${toFlag}</div>
+      <div class="log-info">
+        <div class="log-crossing">${fromLabel} → ${toLabel}</div>
+        <div class="log-time">${formatTime(now)}</div>
+        ${discordStatus}
+      </div>`;
+    ul.prepend(li);
+  }
+
+  function updateCurrentCountry(code, name, lat, lon) {
+    const label = getCountryLabel(code, name);
+    document.getElementById('flagBig').textContent = getFlag(code);
+    document.getElementById('countryName').textContent = label;
+    if (!sinceTime || code !== currentCountryCode) sinceTime = new Date();
+    document.getElementById('countrySince').textContent = 'Hier sinds ' + formatTime(sinceTime);
+    document.getElementById('coordsText').textContent = '🔒 Exacte coördinaten verborgen';
+  }
+
+  async function checkLocation(lat, lon) {
+    if (isQuerying) return;
+    const now = Date.now();
+    if (now - lastNominatimCall < 5000) return;
+    isQuerying = true;
+    lastNominatimCall = now;
+    lastLat = lat;
+    lastLon = lon;
+    document.getElementById('trackingDot').className = 'dot dot-yellow';
+    document.getElementById('trackingText').textContent = 'Locatie ophalen...';
+    
+    try {
+      const { code, name } = await reverseGeocode(lat, lon);
+      if (!code) throw new Error('Geen land gevonden');
+
+      document.getElementById('trackingDot').className = 'dot dot-green';
+      document.getElementById('trackingText').textContent = 'Actief — elke check';
+      checkVpnStatus(code);
+
+      if (currentCountryCode && code !== currentCountryCode) {
+        const prevCode = currentCountryCode;
+        const prevName = currentCountry;
+        const toLabel = getCountryLabel(code, name);
+        const fromLabel = getCountryLabel(prevCode, prevName);
+        
+        const vpnLine = formatVpnString();
+        
+        const fields = [
+          { name: "Van", value: `${getFlag(prevCode)} ${fromLabel}`, inline: true },
+          { name: "Naar", value: `${getFlag(code)} ${toLabel}`, inline: true }
+        ];
+
+        const ok = await sendDiscordEmbed('🚆 Grensovergang Gedetecteerd', '#FFC917', fields, vpnLine);
+        addToLog(prevCode, prevName, code, name, lat, lon, ok);
+        showAlert(`${getFlag(code)} Grens over! ${fromLabel} → ${toLabel}`, 'success');
+      }
+
+      currentCountryCode = code;
+      currentCountry = name;
+      updateCurrentCountry(code, name, lat, lon);
+      document.getElementById('shareBtn').disabled = false;
+      document.getElementById('boardBtn').disabled = false;
+      document.getElementById('exitBtn').disabled = false;
+    } catch (e) {
+      document.getElementById('trackingDot').className = 'dot dot-red';
+      document.getElementById('trackingText').textContent = 'Fout bij ophalen locatie';
+    } finally {
+      isQuerying = false;
+    }
+  }
+
+  async function trainAction(type) {
+    const flag = currentCountryCode ? getFlag(currentCountryCode) : '📍';
+    const label = currentCountryCode ? getCountryLabel(currentCountryCode, currentCountry) : 'onbekende locatie';
+    const vpnLine = formatVpnString();
+    
+    const isBoard = type === 'instap';
+    const btnId = isBoard ? 'boardBtn' : 'exitBtn';
+    const btn = document.getElementById(btnId);
+    const origText = btn.textContent.trim();
+    btn.disabled = true;
+    btn.textContent = '⏳ Locatie ophalen...';
+
+    let plaatsLabel = label;
+    if (lastLat !== null) {
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lastLat}&lon=${lastLon}&format=json&zoom=12&accept-language=nl`, { headers: { 'User-Agent': 'GrensovergangTracker/1.0' } });
+        const d = await r.json();
+        const city = d.address?.city || d.address?.town || d.address?.village || d.address?.municipality || null;
+        if (city) plaatsLabel = `${city}, ${label}`;
+      } catch (e) {}
+    }
+
+    btn.textContent = '⏳ Versturen...';
+    const actionTitle = isBoard ? '🚆 Passagier Ingestapt' : '🚪 Passagier Uitgestapt';
+    const actionColor = isBoard ? '#10b981' : '#ef4444';
+    
+    const fields = [{ name: "Locatie", value: `${flag} ${plaatsLabel}`, inline: true }];
+    const ok = await sendDiscordEmbed(actionTitle, actionColor, fields, vpnLine);
+    
+    if (ok) {
+      showAlert(`✓ Verstuurd: ${isBoard ? 'Ingestapt' : 'Uitgestapt'} in ${plaatsLabel}`, 'success');
+      btn.textContent = '✓ Verstuurd!';
+      setTimeout(() => { btn.disabled = false; btn.textContent = origText; }, 2500);
+    } else {
+      showAlert('Versturen mislukt. Controleer je webhook.', 'danger');
+      btn.disabled = false;
+      btn.textContent = origText;
+    }
+  }
+
+  async function manualShare() {
+    if (!currentCountryCode) { showAlert('Nog geen land bekend. Start tracking eerst.', 'danger'); return; }
+    const flag = getFlag(currentCountryCode);
+    const label = getCountryLabel(currentCountryCode, currentCountry);
+    const vpnLine = formatVpnString();
+
+    const btn = document.getElementById('shareBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Versturen...';
+
+    const fields = [{ name: "Huidige Regio", value: `${flag} ${label}`, inline: true }];
+    const ok = await sendDiscordEmbed('📍 Algemene Locatie Update', '#3b82f6', fields, vpnLine);
+
+    if (ok) {
+      showAlert(`${flag} Locatie gedeeld: ${label}`, 'success');
+      btn.textContent = '✓ Verstuurd!';
+      setTimeout(() => { btn.disabled = false; btn.textContent = '📤 Deel land/regio'; }, 2500);
+    } else {
+      showAlert('Versturen mislukt. Controleer je webhook.', 'danger');
+      btn.disabled = false;
+      btn.textContent = '📤 Deel land/regio';
+    }
+  }
+
+  function toggleTracking() {
+    if (!tracking) startTracking();
+    else stopTracking();
+  }
+
+  function startTracking() {
+    if (!navigator.geolocation) { showAlert('GPS niet beschikbaar in deze browser.', 'danger'); return; }
+    saveSettings();
+    tracking = true;
+    document.getElementById('mainBtn').textContent = '⏹ Stop tracking';
+    document.getElementById('mainBtn').className = 'btn btn-stop';
+    document.getElementById('trackingDot').className = 'dot dot-yellow';
+    document.getElementById('trackingText').textContent = 'GPS verbinden...';
+    document.getElementById('countrySince').textContent = 'Locatie ophalen...';
+
+    const interval = parseInt(document.getElementById('intervalSelect').value);
+
+    watchId = navigator.geolocation.watchPosition(
+      pos => { checkLocation(pos.coords.latitude, pos.coords.longitude); },
+      err => {
+        let msg = 'GPS-fout';
+        if (err.code === 1) msg = 'GPS-toegang geweigerd.';
+        else if (err.code === 2) msg = 'GPS-positie niet beschikbaar.';
+        showAlert(msg, 'danger');
+        document.getElementById('trackingDot').className = 'dot dot-red';
+        document.getElementById('trackingText').textContent = msg;
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+
+    intervalId = setInterval(() => { if (lastLat !== null) checkLocation(lastLat, lastLon); }, interval);
+    vpnCheckInterval = setInterval(() => { if (currentCountryCode) checkVpnStatus(currentCountryCode); }, 60000);
+    showAlert('Tracking gestart! Houd het scherm actief.', 'success');
+  }
+
+  function stopTracking() {
+    tracking = false;
+    if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+    if (intervalId !== null) { clearInterval(intervalId); intervalId = null; }
+    if (vpnCheckInterval !== null) { clearInterval(vpnCheckInterval); vpnCheckInterval = null; }
+    document.getElementById('mainBtn').textContent = '▶ Start tracking';
+    document.getElementById('mainBtn').className = 'btn btn-start';
+    document.getElementById('trackingDot').className = 'dot dot-red';
+    document.getElementById('trackingText').textContent = 'Niet actief';
+    document.getElementById('shareBtn').disabled = true;
+    document.getElementById('boardBtn').disabled = true;
+    document.getElementById('exitBtn').disabled = true;
+    setVpnUnknown('Start tracking om te detecteren');
+    showAlert('Tracking gestopt.', 'info');
+  }
+
+  document.addEventListener('DOMContentLoaded', loadSaved);
+</script>
+</body>
+</html>
