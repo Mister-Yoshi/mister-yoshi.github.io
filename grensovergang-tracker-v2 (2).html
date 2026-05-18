@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Rail Tracker</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#0c0f14;--s1:#131720;--s2:#1a2030;--s3:#212840;
+  --b1:rgba(255,255,255,.07);--b2:rgba(255,255,255,.12);
+  --text:#e2e8f0;--muted:#64748b;--subtle:#94a3b8;
+  --yellow:#f59e0b;--yd:#d97706;--green:#10b981;--red:#ef4444;--blue:#3b82f6;
+  --r:10px;--rs:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;min-height:100vh;padding-bottom:40px}
+
+/* Header */
+.header{background:var(--s1);border-bottom:1px solid var(--b1);padding:0 16px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:10px}
+.hl{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.hicon{width:30px;height:30px;background:var(--yellow);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.htitle{font-size:14px;font-weight:600;letter-spacing:-.3px}
+.hsub{font-size:11px;color:var(--muted)}
+.hr{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* Lang toggle */
+.langtoggle{display:flex;background:var(--s2);border:1px solid var(--b2);border-radius:20px;padding:3px;gap:2px}
+.langbtn{padding:3px 10px;border-radius:16px;border:none;background:transparent;color:var(--muted);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+.langbtn.active{background:var(--yellow);color:#0c0f14}
+
+/* Status pill */
+.spill{display:flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--b1);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:500;color:var(--muted);transition:all .3s}
+.spill.on{border-color:rgba(16,185,129,.3);color:var(--green)}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:all .3s}
+.sdot.on{background:var(--green);box-shadow:0 0 5px var(--green)}
+.sdot.spin{background:var(--yellow);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Layout */
+.main{padding:14px;max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+
+/* Cards */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden}
+.clabel{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.cheader{padding:13px 15px 0;margin-bottom:10px}
+.cbody{padding:0 15px 15px}
+
+/* Location */
+.locblock{display:flex;align-items:center;gap:14px;padding:16px}
+.locflag{font-size:40px;line-height:1;flex-shrink:0}
+.locinfo{flex:1;min-width:0}
+.loccountry{font-size:19px;font-weight:600;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.locmeta{font-size:11px;color:var(--muted);margin-top:1px;font-family:'JetBrains Mono',monospace}
+.locdiv{height:1px;background:var(--b1);margin:0 16px}
+.coordrow{padding:9px 16px;display:flex;align-items:center;justify-content:space-between}
+.coordlbl{font-size:11px;color:var(--muted)}
+.coordval{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--subtle)}
+
+/* VPN */
+.vpnblock{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:var(--r);border:1px solid var(--b1);background:var(--s2);transition:border-color .3s,background .3s}
+.vpnblock.on{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.04)}
+.vpnblock.off{border-color:rgba(16,185,129,.2);background:rgba(16,185,129,.03)}
+.vpniconw{width:32px;height:32px;border-radius:var(--rs);background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.vpninfo{flex:1;min-width:0}
+.vpntitle{font-size:13px;font-weight:500}
+.vpnsub{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpnbadge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.5px;flex-shrink:0}
+.vpnbadge.on{background:rgba(59,130,246,.15);color:#60a5fa}
+.vpnbadge.off{background:rgba(16,185,129,.12);color:#34d399}
+.vpnbadge.unk{background:var(--s3);color:var(--muted)}
+
+/* Inputs */
+.field{margin-bottom:10px}.field:last-child{margin-bottom:0}
+.flabel{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);display:block;margin-bottom:4px}
+.fhint{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4}
+input[type="url"],input[type="text"],select{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:var(--rs);padding:8px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--yellow)}
+input::placeholder{color:var(--muted);opacity:.5}
+
+/* Buttons */
+.btn{width:100%;padding:11px;border-radius:var(--rs);border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .2s,transform .1s,background .2s;letter-spacing:-.1px}
+.btn:active:not(:disabled){transform:scale(.98)}
+.btn:disabled{opacity:.28;cursor:not-allowed}
+.btn-p{background:var(--yellow);color:#0c0f14;font-weight:600}
+.btn-p:hover:not(:disabled){background:var(--yd)}
+.btn-stop{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.btn-stop:hover:not(:disabled){background:rgba(239,68,68,.2)}
+.btn-ghost{background:var(--s2);color:var(--subtle);border:1px solid var(--b2)}
+.btn-ghost:hover:not(:disabled){background:var(--s3)}
+.btn-green{background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.25)}
+.btn-green:hover:not(:disabled){background:rgba(16,185,129,.18)}
+.btn-red{background:rgba(239,68,68,.07);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.btn-red:hover:not(:disabled){background:rgba(239,68,68,.14)}
+.btn-yghost{background:transparent;color:var(--yellow);border:1px solid rgba(245,158,11,.3)}
+.btn-yghost:hover:not(:disabled){background:rgba(245,158,11,.07)}
+.brow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bstack{display:flex;flex-direction:column;gap:8px}
+
+/* Alert */
+.alert{border-radius:var(--rs);padding:9px 12px;font-size:12px;display:none;align-items:center;gap:7px;font-weight:500}
+.alert.show{display:flex}
+.alert-info{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:#60a5fa}
+.alert-success{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:#34d399}
+.alert-danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171}
+
+/* Divider */
+.divrow{display:flex;align-items:center;gap:10px}
+.divrow span{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.divrow::before,.divrow::after{content:'';flex:1;height:1px;background:var(--b1)}
+
+/* Log */
+.loglist{list-style:none}
+.logempty{padding:22px 15px;text-align:center;color:var(--muted);font-size:12px}
+.logitem{display:flex;align-items:flex-start;gap:10px;padding:10px 15px;border-bottom:1px solid var(--b1);animation:si .3s ease}
+.logitem:last-child{border-bottom:none}
+@keyframes si{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.logflags{font-size:17px;flex-shrink:0;padding-top:1px}
+.logbody{flex:1;min-width:0}
+.logtitle{font-size:12px;font-weight:500;color:var(--text)}
+.logtime{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:1px}
+.logtag{font-size:10px;font-weight:500;padding:1px 6px;border-radius:3px;margin-top:3px;display:inline-block}
+.logtag.ok{background:rgba(16,185,129,.12);color:#34d399}
+.logtag.fail{background:rgba(239,68,68,.1);color:#f87171}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="hl">
+    <div class="hicon">🚆</div>
+    <div>
+      <div class="htitle">Rail Tracker</div>
+      <div class="hsub" id="hSub">Grensovergang &amp; reislog</div>
+    </div>
+  </div>
+  <div class="hr">
+    <div class="langtoggle">
+      <button class="langbtn active" id="btnNL" onclick="setLang('nl')">NL</button>
+      <button class="langbtn"        id="btnFR" onclick="setLang('fr')">FR</button>
+    </div>
+    <div class="spill" id="spill">
+      <div class="sdot" id="sdot"></div>
+      <span id="stext">Inactief</span>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+  <div class="alert" id="alertBox"></div>
+
+  <!-- Locatie -->
+  <div class="card">
+    <div class="locblock">
+      <div class="locflag" id="flagBig">📍</div>
+      <div class="locinfo">
+        <div class="loccountry" id="countryName">—</div>
+        <div class="locmeta"    id="countrySince"></div>
+      </div>
+    </div>
+    <div class="locdiv"></div>
+    <div class="coordrow">
+      <span class="coordlbl" id="lblCoords">Coördinaten</span>
+      <span class="coordval" id="coordsVal">—</span>
+    </div>
+  </div>
+
+  <!-- VPN -->
+  <div class="vpnblock" id="vpnBox">
+    <div class="vpniconw" id="vpnIcon">🔒</div>
+    <div class="vpninfo">
+      <div class="vpntitle" id="vpnStatus"></div>
+      <div class="vpnsub"   id="vpnDetail"></div>
+    </div>
+    <div class="vpnbadge unk" id="vpnBadge">—</div>
+  </div>
+
+  <!-- Tracking -->
+  <div class="bstack">
+    <button class="btn btn-p"      id="mainBtn"  onclick="toggleTracking()"></button>
+    <button class="btn btn-yghost" id="shareBtn" onclick="manualShare()" disabled></button>
+  </div>
+
+  <!-- Trein -->
+  <div class="divrow"><span id="divTrain"></span></div>
+  <div class="brow">
+    <button class="btn btn-green" id="boardBtn" onclick="trainAction('board')" disabled></button>
+    <button class="btn btn-red"   id="exitBtn"  onclick="trainAction('exit')"  disabled></button>
+  </div>
+
+  <!-- Instellingen -->
+  <div class="divrow"><span id="divSettings"></span></div>
+  <div class="card">
+    <div class="cheader"><span class="clabel" id="lblWebhook"></span></div>
+    <div class="cbody">
+      <div class="field">
+        <label class="flabel" id="lblWebhookUrl"></label>
+        <input type="url" id="webhookUrl" />
+        <p class="fhint" id="hintWebhook"></p>
+      </div>
+      <div class="field">
+        <label class="flabel" id="lblSender"></label>
+        <input type="text" id="senderName" />
+      </div>
+      <div class="field">
+        <label class="flabel" id="lblInterval"></label>
+        <select id="intervalSelect"></select>
+      </div>
+      <button class="btn btn-ghost" id="testBtn" onclick="testWebhook()"></button>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="divrow"><span id="divLog"></span></div>
+  <div class="card">
+    <ul class="loglist" id="logList">
+      <li class="logempty" id="logEmpty"></li>
+    </ul>
+  </div>
+</div>
+
+<script>
+/* ── Translations ── */
+const T = {
+  nl: {
+    sub:          'Grensovergang & reislog',
+    inactive:     'Inactief',
+    active:       'Actief',
+    connecting:   'Verbinden…',
+    coords:       'Coördinaten',
+    vpnUnknown:   'VPN status onbekend',
+    vpnStart:     'Start tracking om te detecteren',
+    vpnOn:        'VPN actief',
+    vpnOnPfx:     'VPN actief — ',
+    vpnOff:       'Geen VPN gedetecteerd',
+    vpnOffPfx:    'Geen VPN — ',
+    vpnBadgeOn:   'VPN AAN',
+    vpnBadgeOff:  'VPN UIT',
+    vpnFail:      'IP-check mislukt',
+    vpnWait:      'Wachten op GPS…',
+    sinceStart:   'Start tracking om je locatie te zien',
+    sinceHere:    'Hier sinds',
+    fetching:     'Locatie ophalen…',
+    btnStart:     '▶ \u00A0Start tracking',
+    btnStop:      '■ \u00A0Stop tracking',
+    btnShare:     '↑ \u00A0Huidige locatie delen',
+    btnBoard:     '🚆 \u00A0Instappen',
+    btnExit:      '🚪 \u00A0Uitstappen',
+    btnTest:      'Testbericht versturen',
+    divTrain:     'Treinrit',
+    divSettings:  'Instellingen',
+    divLog:       'Activiteitenlog',
+    lblWebhook:   'Discord webhook',
+    lblUrl:       'Webhook URL',
+    lblSender:    'Weergavenaam',
+    lblInterval:  'GPS-interval',
+    hintWebhook:  'Server-instellingen → Integraties → Webhooks → Nieuw webhook',
+    placeholder_url:  'https://discord.com/api/webhooks/…',
+    placeholder_name: 'Rail Tracker',
+    logEmpty:     'Nog geen activiteit geregistreerd',
+    intervals: [
+      ['15000','Elke 15 seconden'],['30000','Elke 30 seconden'],
+      ['60000','Elke minuut'],['120000','Elke 2 minuten']
+    ],
+    alertTrackStart:  'Tracking gestart.',
+    alertTrackStop:   'Tracking gestopt.',
+    alertNoGPS:       'GPS niet beschikbaar in deze browser.',
+    alertGPSDenied:   'GPS-toegang geweigerd.',
+    alertGPSUnavail:  'GPS niet beschikbaar.',
+    alertGPSTimeout:  'GPS timeout.',
+    alertBackground:  'App op achtergrond — GPS kan pauzeren.',
+    alertNoLoc:       'Nog geen locatie beschikbaar.',
+    alertNoWebhook:   'Voer eerst een webhook URL in.',
+    alertSending:     'Testbericht versturen…',
+    alertTestOk:      'Testbericht succesvol verzonden.',
+    alertTestFail:    'Verzending mislukt. Controleer de webhook URL.',
+    alertShared:      'Locatie gedeeld.',
+    alertSendFail:    'Verzending mislukt.',
+    alertCrossing:    '→ Grens gepasseerd:',
+    fetchingLoc:      'Locatie ophalen…',
+    sending:          'Versturen…',
+    boardedIn:        'Ingestapt in',
+    exitedIn:         'Uitgestapt in',
+    boardedSent:      'ingestapt in',
+    exitedSent:       'uitgestapt in',
+    discordTest:      { title:'✅ Verbinding geslaagd', desc:'Rail Tracker is correct verbonden met dit kanaal en klaar voor gebruik.', f_status:'Status', f_op:'Operationeel', f_ver:'Versie', footer:'Rail Tracker • Testbericht' },
+    discordShare:     { title:'Locatie-update', desc:'Huidig land:', footer:'Rail Tracker • Handmatig gedeeld' },
+    discordBoard:     { title:'🚆  Ingestapt', footer:'Rail Tracker • Vertrek' },
+    discordExit:      { title:'🚪  Uitgestapt', footer:'Rail Tracker • Aankomst' },
+    discordCross:     { title:'Grensovergang', f_from:'Vertrokken uit', f_to:'Aangekomen in', footer:'Rail Tracker • Automatische grensdetectie' },
+    discordNet:       { name:'Netwerk', vpnOn:'🔐 VPN actief', vpnOff:'🔓 Directe verbinding' },
+    logLabels:        { board:'Ingestapt', exit:'Uitgestapt', share:'Locatie gedeeld', crossing:'Grensovergang' },
+    logDiscordOk:     'Discord ✓',
+    logDiscordFail:   'Discord ✗',
+  },
+  fr: {
+    sub:          'Passage de frontière & journal de voyage',
+    inactive:     'Inactif',
+    active:       'Actif',
+    connecting:   'Connexion…',
+    coords:       'Coordonnées',
+    vpnUnknown:   'Statut VPN inconnu',
+    vpnStart:     'Démarrez le suivi pour détecter',
+    vpnOn:        'VPN actif',
+    vpnOnPfx:     'VPN actif — ',
+    vpnOff:       'Aucun VPN détecté',
+    vpnOffPfx:    'Sans VPN — ',
+    vpnBadgeOn:   'VPN ON',
+    vpnBadgeOff:  'VPN OFF',
+    vpnFail:      'Vérification IP échouée',
+    vpnWait:      'En attente du GPS…',
+    sinceStart:   'Démarrez le suivi pour voir votre position',
+    sinceHere:    'Ici depuis',
+    fetching:     'Récupération de la position…',
+    btnStart:     '▶ \u00A0Démarrer le suivi',
+    btnStop:      '■ \u00A0Arrêter le suivi',
+    btnShare:     '↑ \u00A0Partager la position actuelle',
+    btnBoard:     '🚆 \u00A0Monter à bord',
+    btnExit:      '🚪 \u00A0Descendre',
+    btnTest:      'Envoyer un message test',
+    divTrain:     'Trajet en train',
+    divSettings:  'Paramètres',
+    divLog:       'Journal d\'activité',
+    lblWebhook:   'Webhook Discord',
+    lblUrl:       'URL du webhook',
+    lblSender:    'Nom d\'affichage',
+    lblInterval:  'Intervalle GPS',
+    hintWebhook:  'Paramètres du serveur → Intégrations → Webhooks → Nouveau webhook',
+    placeholder_url:  'https://discord.com/api/webhooks/…',
+    placeholder_name: 'Rail Tracker',
+    logEmpty:     'Aucune activité enregistrée',
+    intervals: [
+      ['15000','Toutes les 15 secondes'],['30000','Toutes les 30 secondes'],
+      ['60000','Chaque minute'],['120000','Toutes les 2 minutes']
+    ],
+    alertTrackStart:  'Suivi démarré.',
+    alertTrackStop:   'Suivi arrêté.',
+    alertNoGPS:       'GPS non disponible dans ce navigateur.',
+    alertGPSDenied:   'Accès GPS refusé.',
+    alertGPSUnavail:  'Position GPS indisponible.',
+    alertGPSTimeout:  'Délai GPS dépassé.',
+    alertBackground:  'Application en arrière-plan — le GPS peut se mettre en pause.',
+    alertNoLoc:       'Aucune position disponible.',
+    alertNoWebhook:   'Veuillez d\'abord saisir une URL de webhook.',
+    alertSending:     'Envoi du message test…',
+    alertTestOk:      'Message test envoyé avec succès.',
+    alertTestFail:    'Échec de l\'envoi. Vérifiez l\'URL du webhook.',
+    alertShared:      'Position partagée.',
+    alertSendFail:    'Échec de l\'envoi.',
+    alertCrossing:    '→ Frontière franchie :',
+    fetchingLoc:      'Récupération de la position…',
+    sending:          'Envoi…',
+    boardedIn:        'Monté à bord à',
+    exitedIn:         'Descendu à',
+    boardedSent:      'monté à bord à',
+    exitedSent:       'descendu à',
+    discordTest:      { title:'✅ Connexion réussie', desc:'Rail Tracker est correctement connecté à ce canal et prêt à l\'emploi.', f_status:'Statut', f_op:'Opérationnel', f_ver:'Version', footer:'Rail Tracker • Message test' },
+    discordShare:     { title:'Mise à jour de position', desc:'Pays actuel :', footer:'Rail Tracker • Partage manuel' },
+    discordBoard:     { title:'🚆  Monté à bord', footer:'Rail Tracker • Départ' },
+    discordExit:      { title:'🚪  Descendu', footer:'Rail Tracker • Arrivée' },
+    discordCross:     { title:'Passage de frontière', f_from:'Parti de', f_to:'Arrivé en', footer:'Rail Tracker • Détection automatique' },
+    discordNet:       { name:'Réseau', vpnOn:'🔐 VPN actif', vpnOff:'🔓 Connexion directe' },
+    logLabels:        { board:'Monté à bord', exit:'Descendu', share:'Position partagée', crossing:'Passage de frontière' },
+    logDiscordOk:     'Discord ✓',
+    logDiscordFail:   'Discord ✗',
+  }
+};
+
+/* ── Country data ── */
+const FL={'NL':'🇳🇱','DE':'🇩🇪','BE':'🇧🇪','FR':'🇫🇷','LU':'🇱🇺','GB':'🇬🇧','DK':'🇩🇰','PL':'🇵🇱','CH':'🇨🇭','AT':'🇦🇹','IT':'🇮🇹','ES':'🇪🇸','PT':'🇵🇹','CZ':'🇨🇿','SK':'🇸🇰','HU':'🇭🇺','NO':'🇳🇴','SE':'🇸🇪','FI':'🇫🇮','EE':'🇪🇪','LV':'🇱🇻','LT':'🇱🇹','RO':'🇷🇴','BG':'🇧🇬','HR':'🇭🇷','SI':'🇸🇮','RS':'🇷🇸','GR':'🇬🇷','TR':'🇹🇷','UA':'🇺🇦','BY':'🇧🇾','RU':'🇷🇺','US':'🇺🇸','CA':'🇨🇦','JP':'🇯🇵','CN':'🇨🇳'};
+const NL_NAMES={'NL':'Nederland','DE':'Duitsland','BE':'België','FR':'Frankrijk','LU':'Luxemburg','GB':'Verenigd Koninkrijk','DK':'Denemarken','PL':'Polen','CH':'Zwitserland','AT':'Oostenrijk','IT':'Italië','ES':'Spanje','PT':'Portugal','CZ':'Tsjechië','SK':'Slowakije','HU':'Hongarije','NO':'Noorwegen','SE':'Zweden','FI':'Finland','EE':'Estland','LV':'Letland','LT':'Litouwen','RO':'Roemenië','BG':'Bulgarije','HR':'Kroatië','SI':'Slovenië','RS':'Servië','GR':'Griekenland','TR':'Turkije','UA':'Oekraïne','US':'Verenigde Staten','CA':'Canada','JP':'Japan'};
+const FR_NAMES={'NL':'Pays-Bas','DE':'Allemagne','BE':'Belgique','FR':'France','LU':'Luxembourg','GB':'Royaume-Uni','DK':'Danemark','PL':'Pologne','CH':'Suisse','AT':'Autriche','IT':'Italie','ES':'Espagne','PT':'Portugal','CZ':'Tchéquie','SK':'Slovaquie','HU':'Hongrie','NO':'Norvège','SE':'Suède','FI':'Finlande','EE':'Estonie','LV':'Lettonie','LT':'Lituanie','RO':'Roumanie','BG':'Bulgarie','HR':'Croatie','SI':'Slovénie','RS':'Serbie','GR':'Grèce','TR':'Turquie','UA':'Ukraine','US':'États-Unis','CA':'Canada','JP':'Japon'};
+
+let lang = localStorage.getItem('lang') || 'nl';
+
+const fl = c => FL[c] || '🌍';
+const nm = (c,n) => {
+  const map = lang==='nl' ? NL_NAMES : FR_NAMES;
+  return map[c] || n || c || (lang==='nl'?'Onbekend':'Inconnu');
+};
+const t = k => T[lang][k];
+const fmtTime = () => new Date().toLocaleString(lang==='nl'?'nl-NL':'fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.getElementById('btnNL').classList.toggle('active', lang==='nl');
+  document.getElementById('btnFR').classList.toggle('active', lang==='fr');
+  document.getElementById('hSub').textContent        = t('sub');
+  document.getElementById('stext').textContent       = tracking ? t('active') : t('inactive');
+  document.getElementById('lblCoords').textContent   = t('coords');
+  document.getElementById('divTrain').textContent    = t('divTrain');
+  document.getElementById('divSettings').textContent = t('divSettings');
+  document.getElementById('divLog').textContent      = t('divLog');
+  document.getElementById('lblWebhook').textContent  = t('lblWebhook');
+  document.getElementById('lblWebhookUrl').textContent = t('lblUrl');
+  document.getElementById('lblSender').textContent   = t('lblSender');
+  document.getElementById('lblInterval').textContent = t('lblInterval');
+  document.getElementById('hintWebhook').textContent = t('hintWebhook');
+  document.getElementById('webhookUrl').placeholder  = t('placeholder_url');
+  document.getElementById('senderName').placeholder  = t('placeholder_name');
+  document.getElementById('testBtn').textContent     = t('btnTest');
+  document.getElementById('mainBtn').innerHTML       = tracking ? t('btnStop') : t('btnStart');
+  document.getElementById('shareBtn').innerHTML      = t('btnShare');
+  document.getElementById('boardBtn').innerHTML      = t('btnBoard');
+  document.getElementById('exitBtn').innerHTML       = t('btnExit');
+  if(document.getElementById('logList').querySelector('.logempty'))
+    document.getElementById('logEmpty').textContent  = t('logEmpty');
+  // Rebuild interval select preserving value
+  const sel = document.getElementById('intervalSelect');
+  const cur = sel.value;
+  sel.innerHTML = t('intervals').map(([v,l])=>`<option value="${v}">${l}</option>`).join('');
+  sel.value = cur || '30000';
+  // VPN text refresh
+  if(!tracking) {
+    document.getElementById('vpnStatus').textContent = t('vpnUnknown');
+    document.getElementById('vpnDetail').textContent = t('vpnStart');
+  } else if(vpnOn!==null) {
+    updateVPNUI(curCode);
+  }
+  // Country name update
+  if(curCode) document.getElementById('countryName').textContent = nm(curCode, curName);
+  // Since text update
+  if(sinceTime && curCode)
+    document.getElementById('countrySince').textContent = `${t('sinceHere')} ${sinceTime.toLocaleTimeString(lang==='nl'?'nl-NL':'fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+  else if(!tracking)
+    document.getElementById('countrySince').textContent = t('sinceStart');
+}
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('lang', l);
+  applyLang();
+}
+
+/* ── State ── */
+let tracking=false,watchId=null,intervalId=null,vpnInt=null,isQuerying=false;
+let curCode=null,curName=null,sinceTime=null,lastLat=null,lastLon=null,lastGeoCall=0;
+let vpnOn=null,ipCode=null,ipName=null,ipAddr=null,ipOrg=null;
+
+function alert_(msg,type){
+  const b=document.getElementById('alertBox');
+  b.textContent=msg; b.className=`alert alert-${type} show`;
+  clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove('show'),3500);
+}
+
+function setStatus(s){
+  const dot=document.getElementById('sdot'),txt=document.getElementById('stext'),pill=document.getElementById('spill');
+  if(s==='on'){dot.className='sdot on';txt.textContent=t('active');pill.className='spill on';}
+  else if(s==='load'){dot.className='sdot spin';txt.textContent=t('connecting');pill.className='spill';}
+  else{dot.className='sdot';txt.textContent=t('inactive');pill.className='spill';}
+}
+
+function setBtns(en){['shareBtn','boardBtn','exitBtn'].forEach(id=>document.getElementById(id).disabled=!en);}
+
+function loadSaved(){
+  const g=k=>localStorage.getItem(k);
+  if(g('wh'))  document.getElementById('webhookUrl').value=g('wh');
+  if(g('nm'))  document.getElementById('senderName').value=g('nm');
+  if(g('iv'))  document.getElementById('intervalSelect').value=g('iv');
+}
+function save(){
+  localStorage.setItem('wh',  document.getElementById('webhookUrl').value);
+  localStorage.setItem('nm',  document.getElementById('senderName').value);
+  localStorage.setItem('iv',  document.getElementById('intervalSelect').value);
+}
+
+async function geo(lat,lon,zoom=3){
+  const accept = lang==='fr'?'fr':'nl';
+  const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=${zoom}&accept-language=${accept}`,{headers:{'User-Agent':'RailTracker/2.0'}});
+  if(!r.ok)throw 0; return r.json();
+}
+
+async function getCity(lat,lon){
+  try{const d=await geo(lat,lon,12);return d.address?.city||d.address?.town||d.address?.village||d.address?.municipality||null;}
+  catch{return null;}
+}
+
+async function checkVPN(gpsCode){
+  const apis=[
+    async()=>{const r=await fetch('https://ipinfo.io/json');if(!r.ok)throw 0;const d=await r.json();return{code:d.country?.toUpperCase(),name:null,ip:d.ip,org:d.org?d.org.replace(/^AS\d+\s*/,''):null};},
+    async()=>{const r=await fetch('https://freeipapi.com/api/json');if(!r.ok)throw 0;const d=await r.json();return{code:d.countryCode?.toUpperCase(),name:d.countryName,ip:d.ipAddress,org:d.isp||null};},
+    async()=>{const r=await fetch('https://api.country.is');if(!r.ok)throw 0;const d=await r.json();return{code:d.country?.toUpperCase(),name:null,ip:d.ip,org:null};}
+  ];
+  for(const api of apis){
+    try{const{code,name:n,ip,org}=await api();if(!code)continue;ipCode=code;ipName=n;ipAddr=ip;ipOrg=org||null;updateVPNUI(gpsCode);return;}catch{}
+  }
+  setVPNUnknown(t('vpnFail'));
+}
+
+function updateVPNUI(gpsCode){
+  if(!ipCode||!gpsCode){setVPNUnknown(t('vpnWait'));return;}
+  const box=document.getElementById('vpnBox'),icon=document.getElementById('vpnIcon'),
+        st=document.getElementById('vpnStatus'),det=document.getElementById('vpnDetail'),
+        badge=document.getElementById('vpnBadge');
+  const ipNm=nm(ipCode,ipName);
+  const lbl=`${fl(ipCode)} ${ipNm}  ·  ${ipAddr}`;
+  if(ipCode!==gpsCode){
+    vpnOn=true; box.className='vpnblock on'; icon.textContent='🔐';
+    st.textContent=ipOrg?t('vpnOnPfx')+ipOrg:t('vpnOn');
+    det.textContent=lbl; badge.className='vpnbadge on'; badge.textContent=t('vpnBadgeOn');
+  }else{
+    vpnOn=false; box.className='vpnblock off'; icon.textContent='🔓';
+    st.textContent=ipOrg?t('vpnOffPfx')+ipOrg:t('vpnOff');
+    det.textContent=lbl; badge.className='vpnbadge off'; badge.textContent=t('vpnBadgeOff');
+  }
+}
+
+function setVPNUnknown(msg){
+  document.getElementById('vpnBox').className='vpnblock';
+  document.getElementById('vpnIcon').textContent='🔒';
+  document.getElementById('vpnStatus').textContent=t('vpnUnknown');
+  document.getElementById('vpnDetail').textContent=msg;
+  document.getElementById('vpnBadge').className='vpnbadge unk';
+  document.getElementById('vpnBadge').textContent='—';
+  vpnOn=null;
+}
+
+function vpnField(){
+  const dn=t('discordNet');
+  if(vpnOn===true)  return{name:dn.name,value:`${dn.vpnOn}${ipOrg?' — **'+ipOrg+'**':''}`,inline:true};
+  if(vpnOn===false) return{name:dn.name,value:`${dn.vpnOff}${ipOrg?' — '+ipOrg:''}`,inline:true};
+  return null;
+}
+
+async function sendEmbed(embed){
+  const url=document.getElementById('webhookUrl').value.trim();
+  if(!url)return false;
+  const uname=document.getElementById('senderName').value.trim()||'Rail Tracker';
+  save();
+  try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:uname,embeds:[embed]})});return r.ok;}
+  catch{return false;}
+}
+
+async function testWebhook(){
+  const url=document.getElementById('webhookUrl').value.trim();
+  if(!url){alert_(t('alertNoWebhook'),'danger');return;}
+  save(); alert_(t('alertSending'),'info');
+  const d=t('discordTest');
+  const ok=await sendEmbed({title:d.title,description:d.desc,color:3394611,
+    fields:[{name:d.f_status,value:d.f_op,inline:true},{name:d.f_ver,value:'Rail Tracker 2.0',inline:true}],
+    footer:{text:d.footer},timestamp:new Date().toISOString()});
+  ok?alert_(t('alertTestOk'),'success'):alert_(t('alertTestFail'),'danger');
+}
+
+function addLog(type,code,cname,city,ok){
+  const ul=document.getElementById('logList');
+  if(ul.querySelector('.logempty'))ul.innerHTML='';
+  const icons={board:'🚆',exit:'🚪',share:'↑',crossing:'⟶'};
+  const labels=t('logLabels');
+  const loc=[city,code?nm(code,cname):null].filter(Boolean).join(', ');
+  const li=document.createElement('li'); li.className='logitem';
+  li.innerHTML=`<div class="logflags">${icons[type]} ${code?fl(code):''}</div>
+    <div class="logbody">
+      <div class="logtitle">${labels[type]}${loc?' — '+loc:''}</div>
+      <div class="logtime">${fmtTime()}</div>
+      <span class="logtag ${ok?'ok':'fail'}">${ok?t('logDiscordOk'):t('logDiscordFail')}</span>
+    </div>`;
+  ul.prepend(li);
+}
+
+async function manualShare(){
+  if(!curCode){alert_(t('alertNoLoc'),'danger');return;}
+  const btn=document.getElementById('shareBtn');
+  btn.disabled=true; btn.textContent='…';
+  const vf=vpnField(); const d=t('discordShare');
+  const ok=await sendEmbed({title:`${fl(curCode)}  ${d.title}`,description:`${d.desc} **${nm(curCode,curName)}**`,color:16750592,
+    fields:[...(vf?[vf]:[])],footer:{text:d.footer},timestamp:new Date().toISOString()});
+  addLog('share',curCode,curName,null,ok);
+  ok?alert_(t('alertShared'),'success'):alert_(t('alertSendFail'),'danger');
+  btn.innerHTML=t('btnShare'); setBtns(true);
+}
+
+async function trainAction(type){
+  const isBoard=type==='board';
+  const btn=document.getElementById(isBoard?'boardBtn':'exitBtn');
+  const orig=btn.innerHTML; btn.disabled=true; btn.textContent=t('fetchingLoc');
+  const cl=curCode?nm(curCode,curName):(lang==='nl'?'onbekende locatie':'position inconnue');
+  const city=lastLat!==null?await getCity(lastLat,lastLon):null;
+  const loc=city?`${city}, ${cl}`:cl;
+  btn.textContent=t('sending');
+  const vf=vpnField();
+  const d=isBoard?t('discordBoard'):t('discordExit');
+  const ok=await sendEmbed({title:d.title,description:`**${loc}** ${curCode?fl(curCode):'📍'}`,
+    color:isBoard?3394611:15548997,fields:[...(vf?[vf]:[])],
+    footer:{text:d.footer},timestamp:new Date().toISOString()});
+  addLog(type,curCode,curName,city,ok);
+  const verb=isBoard?t('boardedSent'):t('exitedSent');
+  ok?alert_(`${verb.charAt(0).toUpperCase()+verb.slice(1)} ${loc}.`,'success'):alert_(t('alertSendFail'),'danger');
+  btn.innerHTML=orig; btn.disabled=false;
+}
+
+async function checkLocation(lat,lon){
+  if(isQuerying)return;
+  if(Date.now()-lastGeoCall<5000)return;
+  isQuerying=true; lastGeoCall=Date.now(); lastLat=lat; lastLon=lon;
+  setStatus('load');
+  try{
+    const d=await geo(lat,lon,3);
+    const code=d.address?.country_code?.toUpperCase();
+    const cname=d.address?.country;
+    if(!code)throw 0;
+    setStatus('on');
+    checkVPN(code);
+
+    if(curCode&&code!==curCode){
+      const prev=curCode,prevN=curName; const vf=vpnField(); const dc=t('discordCross');
+      const ok=await sendEmbed({title:`${fl(prev)} → ${fl(code)}  ${dc.title}`,
+        description:`${lang==='nl'?'Van':'De'} **${nm(prev,prevN)}** ${lang==='nl'?'naar':'vers'} **${nm(code,cname)}**`,
+        color:5763719,
+        fields:[{name:dc.f_from,value:`${fl(prev)} ${nm(prev,prevN)}`,inline:true},
+                {name:dc.f_to,  value:`${fl(code)} ${nm(code,cname)}`,inline:true},
+                ...(vf?[vf]:[])],
+        footer:{text:dc.footer},timestamp:new Date().toISOString()});
+      addLog('crossing',code,cname,null,ok);
+      alert_(`${fl(prev)} ${t('alertCrossing')} ${nm(code,cname)}`,'success');
+    }
+
+    if(!curCode||code!==curCode) sinceTime=new Date();
+    curCode=code; curName=cname;
+    document.getElementById('flagBig').textContent=fl(code);
+    document.getElementById('countryName').textContent=nm(code,cname);
+    document.getElementById('countrySince').textContent=`${t('sinceHere')} ${sinceTime.toLocaleTimeString(lang==='nl'?'nl-NL':'fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+    document.getElementById('coordsVal').textContent=`${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+    setBtns(true);
+  }catch{setStatus('load');}
+  finally{isQuerying=false;}
+}
+
+function toggleTracking(){tracking?stopTracking():startTracking();}
+
+function startTracking(){
+  if(!navigator.geolocation){alert_(t('alertNoGPS'),'danger');return;}
+  save(); tracking=true;
+  document.getElementById('mainBtn').innerHTML=t('btnStop');
+  document.getElementById('mainBtn').className='btn btn-stop';
+  document.getElementById('countrySince').textContent=t('fetching');
+  setStatus('load');
+  const iv=parseInt(document.getElementById('intervalSelect').value);
+  watchId=navigator.geolocation.watchPosition(
+    p=>checkLocation(p.coords.latitude,p.coords.longitude),
+    e=>{alert_(e.code===1?t('alertGPSDenied'):e.code===2?t('alertGPSUnavail'):t('alertGPSTimeout'),'danger');setStatus('idle');},
+    {enableHighAccuracy:true,timeout:15000,maximumAge:0}
+  );
+  intervalId=setInterval(()=>{if(lastLat!==null)checkLocation(lastLat,lastLon);},iv);
+  vpnInt=setInterval(()=>{if(curCode)checkVPN(curCode);},60000);
+  alert_(t('alertTrackStart'),'success');
+}
+
+function stopTracking(){
+  tracking=false;
+  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}
+  if(intervalId!==null){clearInterval(intervalId);intervalId=null;}
+  if(vpnInt!==null){clearInterval(vpnInt);vpnInt=null;}
+  document.getElementById('mainBtn').innerHTML=t('btnStart');
+  document.getElementById('mainBtn').className='btn btn-p';
+  setStatus('idle'); setBtns(false);
+  setVPNUnknown(t('vpnStart'));
+  alert_(t('alertTrackStop'),'info');
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  loadSaved();
+  applyLang();
+});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&tracking)alert_(t('alertBackground'),'info');
+});
+</script>
+</body>
+</html>
