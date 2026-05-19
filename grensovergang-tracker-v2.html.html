@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rail Tracker — Hoggynesische Spoorwegen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --yellow: #FFC917;
+      --yellow-dark: #e6b400;
+      --blue: #001a4d;
+      --blue-nav: #001233;
+      --blue-light: #0054a6;
+      --card-bg: #1e2330;
+      --bg: #141821;
+      --border: #2a2f3d;
+      --text: #e8edf5;
+      --text-dim: #9aa3b8;
+      --radius: 6px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4);
+      --green: #10b981;
+      --red: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      background: var(--blue-nav);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 64px;
+      box-shadow: 0 2px 8px rgba(0,0,48,0.18);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .back-btn {
+      background: rgba(255,201,23,0.15);
+      border: 1px solid var(--yellow);
+      color: var(--yellow);
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-btn:hover {
+      background: var(--yellow);
+      color: #000;
+    }
+
+    .nav-brand {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-brand span {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255,201,23,0.15);
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #666;
+      animation: none;
+      transition: background 0.3s;
+    }
+
+    .status-dot.active {
+      background: var(--green);
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-dot.connecting {
+      background: var(--yellow);
+      animation: blink 1s infinite;
+    }
+
+    .status-dot.idle { background: #333; animation: none; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, rgba(26,20,0,0.75) 0%, rgba(42,32,0,0.75) 60%, rgba(26,26,0,0.75) 100%),
+                  url('images/train-station.jpg') center/cover no-repeat;
+      background-attachment: fixed;
+      border-bottom: 3px solid var(--yellow);
+      padding: 44px 32px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -60px;
+      top: -40px;
+      width: 380px;
+      height: 200px;
+      background: rgba(255,201,23,0.06);
+      transform: rotate(-18deg);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: var(--yellow);
+      line-height: 1.15;
+    }
+
+    .hero p {
+      color: rgba(255,201,23,0.6);
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    /* ── MAIN ── */
+    .content {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 36px 32px 60px;
+    }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      background: #0a0f1a;
+      padding: 18px 24px;
+      border-bottom: 2px solid var(--yellow);
+    }
+
+    .card-header h2 {
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
+    /* ── LOCATION DISPLAY ── */
+    .location-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .location-flag {
+      font-size: 4rem;
+      line-height: 1;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 120px;
+      height: 120px;
+      background: rgba(255,201,23,0.08);
+      border: 2px solid var(--yellow);
+      border-radius: var(--radius);
+    }
+
+    .location-info {
+      flex: 1;
+    }
+
+    .country-name {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--yellow);
+      margin-bottom: 6px;
+    }
+
+    .country-meta {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-bottom: 3px;
+    }
+
+    .coordinates {
+      font-size: 0.85rem;
+      font-family: 'Courier New', monospace;
+      color: var(--text);
+      background: rgba(255,201,23,0.08);
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+
+    /* ── VPN STATUS ── */
+    .vpn-block {
+      background: rgba(100,116,139,0.08);
+      border: 1px solid rgba(100,116,139,0.2);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.3s;
+    }
+
+    .vpn-block.active {
+      background: rgba(59,130,246,0.08);
+      border-color: rgba(59,130,246,0.3);
+    }
+
+    .vpn-block.detected {
+      background: rgba(16,185,129,0.08);
+      border-color: rgba(16,185,129,0.3);
+    }
+
+    .vpn-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .vpn-info {
+      flex: 1;
+    }
+
+    .vpn-title {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .vpn-detail {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-family: 'Courier New', monospace;
+      margin-top: 3px;
+    }
+
+    .vpn-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      background: rgba(255,201,23,0.15);
+      color: var(--yellow);
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    .vpn-badge.on {
+      background: rgba(59,130,246,0.15);
+      color: #60a5fa;
+    }
+
+    .vpn-badge.off {
+      background: rgba(16,185,129,0.12);
+      color: #34d399;
+    }
+
+    /* ── BUTTONS ── */
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-group.single {
+      grid-template-columns: 1fr;
+    }
+
+    .btn {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      border: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--yellow);
+      color: #000;
+      font-weight: 800;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--yellow-dark);
+    }
+
+    .btn-stop {
+      background: rgba(239,68,68,0.12);
+      color: #f87171;
+      border: 1px solid rgba(239,68,68,0.25);
+    }
+
+    .btn-stop:hover:not(:disabled) {
+      background: rgba(239,68,68,0.2);
+    }
+
+    .btn-green {
+      background: rgba(16,185,129,0.12);
+      color: #34d399;
+      border: 1px solid rgba(16,185,129,0.25);
+    }
+
+    .btn-green:hover:not(:disabled) {
+      background: rgba(16,185,129,0.2);
+    }
+
+    .btn-red {
+      background: rgba(239,68,68,0.12);
+      color: #f87171;
+      border: 1px solid rgba(239,68,68,0.25);
+    }
+
+    .btn-red:hover:not(:disabled) {
+      background: rgba(239,68,68,0.2);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      color: var(--yellow);
+      border-color: var(--yellow);
+    }
+
+    /* ── ALERTS ── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s ease;
+    }
+
+    .alert.show {
+      display: flex;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-success {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.25);
+      color: #34d399;
+    }
+
+    .alert-danger {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #f87171;
+    }
+
+    .alert-info {
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.25);
+      color: #60a5fa;
+    }
+
+    /* ── INPUT SELECT ── */
+    select {
+      width: 100%;
+      background: rgba(255,201,23,0.08);
+      border: 1px solid rgba(255,201,23,0.2);
+      border-radius: 6px;
+      padding: 10px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: var(--yellow);
+    }
+
+    /* ── ACTIVITY LOG ── */
+    .log-list {
+      list-style: none;
+    }
+
+    .log-empty {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    .log-item {
+      display: flex;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,201,23,0.1);
+      animation: slideIn 0.3s ease;
+    }
+
+    .log-item:last-child {
+      border-bottom: none;
+    }
+
+    .log-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .log-body {
+      flex: 1;
+    }
+
+    .log-title {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .log-time {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: 'Courier New', monospace;
+      margin-top: 3px;
+    }
+
+    .log-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .log-tag.success {
+      background: rgba(16,185,129,0.2);
+      color: #34d399;
+    }
+
+    .log-tag.fail {
+      background: rgba(239,68,68,0.2);
+      color: #f87171;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #0a0f1a;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      border-top: 1px solid var(--border);
+    }
+
+    footer strong { color: var(--yellow); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      nav { padding: 0 16px; }
+      .hero { padding: 32px 16px 28px; }
+      .hero h1 { font-size: 1.5rem; }
+      .content { padding: 24px 16px 40px; }
+      .location-box { flex-direction: column; gap: 16px; }
+      .location-flag { width: 100px; height: 100px; font-size: 3rem; }
+      .btn-group { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="nav-left">
+      <a href="index.html" class="back-btn">←</a>
+      <div class="nav-brand">
+        <span id="navTitle">Rail Tracker</span>
+        <span id="navSub">Grensovergang & Reislog</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">FRANÇAIS</button>
+      <div class="status-dot" id="statusDot"></div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <h1 id="heroTitle">Grensovergang Tracker</h1>
+      <p id="heroSub">Volg je locatie en detecteer grensovergangen automatisch</p>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+    <div class="alert alert-info" id="alertBox"></div>
+
+    <!-- LOCATION CARD -->
+    <div class="section-label">
+      📍 <span id="lbl-location">Huidige Locatie</span>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="location-box">
+          <div class="location-flag" id="flagBig">🌍</div>
+          <div class="location-info">
+            <div class="country-name" id="countryName">—</div>
+            <div class="country-meta" id="countrySince">Start tracking om je locatie te zien</div>
+            <div class="coordinates" id="coordsVal">📍 —</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VPN STATUS -->
+    <div class="section-label">
+      🔐 <span id="lbl-vpn">VPN Status</span>
+    </div>
+    <div class="vpn-block" id="vpnBox">
+      <div class="vpn-icon" id="vpnIcon">🔒</div>
+      <div class="vpn-info">
+        <div class="vpn-title" id="vpnStatus">VPN status onbekend</div>
+        <div class="vpn-detail" id="vpnDetail">Start tracking om te detecteren</div>
+      </div>
+      <div class="vpn-badge" id="vpnBadge">—</div>
+    </div>
+
+    <!-- TRACKING CONTROLS -->
+    <div class="section-label">
+      🎛️ <span id="lbl-controls">Tracking</span>
+    </div>
+    <div class="btn-group single">
+      <button class="btn btn-primary" id="mainBtn" onclick="toggleTracking()">▶ Start Tracking</button>
+    </div>
+
+    <!-- TRAIN ACTIONS -->
+    <div class="section-label">
+      🚆 <span id="lbl-train">Treinrit</span>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-green" id="boardBtn" onclick="trainAction('board')" disabled>
+        🚆 Instappen
+      </button>
+      <button class="btn btn-red" id="exitBtn" onclick="trainAction('exit')" disabled>
+        🚪 Uitstappen
+      </button>
+    </div>
+
+    <button class="btn btn-secondary" id="shareBtn" onclick="manualShare()" disabled style="width:100%;margin-bottom:20px;">
+      ↑ <span id="btnShareText">Huidige locatie delen</span>
+    </button>
+
+    <!-- SETTINGS -->
+    <div class="section-label">
+      ⚙️ <span id="lbl-settings">Instellingen</span>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.8rem; font-weight:600; color:var(--text-dim); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em;">
+            <span id="lbl-interval">GPS-interval</span>
+          </label>
+          <select id="intervalSelect">
+            <option value="15000" id="opt-15s">Elke 15 seconden</option>
+            <option value="30000" id="opt-30s" selected>Elke 30 seconden</option>
+            <option value="60000" id="opt-60s">Elke minuut</option>
+            <option value="120000" id="opt-120s">Elke 2 minuten</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" id="testBtn" onclick="testWebhook()" style="width:100%;">
+          🧪 <span id="lbl-test">Testbericht versturen</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="section-label">
+      📝 <span id="lbl-log">Activiteitenlog</span>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <ul class="log-list" id="logList">
+          <li class="log-empty" id="logEmpty">Nog geen activiteit geregistreerd</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p id="txt-footer">© 2026 <strong>HOGGYNESISCHE SPOORWEGEN</strong> — PROTOCOL HS-X</p>
+  </footer>
+
+<script>
+/* ──────────────────────────────
+   TRANSLATIONS
+────────────────────────────────── */
+const T = {
+  nl: {
+    navTitle: 'Rail Tracker',
+    navSub: 'Grensovergang & Reislog',
+    langBtn: 'FRANÇAIS',
+    heroTitle: 'Grensovergang Tracker',
+    heroSub: 'Volg je locatie en detecteer grensovergangen automatisch',
+    lbl_location: 'Huidige Locatie',
+    lbl_vpn: 'VPN Status',
+    lbl_controls: 'Tracking',
+    lbl_train: 'Treinrit',
+    lbl_settings: 'Instellingen',
+    lbl_log: 'Activiteitenlog',
+    lbl_interval: 'GPS-interval',
+    lbl_test: 'Testbericht versturen',
+    opt_15s: 'Elke 15 seconden',
+    opt_30s: 'Elke 30 seconden',
+    opt_60s: 'Elke minuut',
+    opt_120s: 'Elke 2 minuten',
+    btnStart: '▶ Start Tracking',
+    btnStop: '■ Stop Tracking',
+    btnBoard: '🚆 Instappen',
+    btnExit: '🚪 Uitstappen',
+    btnShare: '↑ Huidige locatie delen',
+    countrySince: 'Start tracking om je locatie te zien',
+    vpnUnknown: 'VPN status onbekend',
+    vpnStart: 'Start tracking om te detecteren',
+    vpnWait: 'Wachten op GPS…',
+    alertTrackStart: 'Tracking gestart.',
+    alertTrackStop: 'Tracking gestopt.',
+    alertNoGPS: 'GPS niet beschikbaar in deze browser.',
+    alertGPSDenied: 'GPS-toegang geweigerd.',
+    alertGPSUnavail: 'GPS niet beschikbaar.',
+    alertGPSTimeout: 'GPS timeout.',
+    alertNoLoc: 'Nog geen locatie beschikbaar.',
+    alertSending: 'Testbericht versturen…',
+    alertTestOk: 'Testbericht succesvol verzonden.',
+    alertTestFail: 'Verzending mislukt.',
+    alertShared: 'Locatie gedeeld.',
+    alertSendFail: 'Verzending mislukt.',
+    alertCrossing: '→ Grens gepasseerd:',
+    logEmpty: 'Nog geen activiteit geregistreerd',
+    logDiscordOk: 'Discord ✓',
+    logDiscordFail: 'Discord ✗',
+    sinceHere: 'Hier sinds',
+    fetching: 'Locatie ophalen…',
+    sending: 'Verzenden…',
+    footerText: '© 2026 HOGGYNESISCHE SPOORWEGEN — PROTOCOL HS-X',
+    logLabels: { board: 'Ingestapt', exit: 'Uitgestapt', share: 'Locatie gedeeld', crossing: 'Grensovergang' },
+    discordTest: { title: '✅ Verbinding geslaagd', desc: 'Rail Tracker is correct verbonden met dit kanaal en klaar voor gebruik.', footer: 'Rail Tracker • Testbericht' },
+    discordCross: { title: 'Grensovergang', f_from: 'Vertrokken uit', f_to: 'Aangekomen in', footer: 'Rail Tracker • Automatische grensdetectie' }
+  },
+  fr: {
+    navTitle: 'Rail Tracker',
+    navSub: 'Passage de frontière & journal de voyage',
+    langBtn: 'NEDERLANDS',
+    heroTitle: 'Suivi des franchissements de frontière',
+    heroSub: 'Suivez votre position et détectez les franchissements de frontière automatiquement',
+    lbl_location: 'Position actuelle',
+    lbl_vpn: 'Statut VPN',
+    lbl_controls: 'Suivi',
+    lbl_train: 'Trajet en train',
+    lbl_settings: 'Paramètres',
+    lbl_log: 'Journal d\'activité',
+    lbl_interval: 'Intervalle GPS',
+    lbl_test: 'Envoyer un message test',
+    opt_15s: 'Toutes les 15 secondes',
+    opt_30s: 'Toutes les 30 secondes',
+    opt_60s: 'Chaque minute',
+    opt_120s: 'Toutes les 2 minutes',
+    btnStart: '▶ Démarrer le suivi',
+    btnStop: '■ Arrêter le suivi',
+    btnBoard: '🚆 Monter à bord',
+    btnExit: '🚪 Descendre',
+    btnShare: '↑ Partager la position actuelle',
+    countrySince: 'Démarrez le suivi pour voir votre position',
+    vpnUnknown: 'Statut VPN inconnu',
+    vpnStart: 'Démarrez le suivi pour détecter',
+    vpnWait: 'En attente du GPS…',
+    alertTrackStart: 'Suivi démarré.',
+    alertTrackStop: 'Suivi arrêté.',
+    alertNoGPS: 'GPS non disponible dans ce navigateur.',
+    alertGPSDenied: 'Accès GPS refusé.',
+    alertGPSUnavail: 'Position GPS indisponible.',
+    alertGPSTimeout: 'Délai GPS dépassé.',
+    alertNoLoc: 'Aucune position disponible.',
+    alertSending: 'Envoi du message test…',
+    alertTestOk: 'Message test envoyé avec succès.',
+    alertTestFail: 'Échec de l\'envoi.',
+    alertShared: 'Position partagée.',
+    alertSendFail: 'Échec de l\'envoi.',
+    alertCrossing: '→ Frontière franchie :',
+    logEmpty: 'Aucune activité enregistrée',
+    logDiscordOk: 'Discord ✓',
+    logDiscordFail: 'Discord ✗',
+    sinceHere: 'Ici depuis',
+    fetching: 'Récupération de la position…',
+    sending: 'Envoi…',
+    footerText: '© 2026 CHEMIN DE FER HOGGYNÉSIENS — PROTOCOLE HS-X',
+    logLabels: { board: 'Monté à bord', exit: 'Descendu', share: 'Position partagée', crossing: 'Passage de frontière' },
+    discordTest: { title: '✅ Connexion réussie', desc: 'Rail Tracker est correctement connecté à ce canal et prêt à l\'emploi.', footer: 'Rail Tracker • Message test' },
+    discordCross: { title: 'Passage de frontière', f_from: 'Parti de', f_to: 'Arrivé en', footer: 'Rail Tracker • Détection automatique' }
+  }
+};
+
+let lang = localStorage.getItem('lang') || 'nl';
+const t = (key) => T[lang][key] || T['nl'][key];
+
+/* ──────────────────────────────
+   CONSTANTS & STATE
+────────────────────────────────── */
+const WEBHOOK_URL = 'https://discord.com/api/webhooks/1505675660759138426/CeOmLPIvRb5z1bip3Y3h-5yO8pGd17Evc22eb_RTBx8E0XU4khRerU8QHXsHX3IIH9bw';
+const SENDER_NAME = 'Rail Tracker';
+
+const COUNTRY_FLAGS = {
+  'NL':'🇳🇱','DE':'🇩🇪','BE':'🇧🇪','FR':'🇫🇷','LU':'🇱🇺','GB':'🇬🇧','DK':'🇩🇰','PL':'🇵🇱','CH':'🇨🇭','AT':'🇦🇹',
+  'IT':'🇮🇹','ES':'🇪🇸','PT':'🇵🇹','CZ':'🇨🇿','SK':'🇸🇰','HU':'🇭🇺','NO':'🇳🇴','SE':'🇸🇪','FI':'🇫🇮','EE':'🇪🇪',
+  'LV':'🇱🇻','LT':'🇱🇹','RO':'🇷🇴','BG':'🇧🇬','HR':'🇭🇷','SI':'🇸🇮','RS':'🇷🇸','GR':'🇬🇷','TR':'🇹🇷','UA':'🇺🇦','US':'🇺🇸'
+};
+
+const COUNTRY_NAMES_NL = {
+  'NL':'Nederland','DE':'Duitsland','BE':'België','FR':'Frankrijk','LU':'Luxemburg','GB':'Verenigd Koninkrijk','DK':'Denemarken',
+  'PL':'Polen','CH':'Zwitserland','AT':'Oostenrijk','IT':'Italië','ES':'Spanje','PT':'Portugal','CZ':'Tsjechië','SK':'Slowakije',
+  'HU':'Hongarije','NO':'Noorwegen','SE':'Zweden','FI':'Finland','EE':'Estland','LV':'Letland','LT':'Litouwen','RO':'Roemenië',
+  'BG':'Bulgarije','HR':'Kroatië','SI':'Slovenië','RS':'Servië','GR':'Griekenland','TR':'Turkije','UA':'Oekraïne','US':'Verenigde Staten'
+};
+
+const COUNTRY_NAMES_FR = {
+  'NL':'Pays-Bas','DE':'Allemagne','BE':'Belgique','FR':'France','LU':'Luxembourg','GB':'Royaume-Uni','DK':'Danemark',
+  'PL':'Pologne','CH':'Suisse','AT':'Autriche','IT':'Italie','ES':'Espagne','PT':'Portugal','CZ':'Tchéquie','SK':'Slovaquie',
+  'HU':'Hongrie','NO':'Norvège','SE':'Suède','FI':'Finlande','EE':'Estonie','LV':'Lettonie','LT':'Lituanie','RO':'Roumanie',
+  'BG':'Bulgarie','HR':'Croatie','SI':'Slovénie','RS':'Serbie','GR':'Grèce','TR':'Turquie','UA':'Ukraine','US':'États-Unis'
+};
+
+let state = {
+  tracking: false,
+  watchId: null,
+  intervalId: null,
+  vpnInt: null,
+  isQuerying: false,
+  curCode: null,
+  curName: null,
+  sinceTime: null,
+  lastLat: null,
+  lastLon: null,
+  lastGeoCall: 0,
+  vpnOn: null,
+  ipCode: null,
+  ipName: null,
+  ipAddr: null,
+  ipOrg: null
+};
+
+/* ──────────────────────────────
+   LANGUAGE & UI
+────────────────────────────────── */
+function toggleLanguage() {
+  lang = lang === 'nl' ? 'fr' : 'nl';
+  localStorage.setItem('lang', lang);
+  updateUI();
+}
+
+function updateUI() {
+  document.documentElement.lang = lang;
+  document.getElementById('langBtn').textContent = t('langBtn');
+  document.getElementById('navTitle').textContent = t('navTitle');
+  document.getElementById('navSub').textContent = t('navSub');
+  document.getElementById('heroTitle').textContent = t('heroTitle');
+  document.getElementById('heroSub').textContent = t('heroSub');
+  document.getElementById('lbl-location').textContent = t('lbl_location');
+  document.getElementById('lbl-vpn').textContent = t('lbl_vpn');
+  document.getElementById('lbl-controls').textContent = t('lbl_controls');
+  document.getElementById('lbl-train').textContent = t('lbl_train');
+  document.getElementById('lbl-settings').textContent = t('lbl_settings');
+  document.getElementById('lbl-log').textContent = t('lbl_log');
+  document.getElementById('lbl-interval').textContent = t('lbl_interval');
+  document.getElementById('lbl-test').textContent = t('lbl_test');
+  document.getElementById('opt-15s').textContent = t('opt_15s');
+  document.getElementById('opt-30s').textContent = t('opt_30s');
+  document.getElementById('opt-60s').textContent = t('opt_60s');
+  document.getElementById('opt-120s').textContent = t('opt_120s');
+  document.getElementById('mainBtn').innerHTML = state.tracking ? t('btnStop') : t('btnStart');
+  document.getElementById('boardBtn').innerHTML = t('btnBoard');
+  document.getElementById('exitBtn').innerHTML = t('btnExit');
+  document.getElementById('btnShareText').textContent = t('btnShare').replace('↑ ', '');
+  document.getElementById('txt-footer').innerHTML = `<strong>HOGGYNESISCHE SPOORWEGEN</strong> — PROTOCOL HS-X`;
+  if(document.getElementById('logEmpty')) document.getElementById('logEmpty').textContent = t('logEmpty');
+  if(state.curCode) document.getElementById('countryName').textContent = nm(state.curCode, state.curName);
+  if(state.sinceTime && state.curCode) 
+    document.getElementById('countrySince').textContent = `${t('sinceHere')} ${state.sinceTime.toLocaleTimeString(lang === 'nl' ? 'nl-NL' : 'fr-FR', {hour:'2-digit',minute:'2-digit'})}`;
+  else if(!state.tracking)
+    document.getElementById('countrySince').textContent = t('countrySince');
+  if(state.vpnOn === null && !state.tracking) {
+    document.getElementById('vpnStatus').textContent = t('vpnUnknown');
+    document.getElementById('vpnDetail').textContent = t('vpnStart');
+  }
+}
+
+/* ──────────────────────────────
+   HELPERS
+────────────────────────────────── */
+function fl(code) { return COUNTRY_FLAGS[code] || '🌍'; }
+
+function nm(code, fallback) {
+  const map = lang === 'nl' ? COUNTRY_NAMES_NL : COUNTRY_NAMES_FR;
+  return map[code] || fallback || code || (lang === 'nl' ? 'Onbekend' : 'Inconnu');
+}
+
+function fmtTime() {
+  return new Date().toLocaleString(lang === 'nl' ? 'nl-NL' : 'fr-FR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+function alert_(msg, type = 'info') {
+  const box = document.getElementById('alertBox');
+  box.textContent = msg;
+  box.className = `alert alert-${type} show`;
+  clearTimeout(box._t);
+  box._t = setTimeout(() => box.classList.remove('show'), 3500);
+}
+
+function setStatus(s) {
+  const dot = document.getElementById('statusDot');
+  if (s === 'on') {
+    dot.className = 'status-dot active';
+  } else if (s === 'connecting') {
+    dot.className = 'status-dot connecting';
+  } else {
+    dot.className = 'status-dot idle';
+  }
+}
+
+function setBtns(enabled) {
+  ['shareBtn', 'boardBtn', 'exitBtn'].forEach(id => {
+    document.getElementById(id).disabled = !enabled;
+  });
+}
+
+/* ──────────────────────────────
+   GEOLOCATION & VPN
+────────────────────────────────── */
+async function geo(lat, lon, zoom = 3) {
+  const accept = lang === 'fr' ? 'fr' : 'nl';
+  const r = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=${zoom}&accept-language=${accept}`,
+    { headers: { 'User-Agent': 'RailTracker/2.0' } }
+  );
+  if (!r.ok) throw 0;
+  return r.json();
+}
+
+async function getCity(lat, lon) {
+  try {
+    const d = await geo(lat, lon, 12);
+    return d.address?.city || d.address?.town || d.address?.village || d.address?.municipality || null;
+  } catch {
+    return null;
+  }
+}
+
+async function checkVPN(gpsCode) {
+  const apis = [
+    async () => {
+      const r = await fetch('https://ipinfo.io/json');
+      if (!r.ok) throw 0;
+      const d = await r.json();
+      return { code: d.country?.toUpperCase(), name: null, ip: d.ip, org: d.org ? d.org.replace(/^AS\d+\s*/, '') : null };
+    },
+    async () => {
+      const r = await fetch('https://freeipapi.com/api/json');
+      if (!r.ok) throw 0;
+      const d = await r.json();
+      return { code: d.countryCode?.toUpperCase(), name: d.countryName, ip: d.ipAddress, org: d.isp || null };
+    }
+  ];
+
+  for (const api of apis) {
+    try {
+      const { code, name: n, ip, org } = await api();
+      if (!code) continue;
+      state.ipCode = code;
+      state.ipName = n;
+      state.ipAddr = ip;
+      state.ipOrg = org || null;
+      updateVPNUI(gpsCode);
+      return;
+    } catch { }
+  }
+  setVPNUnknown('IP-check mislukt');
+}
+
+function updateVPNUI(gpsCode) {
+  if (!state.ipCode || !gpsCode) {
+    setVPNUnknown(t('vpnWait'));
+    return;
+  }
+
+  const box = document.getElementById('vpnBox');
+  const icon = document.getElementById('vpnIcon');
+  const st = document.getElementById('vpnStatus');
+  const det = document.getElementById('vpnDetail');
+  const badge = document.getElementById('vpnBadge');
+
+  const ipNm = nm(state.ipCode, state.ipName);
+  const lbl = `${fl(state.ipCode)} ${ipNm} · ${state.ipAddr}`;
+
+  if (state.ipCode !== gpsCode) {
+    state.vpnOn = true;
+    box.className = 'vpn-block active';
+    icon.textContent = '🔐';
+    st.textContent = state.ipOrg ? (lang === 'nl' ? `VPN actief — ${state.ipOrg}` : `VPN actif — ${state.ipOrg}`) : (lang === 'nl' ? 'VPN actief' : 'VPN actif');
+    det.textContent = lbl;
+    badge.className = 'vpn-badge on';
+    badge.textContent = t('vpnBadgeOn');
+  } else {
+    state.vpnOn = false;
+    box.className = 'vpn-block detected';
+    icon.textContent = '🔓';
+    st.textContent = state.ipOrg ? (lang === 'nl' ? `Geen VPN — ${state.ipOrg}` : `Sans VPN — ${state.ipOrg}`) : (lang === 'nl' ? 'Geen VPN gedetecteerd' : 'Aucun VPN détecté');
+    det.textContent = lbl;
+    badge.className = 'vpn-badge off';
+    badge.textContent = t('vpnBadgeOff');
+  }
+}
+
+function setVPNUnknown(msg) {
+  document.getElementById('vpnBox').className = 'vpn-block';
+  document.getElementById('vpnIcon').textContent = '🔒';
+  document.getElementById('vpnStatus').textContent = t('vpnUnknown');
+  document.getElementById('vpnDetail').textContent = msg;
+  document.getElementById('vpnBadge').className = 'vpn-badge';
+  document.getElementById('vpnBadge').textContent = '—';
+  state.vpnOn = null;
+}
+
+/* ──────────────────────────────
+   DISCORD
+────────────────────────────────── */
+async function sendEmbed(embed) {
+  try {
+    const r = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: SENDER_NAME, embeds: [embed] })
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function testWebhook() {
+  alert_(t('alertSending'), 'info');
+  const d = t('discordTest');
+  const ok = await sendEmbed({
+    title: d.title,
+    description: d.desc,
+    color: 3394611,
+    fields: [{ name: 'Status', value: 'Operationeel', inline: true }, { name: 'Version', value: 'Rail Tracker 2.0', inline: true }],
+    footer: { text: d.footer },
+    timestamp: new Date().toISOString()
+  });
+  ok ? alert_(t('alertTestOk'), 'success') : alert_(t('alertTestFail'), 'danger');
+}
+
+async function manualShare() {
+  if (!state.curCode) {
+    alert_(t('alertNoLoc'), 'danger');
+    return;
+  }
+
+  const btn = document.getElementById('shareBtn');
+  btn.disabled = true;
+  btn.textContent = t('sending');
+
+  const ok = await sendEmbed({
+    title: `${fl(state.curCode)} ${lang === 'nl' ? 'Locatie-update' : 'Mise à jour de position'}`,
+    description: `${lang === 'nl' ? 'Huidig land:' : 'Pays actuel:'} **${nm(state.curCode, state.curName)}**`,
+    color: 16750592,
+    footer: { text: lang === 'nl' ? 'Rail Tracker • Handmatig gedeeld' : 'Rail Tracker • Partage manuel' },
+    timestamp: new Date().toISOString()
+  });
+
+  addLog('share', state.curCode, state.curName, null, ok);
+  ok ? alert_(t('alertShared'), 'success') : alert_(t('alertSendFail'), 'danger');
+  btn.innerHTML = `↑ ${t('btnShare').replace('↑ ', '')}`;
+  setBtns(true);
+}
+
+async function trainAction(type) {
+  const isBoard = type === 'board';
+  const btn = document.getElementById(isBoard ? 'boardBtn' : 'exitBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = t('fetching');
+
+  const cl = state.curCode ? nm(state.curCode, state.curName) : (lang === 'nl' ? 'onbekende locatie' : 'position inconnue');
+  const city = state.lastLat !== null ? await getCity(state.lastLat, state.lastLon) : null;
+  const loc = city ? `${city}, ${cl}` : cl;
+
+  btn.textContent = t('sending');
+
+  const title = isBoard ? (lang === 'nl' ? '🚆 Ingestapt' : '🚆 Monté à bord') : (lang === 'nl' ? '🚪 Uitgestapt' : '🚪 Descendu');
+  const footer = isBoard ? (lang === 'nl' ? 'Rail Tracker • Vertrek' : 'Rail Tracker • Départ') : (lang === 'nl' ? 'Rail Tracker • Aankomst' : 'Rail Tracker • Arrivée');
+
+  const ok = await sendEmbed({
+    title: title,
+    description: `**${loc}** ${state.curCode ? fl(state.curCode) : '📍'}`,
+    color: isBoard ? 3394611 : 15548997,
+    footer: { text: footer },
+    timestamp: new Date().toISOString()
+  });
+
+  addLog(type, state.curCode, state.curName, city, ok);
+  const verb = isBoard ? (lang === 'nl' ? 'Ingestapt' : 'Monté à bord') : (lang === 'nl' ? 'Uitgestapt' : 'Descendu');
+  ok ? alert_(`${verb} in ${loc}.`, 'success') : alert_(t('alertSendFail'), 'danger');
+  btn.innerHTML = orig;
+  btn.disabled = false;
+}
+
+/* ──────────────────────────────
+   LOCATION & TRACKING
+────────────────────────────────── */
+async function checkLocation(lat, lon) {
+  if (state.isQuerying) return;
+  if (Date.now() - state.lastGeoCall < 5000) return;
+
+  state.isQuerying = true;
+  state.lastGeoCall = Date.now();
+  state.lastLat = lat;
+  state.lastLon = lon;
+
+  setStatus('connecting');
+
+  try {
+    const d = await geo(lat, lon, 3);
+    const code = d.address?.country_code?.toUpperCase();
+    const cname = d.address?.country;
+
+    if (!code) throw 0;
+
+    setStatus('on');
+    checkVPN(code);
+
+    if (state.curCode && code !== state.curCode) {
+      const prev = state.curCode;
+      const prevN = state.curName;
+      const dc = t('discordCross');
+
+      const ok = await sendEmbed({
+        title: `${fl(prev)} → ${fl(code)} ${dc.title}`,
+        description: `${lang === 'nl' ? 'Van' : 'De'} **${nm(prev, prevN)}** ${lang === 'nl' ? 'naar' : 'vers'} **${nm(code, cname)}**`,
+        color: 5763719,
+        fields: [
+          { name: dc.f_from, value: `${fl(prev)} ${nm(prev, prevN)}`, inline: true },
+          { name: dc.f_to, value: `${fl(code)} ${nm(code, cname)}`, inline: true }
+        ],
+        footer: { text: dc.footer },
+        timestamp: new Date().toISOString()
+      });
+
+      addLog('crossing', code, cname, null, ok);
+      alert_(`${fl(prev)} ${t('alertCrossing')} ${nm(code, cname)}`, 'success');
+    }
+
+    if (!state.curCode || code !== state.curCode) {
+      state.sinceTime = new Date();
+    }
+
+    state.curCode = code;
+    state.curName = cname;
+
+    document.getElementById('flagBig').textContent = fl(code);
+    document.getElementById('countryName').textContent = nm(code, cname);
+    document.getElementById('countrySince').textContent = `${t('sinceHere')} ${state.sinceTime.toLocaleTimeString(lang === 'nl' ? 'nl-NL' : 'fr-FR', {hour:'2-digit',minute:'2-digit'})}`;
+    document.getElementById('coordsVal').textContent = `📍 ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+
+    setBtns(true);
+  } catch {
+    setStatus('connecting');
+  } finally {
+    state.isQuerying = false;
+  }
+}
+
+function toggleTracking() {
+  state.tracking ? stopTracking() : startTracking();
+}
+
+function startTracking() {
+  if (!navigator.geolocation) {
+    alert_(t('alertNoGPS'), 'danger');
+    return;
+  }
+
+  state.tracking = true;
+  const btn = document.getElementById('mainBtn');
+  btn.innerHTML = t('btnStop');
+  btn.className = 'btn btn-stop';
+  document.getElementById('countrySince').textContent = t('fetching');
+  setStatus('connecting');
+
+  state.watchId = navigator.geolocation.watchPosition(
+    p => checkLocation(p.coords.latitude, p.coords.longitude),
+    e => {
+      const msg = e.code === 1 ? t('alertGPSDenied') : e.code === 2 ? t('alertGPSUnavail') : t('alertGPSTimeout');
+      alert_(msg, 'danger');
+      setStatus('idle');
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+
+  const iv = parseInt(document.getElementById('intervalSelect').value);
+  state.intervalId = setInterval(() => {
+    if (state.lastLat !== null) checkLocation(state.lastLat, state.lastLon);
+  }, iv);
+
+  state.vpnInt = setInterval(() => {
+    if (state.curCode) checkVPN(state.curCode);
+  }, 60000);
+
+  alert_(t('alertTrackStart'), 'success');
+}
+
+function stopTracking() {
+  state.tracking = false;
+
+  if (state.watchId !== null) {
+    navigator.geolocation.clearWatch(state.watchId);
+    state.watchId = null;
+  }
+  if (state.intervalId !== null) {
+    clearInterval(state.intervalId);
+    state.intervalId = null;
+  }
+  if (state.vpnInt !== null) {
+    clearInterval(state.vpnInt);
+    state.vpnInt = null;
+  }
+
+  const btn = document.getElementById('mainBtn');
+  btn.innerHTML = t('btnStart');
+  btn.className = 'btn btn-primary';
+  setStatus('idle');
+  setBtns(false);
+  setVPNUnknown(t('vpnStart'));
+  alert_(t('alertTrackStop'), 'info');
+}
+
+/* ──────────────────────────────
+   LOG
+────────────────────────────────── */
+function addLog(type, code, cname, city, ok) {
+  const ul = document.getElementById('logList');
+  if (ul.querySelector('.log-empty')) ul.innerHTML = '';
+
+  const icons = { board: '🚆', exit: '🚪', share: '↑', crossing: '⟶' };
+  const labels = t('logLabels');
+  const loc = [city, code ? nm(code, cname) : null].filter(Boolean).join(', ');
+
+  const li = document.createElement('li');
+  li.className = 'log-item';
+  li.innerHTML = `
+    <div class="log-icon">${icons[type]} ${code ? fl(code) : ''}</div>
+    <div class="log-body">
+      <div class="log-title">${labels[type]}${loc ? ' — ' + loc : ''}</div>
+      <div class="log-time">${fmtTime()}</div>
+      <span class="log-tag ${ok ? 'success' : 'fail'}">${ok ? t('logDiscordOk') : t('logDiscordFail')}</span>
+    </div>
+  `;
+  ul.prepend(li);
+}
+
+/* ──────────────────────────────
+   INIT
+────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  updateUI();
+  setStatus('idle');
+  setBtns(false);
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && state.tracking) {
+    alert_(lang === 'nl' ? 'App op achtergrond — GPS kan pauzeren.' : 'Application en arrière-plan — le GPS peut se mettre en pause.', 'info');
+  }
+});
+</script>
+</body>
+</html>
