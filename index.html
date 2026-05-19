@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hoggynesische Spoorwegen</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#003366">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1129,6 +1131,18 @@
     document.getElementById('np-dot').className = 'np-dot paused';
     npLastId = null;
   }
+  
+  if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('HS App is klaar voor gebruik als PWA.', registration.scope);
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registratie mislukt: ', err);
+                });
+        });
+    }
 
   (async function npInit() {
     const params = new URLSearchParams(window.location.search);
