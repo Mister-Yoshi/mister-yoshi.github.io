@@ -1,0 +1,17 @@
+{
+  "name": "HS app",
+  "short_name": "HS app",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#003366",
+  "description": "Officiële ticketing app voor de Hoggynesische Spoorwegen",
+  "icons": [
+    {
+      "src": "images/hs.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
