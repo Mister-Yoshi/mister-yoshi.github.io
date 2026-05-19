@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HS / CFH — Mentale Bijstand</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --yellow: #FFC917;
+      --yellow-dark: #e6b400;
+      --blue: #001a4d;
+      --blue-nav: #001233;
+      --blue-light: #0054a6;
+      --card-bg: #1e2330;
+      --bg: #141821;
+      --border: #2a2f3d;
+      --text: #e8edf5;
+      --text-dim: #9aa3b8;
+      --radius: 6px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4);
+      --green: #4CAF50;
+      --orange: #FF9800;
+      --red: #F44336;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    nav {
+      background: var(--blue-nav);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 64px;
+      box-shadow: 0 2px 8px rgba(0,0,48,0.18);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-logo-symbol {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--yellow);
+      font-style: italic;
+      letter-spacing: -0.05em;
+      transition: all 0.3s;
+    }
+
+    .nav-brand {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-brand span {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 7px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.7);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(26,20,0,0.75) 0%, rgba(42,32,0,0.75) 60%, rgba(26,26,0,0.75) 100%);
+      border-bottom: 3px solid var(--yellow);
+      padding: 44px 32px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -60px;
+      top: -40px;
+      width: 380px;
+      height: 200px;
+      background: rgba(255,201,23,0.06);
+      transform: rotate(-18deg);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: var(--yellow);
+      line-height: 1.15;
+    }
+
+    .hero p {
+      color: rgba(255,201,23,0.6);
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .content {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 36px 32px 60px;
+    }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .screen.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .checkin-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .mood-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mood-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .mood-card.goed::before { background: var(--green); }
+    .mood-card.gaat-wel::before { background: var(--yellow); }
+    .mood-card.niet-goed::before { background: var(--red); }
+
+    .mood-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      border-color: var(--yellow);
+    }
+
+    .mood-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    .mood-label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .mood-description {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .info-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .info-card-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 12px;
+    }
+
+    .info-card-content {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .breathing-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    .breath-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 3px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      transition: all 0.1s linear;
+    }
+
+    .breath-text {
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    .btn-small {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-small:hover {
+      border-color: var(--yellow);
+      color: var(--yellow);
+      background: rgba(255,201,23,0.08);
+    }
+
+    .grounding-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .grounding-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .grounding-num {
+      min-width: 32px;
+      height: 32px;
+      background: rgba(255,201,23,0.15);
+      border: 1.5px solid var(--yellow);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--yellow);
+      flex-shrink: 0;
+      font-size: 0.85rem;
+    }
+
+    .grounding-text {
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      padding-top: 4px;
+    }
+
+    .grounding-text strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .logbook-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .mood-picker {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .mood-radio {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mood-radio-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .mood-radio.selected {
+      border-color: var(--yellow);
+      background: rgba(255,201,23,0.08);
+      color: var(--yellow);
+    }
+
+    .mood-radio:hover {
+      border-color: var(--yellow);
+    }
+
+    .log-textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.92rem;
+      padding: 14px;
+      resize: vertical;
+      min-height: 110px;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .log-textarea::placeholder {
+      color: var(--text-dim);
+      opacity: 0.5;
+    }
+
+    .log-textarea:focus {
+      border-color: var(--yellow);
+    }
+
+    .btn-save {
+      width: 100%;
+      background: var(--yellow);
+      color: #000;
+      border: none;
+      padding: 12px;
+      border-radius: var(--radius);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 0.04em;
+    }
+
+    .btn-save:hover {
+      background: var(--yellow-dark);
+    }
+
+    .btn-save:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .save-feedback {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green);
+      text-align: center;
+      margin-top: 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .entries-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .entries-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .entry-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      font-size: 0.88rem;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .entry-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+    }
+
+    .entry-item.goed::before { background: var(--green); }
+    .entry-item.gaat-wel::before { background: var(--yellow); }
+    .entry-item.niet-goed::before { background: var(--red); }
+
+    .entry-content {
+      flex: 1;
+    }
+
+    .entry-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 0.78rem;
+    }
+
+    .entry-mood-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .entry-mood-label {
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .entry-time {
+      margin-left: auto;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+    }
+
+    .entry-text {
+      color: var(--text-dim);
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .entry-del {
+      background: none;
+      border: none;
+      color: var(--red);
+      cursor: pointer;
+      font-size: 0.85rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .entry-item:hover .entry-del {
+      opacity: 1;
+    }
+
+    .empty-entries {
+      text-align: center;
+      color: var(--text-dim);
+      padding: 20px;
+      font-size: 0.85rem;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-back {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+    }
+
+    .btn-back:hover {
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+
+    footer {
+      background: #0a0f1a;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      border-top: 1px solid var(--border);
+    }
+
+    footer strong { color: var(--yellow); }
+
+    @media (max-width: 680px) {
+      .hero h1 { font-size: 1.5rem; }
+      .content { padding: 24px 16px 40px; }
+      nav { padding: 0 16px; }
+      .hero { padding: 32px 16px 28px; }
+      .checkin-section {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-symbol" id="nav-logo">HS</div>
+      <div class="nav-brand">
+        <span id="nav-subtitle">Nationale Spoorwegen</span>
+        <span id="nav-title">Hoggynesische Spoorwegen</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">FRANÇAIS</button>
+      <a href="index.html" class="lang-btn" style="text-decoration: none; display: inline-block;" id="backBtn">← HOME</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <h1 id="hero-title">Jouw Mentale Welzijn</h1>
+      <p id="hero-subtitle">Dagelijkse check-in & hulpmiddelen</p>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="screen active" id="screen-checkin">
+      <div class="section-label" id="lbl-checkin">DAGELIJKSE CHECK-IN</div>
+      <div class="checkin-section" id="checkin-grid"></div>
+    </div>
+
+    <div class="screen" id="screen-goed">
+      <div class="section-label" id="lbl-goed">STATUS: GOED</div>
+      <div class="info-card">
+        <div class="info-card-label" id="goed-lbl1">Welkomstbericht</div>
+        <div class="info-card-content" id="goed-msg1"></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" id="goed-lbl2">Tip voor vandaag</div>
+        <div class="info-card-content" id="goed-tip"></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" id="goed-lbl3">Geniet ervan</div>
+        <div class="info-card-content" id="goed-msg3"></div>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-back" onclick="goScreen('screen-checkin')" id="goed-back">← Terug</button>
+        <button class="btn-small" onclick="openLogWith('goed')" id="goed-log-btn">📓 Logboek</button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-gaat-wel">
+      <div class="section-label" id="lbl-gw">STATUS: GAAT WEL</div>
+      <div class="info-card">
+        <div class="info-card-label" id="gw-lbl1">Welkomstbericht</div>
+        <div class="info-card-content" id="gw-msg1"></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" id="gw-lbl2">Kleine stap</div>
+        <div class="info-card-content" id="gw-msg2"></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" id="gw-lbl3">Onthoud dit</div>
+        <div class="info-card-content" id="gw-msg3"></div>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-back" onclick="goScreen('screen-checkin')" id="gw-back">← Terug</button>
+        <button class="btn-small" onclick="openLogWith('gaat-wel')" id="gw-log-btn">📓 Logboek</button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-niet-goed">
+      <div class="section-label" id="lbl-ng">HULPLIJN ACTIEF</div>
+      <div class="info-card">
+        <div class="info-card-label" id="ng-lbl1">Bericht voor jou</div>
+        <div class="info-card-content" id="ng-msg1"></div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-label" id="breath-lbl">Ademhalingsoefening</div>
+        <div class="breathing-container">
+          <div class="breath-circle" id="breath-circle">4</div>
+          <div class="breath-text" id="breath-text">Druk start om te beginnen</div>
+          <button class="btn-small" id="breath-btn" onclick="toggleBreath()">Start</button>
+          <div class="breath-text" style="color: var(--text-dim); font-size: 0.75rem; margin-top: 8px;" id="breath-hint">Inademen 4s · Vasthouden 4s · Uitademen 4s · Wachten 4s</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-label" id="ground-lbl">Grounding · 5-4-3-2-1</div>
+        <ul class="grounding-list" id="ground-list"></ul>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-label" id="ng-lbl2">Onthoud dit</div>
+        <div class="info-card-content" id="ng-msg2"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn-back" onclick="goScreen('screen-checkin'); stopBreath();" id="ng-back">← Terug</button>
+        <button class="btn-small" onclick="openLogWith('niet-goed')" id="ng-log-btn">📓 Logboek</button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-logboek">
+      <div class="section-label" id="lbl-logboek">LOGBOEK</div>
+
+      <div class="logbook-card">
+        <div class="info-card-label" id="log-new-lbl">Nieuwe notitie</div>
+        <div class="mood-picker" id="mood-picker"></div>
+        <textarea class="log-textarea" id="log-textarea" oninput="checkSaveBtn()"></textarea>
+        <button class="btn-save" id="log-save-btn" onclick="saveEntry()" disabled>Opslaan</button>
+        <div class="save-feedback" id="save-feedback">Opgeslagen ✓</div>
+      </div>
+
+      <div class="entries-label">
+        <span id="lbl-entries">Eerdere notities</span>
+        <span id="entry-count">—</span>
+      </div>
+      <div class="entries-list" id="entries-list">
+        <div class="empty-entries" id="empty-state">Nog geen notities.</div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn-back" onclick="goScreen('screen-checkin')" id="log-back">← Terug naar check-in</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p id="footer-text">© 2026 <strong>HOGGYNESISCHE SPOORWEGEN</strong> — Mentale Bijstand</p>
+  </footer>
+
+  <script>
+const translations = {
+  nl: {
+    navSubtitle: "Nationale Spoorwegen",
+    navTitle: "Hoggynesische Spoorwegen",
+    heroTitle: "Jouw Mentale Welzijn",
+    heroSubtitle: "Dagelijkse check-in & hulpmiddelen",
+    langBtn: "FRANÇAIS",
+    backBtn: "← HOME",
+    lblCheckin: "DAGELIJKSE CHECK-IN",
+    lblGoed: "STATUS: GOED",
+    lblGw: "STATUS: GAAT WEL",
+    lblNg: "HULPLIJN ACTIEF",
+    lblLogboek: "LOGBOEK",
+
+    moodGoed: "Goed",
+    moodGoedDesc: "Het gaat prima vandaag",
+    moodGw: "Gaat wel",
+    moodGwDesc: "Niet geweldig, maar ik red het",
+    moodNg: "Niet goed",
+    moodNgDesc: "Het is zwaar op dit moment",
+
+    goedLbl1: "Welkomstbericht",
+    goedMsg1: "Fijn om te horen. Je hoeft vandaag niks te bewijzen — doe gewoon rustig aan en geniet van de kleine dingen. Je bent goed op weg. 🌿",
+    goedLbl2: "Tip voor vandaag",
+    goedLbl3: "Geniet ervan",
+    goedMsg3: "Op goede dagen hoef je niet alles te doen. Hou het licht. Geniet ervan dat het goed gaat — dat verdien je. 🌤️",
+    goedBack: "← Terug",
+    goedLogBtn: "📓 Logboek",
+
+    gwLbl1: "Welkomstbericht",
+    gwMsg1: "Het hoeft niet altijd top te zijn. \"Gaat wel\" is ook prima — je bent er, en dat telt. Geef jezelf de ruimte. 🌥️",
+    gwLbl2: "Kleine stap",
+    gwMsg2: "Probeer één klein ding te doen dat je energie geeft — een wandeling, iets lekkers eten, of uitrekken. Kleine stappen tellen.",
+    gwLbl3: "Onthoud dit",
+    gwMsg3: "Niet elke dag hoeft goed te zijn. Genoeg is genoeg — jij bent genoeg. 💛",
+    gwBack: "← Terug",
+    gwLogBtn: "📓 Logboek",
+
+    ngLbl1: "Bericht voor jou",
+    ngMsg1: "Het is zwaar nu, en dat is oké. Je hoeft je gevoelens niet weg te stoppen.\n\nAdem. Je bent veilig. Dit gaat voorbij. 💛",
+    breathLbl: "Ademhalingsoefening",
+    breathIdle: "Druk start om te beginnen",
+    breathStart: "Start",
+    breathStop: "Stop",
+    breathHint: "Inademen 4s · Vasthouden 4s · Uitademen 4s · Wachten 4s",
+    breathPhases: ["Inademen ...", "Vasthouden", "Uitademen ...", "Wachten"],
+    groundLbl: "Grounding · 5-4-3-2-1",
+    groundSteps: [
+      {n: "5", word: "Zie", rest: "vijf dingen om je heen. Beschrijf ze rustig."},
+      {n: "4", word: "Voel", rest: "vier dingen die je kunt aanraken."},
+      {n: "3", word: "Hoor", rest: "drie geluiden om je heen."},
+      {n: "2", word: "Ruik", rest: "twee geuren."},
+      {n: "1", word: "Proef", rest: "één smaak. Neem een slokje water."}
+    ],
+    ngLbl2: "Onthoud dit",
+    ngMsg2: "Je bent niet je gedachten. Moeilijke gevoelens zijn als treinen — ze komen, ze gaan. Jij staat op het perron. 🚉\n\nJe hoeft dit niet alleen te dragen.",
+    ngBack: "← Terug",
+    ngLogBtn: "📓 Logboek",
+
+    logNewLbl: "Nieuwe notitie",
+    logGoed: "Goed",
+    logGw: "Gaat wel",
+    logNg: "Niet goed",
+    logPlaceholder: "Schrijf je gevoelens op...",
+    logSaveBtn: "Opslaan",
+    logSaved: "Opgeslagen ✓",
+    lblEntries: "Eerdere notities",
+    logEmpty: "Nog geen notities.",
+    logBack: "← Terug naar check-in",
+
+    footer: "© 2026 HOGGYNESISCHE SPOORWEGEN — Mentale Bijstand",
+    moodLabels: {goed: "Goed", "gaat-wel": "Gaat wel", "niet-goed": "Niet goed"},
+    nNotes: (n) => n === 1 ? "1 notitie" : n + " notities",
+    tips: [
+      "Neem een moment voor iets wat je fijn vindt.",
+      "Stuur iemand een berichtje.",
+      "Ga even naar buiten.",
+      "Zet je favoriete muziek op.",
+      "Schrijf iets waar je blij mee bent.",
+      "Rust is ook productief."
+    ],
+    tsFormat: (d) => {
+      const dg = ["zo", "ma", "di", "wo", "do", "vr", "za"];
+      const mn = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+      return dg[d.getDay()] + " " + d.getDate() + " " + mn[d.getMonth()] + " · " +
+        String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+    }
+  },
+  fr: {
+    navSubtitle: "Chemins de fer nationaux",
+    navTitle: "Chemin de fer Hoggynésiens",
+    heroTitle: "Votre Bien-être Mental",
+    heroSubtitle: "Check-in quotidien & ressources",
+    langBtn: "NEDERLANDS",
+    backBtn: "← ACCUEIL",
+    lblCheckin: "CHECK-IN QUOTIDIEN",
+    lblGoed: "STATUT : BIEN",
+    lblGw: "STATUT : ÇA VA",
+    lblNg: "LIGNE D'AIDE ACTIVE",
+    lblLogboek: "JOURNAL",
+
+    moodGoed: "Bien",
+    moodGoedDesc: "Ça va bien aujourd'hui",
+    moodGw: "Ça va",
+    moodGwDesc: "Pas terrible, mais je m'en sors",
+    moodNg: "Pas bien",
+    moodNgDesc: "C'est difficile en ce moment",
+
+    goedLbl1: "Message",
+    goedMsg1: "C'est agréable. Vous n'avez rien à prouver — prenez votre temps et savourez les petites choses. Vous êtes sur la bonne voie. 🌿",
+    goedLbl2: "Conseil du jour",
+    goedLbl3: "Profitez-en",
+    goedMsg3: "Les bons jours, vous n'avez pas besoin de tout faire. Gardez les choses légères. Profitez-en — vous le méritez. 🌤️",
+    goedBack: "← Retour",
+    goedLogBtn: "📓 Journal",
+
+    gwLbl1: "Message",
+    gwMsg1: "Ce n'est pas toujours parfait. \"Ça va\" c'est bien aussi — vous êtes là, et ça compte. Donnez-vous de l'espace. 🌥️",
+    gwLbl2: "Petit pas",
+    gwMsg2: "Essayez une petite chose qui vous donne de l'énergie — une promenade, quelque chose de bon, un étirement. Les petits pas comptent.",
+    gwLbl3: "Souvenez-vous",
+    gwMsg3: "Chaque jour ne doit pas être parfait. Assez, c'est assez — vous êtes assez. 💛",
+    gwBack: "← Retour",
+    gwLogBtn: "📓 Journal",
+
+    ngLbl1: "Message pour vous",
+    ngMsg1: "C'est difficile maintenant, c'est normal. Vous n'avez pas besoin de refouler vos émotions.\n\nRespirez. Vous êtes en sécurité. Ça va passer. 💛",
+    breathLbl: "Exercice de respiration",
+    breathIdle: "Appuyez pour commencer",
+    breathStart: "Démarrer",
+    breathStop: "Arrêter",
+    breathHint: "Inspirez 4s · Retenez 4s · Expirez 4s · Attendez 4s",
+    breathPhases: ["Inspirez ...", "Retenez", "Expirez ...", "Attendez"],
+    groundLbl: "Ancrage · 5-4-3-2-1",
+    groundSteps: [
+      {n: "5", word: "Voyez", rest: "cinq choses. Décrivez-les calmement."},
+      {n: "4", word: "Touchez", rest: "quatre choses que vous touchez."},
+      {n: "3", word: "Écoutez", rest: "trois sons autour de vous."},
+      {n: "2", word: "Sentez", rest: "deux odeurs."},
+      {n: "1", word: "Goûtez", rest: "une saveur. Gorgée d'eau."}
+    ],
+    ngLbl2: "Souvenez-vous",
+    ngMsg2: "Vous n'êtes pas vos pensées. Les émotions difficiles sont comme des trains — elles arrivent, elles repartent. Vous êtes sur le quai. 🚉\n\nVous n'avez pas à porter ça seul.",
+    ngBack: "← Retour",
+    ngLogBtn: "📓 Journal",
+
+    logNewLbl: "Nouvelle note",
+    logGoed: "Bien",
+    logGw: "Ça va",
+    logNg: "Pas bien",
+    logPlaceholder: "Écrivez vos sentiments...",
+    logSaveBtn: "Enregistrer",
+    logSaved: "Enregistré ✓",
+    lblEntries: "Notes précédentes",
+    logEmpty: "Aucune note pour le moment.",
+    logBack: "← Retour au check-in",
+
+    footer: "© 2026 CHEMIN DE FER HOGGYNÉSIENS — Bien-être Mental",
+    moodLabels: {goed: "Bien", "gaat-wel": "Ça va", "niet-goed": "Pas bien"},
+    nNotes: (n) => n === 1 ? "1 note" : n + " notes",
+    tips: [
+      "Prenez un moment pour quelque chose que vous aimez.",
+      "Envoyez un message à quelqu'un.",
+      "Sortez un moment.",
+      "Écoutez votre musique préférée.",
+      "Notez quelque chose dont vous êtes heureux.",
+      "Le repos est aussi productif."
+    ],
+    tsFormat: (d) => {
+      const dg = ["dim", "lun", "mar", "mer", "jeu", "ven", "sam"];
+      const mn = ["jan", "fév", "mar", "avr", "mai", "jun", "jui", "aoû", "sep", "oct", "nov", "déc"];
+      return dg[d.getDay()] + " " + d.getDate() + " " + mn[d.getMonth()] + " · " +
+        String(d.getHours()).padStart(2, "0") + "h" + String(d.getMinutes()).padStart(2, "0");
+    }
+  }
+};
+
+let currentLang = localStorage.getItem("hs_lang") || "nl";
+
+function updateUI() {
+  const t = translations[currentLang];
+  document.getElementById("nav-logo").textContent = currentLang === "nl" ? "HS" : "CFH";
+  document.getElementById("nav-subtitle").textContent = t.navSubtitle;
+  document.getElementById("nav-title").textContent = t.navTitle;
+  document.getElementById("langBtn").textContent = t.langBtn;
+  document.getElementById("backBtn").textContent = t.backBtn;
+  document.getElementById("hero-title").textContent = t.heroTitle;
+  document.getElementById("hero-subtitle").textContent = t.heroSubtitle;
+  document.getElementById("lbl-checkin").textContent = t.lblCheckin;
+  document.getElementById("lbl-goed").textContent = t.lblGoed;
+  document.getElementById("lbl-gw").textContent = t.lblGw;
+  document.getElementById("lbl-ng").textContent = t.lblNg;
+  document.getElementById("lbl-logboek").textContent = t.lblLogboek;
+
+  renderMoodCards();
+
+  document.getElementById("goed-lbl1").textContent = t.goedLbl1;
+  document.getElementById("goed-msg1").textContent = t.goedMsg1;
+  document.getElementById("goed-lbl2").textContent = t.goedLbl2;
+  document.getElementById("goed-lbl3").textContent = t.goedLbl3;
+  document.getElementById("goed-msg3").textContent = t.goedMsg3;
+  document.getElementById("goed-back").textContent = t.goedBack;
+  document.getElementById("goed-log-btn").textContent = t.goedLogBtn;
+
+  document.getElementById("gw-lbl1").textContent = t.gwLbl1;
+  document.getElementById("gw-msg1").textContent = t.gwMsg1;
+  document.getElementById("gw-lbl2").textContent = t.gwLbl2;
+  document.getElementById("gw-msg2").textContent = t.gwMsg2;
+  document.getElementById("gw-lbl3").textContent = t.gwLbl3;
+  document.getElementById("gw-msg3").textContent = t.gwMsg3;
+  document.getElementById("gw-back").textContent = t.gwBack;
+  document.getElementById("gw-log-btn").textContent = t.gwLogBtn;
+
+  document.getElementById("ng-lbl1").textContent = t.ngLbl1;
+  document.getElementById("ng-msg1").textContent = t.ngMsg1;
+  document.getElementById("breath-lbl").textContent = t.breathLbl;
+  document.getElementById("breath-hint").textContent = t.breathHint;
+  document.getElementById("ng-lbl2").textContent = t.ngLbl2;
+  document.getElementById("ng-msg2").textContent = t.ngMsg2;
+  document.getElementById("ng-back").textContent = t.ngBack;
+  document.getElementById("ng-log-btn").textContent = t.ngLogBtn;
+
+  renderGrounding();
+
+  if (!bRunning) {
+    document.getElementById("breath-btn").textContent = t.breathStart;
+    document.getElementById("breath-text").textContent = t.breathIdle;
+  }
+
+  document.getElementById("log-new-lbl").textContent = t.logNewLbl;
+  document.getElementById("log-textarea").placeholder = t.logPlaceholder;
+  document.getElementById("log-save-btn").textContent = t.logSaveBtn;
+  document.getElementById("save-feedback").textContent = t.logSaved;
+  document.getElementById("lbl-entries").textContent = t.lblEntries;
+  document.getElementById("log-back").textContent = t.logBack;
+  document.getElementById("footer-text").innerHTML = t.footer;
+
+  renderMoodPicker();
+  renderEntries();
+  updateCounts();
+  rotateTip();
+
+  document.documentElement.lang = currentLang;
+  localStorage.setItem("hs_lang", currentLang);
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === "nl" ? "fr" : "nl";
+  updateUI();
+}
+
+function renderMoodCards() {
+  const t = translations[currentLang];
+  const grid = document.getElementById("checkin-grid");
+  grid.innerHTML = '';
+  const moods = [
+    {id: "goed", emoji: "😊", label: t.moodGoed, desc: t.moodGoedDesc},
+    {id: "gaat-wel", emoji: "😐", label: t.moodGw, desc: t.moodGwDesc},
+    {id: "niet-goed", emoji: "😔", label: t.moodNg, desc: t.moodNgDesc}
+  ];
+  moods.forEach(m => {
+    const card = document.createElement("div");
+    card.className = "mood-card " + m.id;
+    card.onclick = () => goScreen("screen-" + m.id);
+    card.innerHTML = `
+      <div class="mood-icon">${m.emoji}</div>
+      <div class="mood-label">${m.label}</div>
+      <div class="mood-description">${m.desc}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderGrounding() {
+  const t = translations[currentLang];
+  const list = document.getElementById("ground-list");
+  list.innerHTML = '';
+  t.groundSteps.forEach(s => {
+    const li = document.createElement("li");
+    li.className = "grounding-item";
+    li.innerHTML = `
+      <div class="grounding-num">${s.n}</div>
+      <div class="grounding-text"><strong>${s.word}</strong> ${s.rest}</div>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function renderMoodPicker() {
+  const t = translations[currentLang];
+  const picker = document.getElementById("mood-picker");
+  picker.innerHTML = '';
+  const moods = [
+    {id: "goed", label: t.logGoed},
+    {id: "gaat-wel", label: t.logGw},
+    {id: "niet-goed", label: t.logNg}
+  ];
+  moods.forEach(m => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "mood-radio" + (m.id === "gaat-wel" ? " selected" : "");
+    btn.id = "mp-" + m.id;
+    btn.onclick = () => selectMood(m.id);
+    btn.innerHTML = `<div class="mood-radio-dot"></div>${m.label}`;
+    picker.appendChild(btn);
+  });
+}
+
+function goScreen(screenId) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(screenId).classList.add("active");
+  if (screenId === "screen-logboek") renderEntries();
+  window.scrollTo(0, 0);
+}
+
+function openLogWith(mood) {
+  selectMood(mood);
+  goScreen("screen-logboek");
+  setTimeout(() => document.getElementById("log-textarea").focus(), 100);
+}
+
+let bRunning = false, bTimer = null, bPhase = 0, bCount = 4;
+const bColors = [
+  {color: "#4CAF50", size: "140px", border: "#4CAF50"},
+  {color: "#FF9800", size: "140px", border: "#FF9800"},
+  {color: "#F44336", size: "140px", border: "#F44336"},
+  {color: "var(--border)", size: "120px", border: "var(--border)"}
+];
+
+function toggleBreath() { bRunning ? stopBreath() : startBreath(); }
+function startBreath() {
+  bRunning = true;
+  const t = translations[currentLang];
+  document.getElementById("breath-btn").textContent = t.breathStop;
+  bPhase = 0; bCount = 4; runPhase();
+}
+function stopBreath() {
+  bRunning = false; clearTimeout(bTimer);
+  const t = translations[currentLang];
+  document.getElementById("breath-btn").textContent = t.breathStart;
+  document.getElementById("breath-text").textContent = t.breathIdle;
+  document.getElementById("breath-circle").style.width = "140px";
+  document.getElementById("breath-circle").style.height = "140px";
+}
+function runPhase() {
+  if (!bRunning) return;
+  const t = translations[currentLang];
+  const p = bColors[bPhase];
+  const circle = document.getElementById("breath-circle");
+  document.getElementById("breath-text").textContent = t.breathPhases[bPhase];
+  document.getElementById("breath-text").style.color = p.color;
+  document.getElementById("breath-circle").textContent = bCount;
+  circle.style.transition = bCount === 4 ? "all 0.8s ease" : "all 0.1s";
+  circle.style.width = p.size;
+  circle.style.height = p.size;
+  circle.style.borderColor = p.border;
+  if (bCount > 1) {
+    bCount--; bTimer = setTimeout(runPhase, 1000);
+  } else {
+    bPhase = (bPhase + 1) % 4; bCount = 4; bTimer = setTimeout(runPhase, 1000);
+  }
+}
+
+const STORE_KEY = "hs_log_entries";
+let selectedMood = "gaat-wel";
+
+function selectMood(mood) {
+  selectedMood = mood;
+  ["goed", "gaat-wel", "niet-goed"].forEach(m => {
+    const el = document.getElementById("mp-" + m);
+    if (el) el.classList.toggle("selected", m === mood);
+  });
+}
+
+function checkSaveBtn() {
+  document.getElementById("log-save-btn").disabled = document.getElementById("log-textarea").value.trim().length < 1;
+}
+
+function loadEntries() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); }
+  catch { return []; }
+}
+
+function saveEntries(arr) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(arr));
+}
+
+function saveEntry() {
+  const txt = document.getElementById("log-textarea").value.trim();
+  if (!txt) return;
+  const entries = loadEntries();
+  entries.unshift({id: Date.now(), mood: selectedMood, text: txt, ts: new Date().toISOString()});
+  saveEntries(entries);
+  document.getElementById("log-textarea").value = "";
+  checkSaveBtn();
+  const fb = document.getElementById("save-feedback");
+  fb.style.opacity = "1";
+  setTimeout(() => { fb.style.opacity = "0"; }, 2200);
+  renderEntries();
+  updateCounts();
+}
+
+function deleteEntry(id) {
+  saveEntries(loadEntries().filter(e => e.id !== id));
+  renderEntries();
+  updateCounts();
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function renderEntries() {
+  const t = translations[currentLang];
+  const entries = loadEntries();
+  const list = document.getElementById("entries-list");
+  list.innerHTML = "";
+  if (entries.length === 0) {
+    list.innerHTML = "<div class=\"empty-entries\">" + escHtml(t.logEmpty) + "</div>";
+    return;
+  }
+  entries.forEach(e => {
+    const d = new Date(e.ts);
+    const ts = t.tsFormat(d);
+    const moodLbl = t.moodLabels[e.mood] || e.mood;
+    const div = document.createElement("div");
+    div.className = "entry-item " + e.mood;
+    div.innerHTML = `
+      <div class="entry-content">
+        <div class="entry-header">
+          <div class="entry-mood-dot"></div>
+          <span class="entry-mood-label">${escHtml(moodLbl)}</span>
+          <span class="entry-time">${escHtml(ts)}</span>
+        </div>
+        <div class="entry-text">${escHtml(e.text)}</div>
+      </div>
+      <button class="entry-del" onclick="deleteEntry(${e.id})">×</button>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function updateCounts() {
+  const t = translations[currentLang];
+  const n = loadEntries().length;
+  document.getElementById("entry-count").textContent = t.nNotes(n);
+}
+
+function rotateTip() {
+  const t = translations[currentLang];
+  const tips = t.tips;
+  document.getElementById("goed-tip").textContent = tips[Math.floor(Math.random() * tips.length)];
+}
+
+updateUI();
+  </script>
+
+</body>
+</html>
