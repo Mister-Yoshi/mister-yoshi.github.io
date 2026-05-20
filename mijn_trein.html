@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Trein Tracker</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#003366">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --yellow: #FFC917;
+      --yellow-dark: #e6b400;
+      --blue: #001a4d;
+      --blue-nav: #001233;
+      --blue-light: #0054a6;
+      --card-bg: #1e2330;
+      --bg: #141821;
+      --border: #2a2f3d;
+      --text: #e8edf5;
+      --text-dim: #9aa3b8;
+      --radius: 6px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      background: var(--blue-nav);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 64px;
+      box-shadow: 0 2px 8px rgba(0,0,48,0.18);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-logo img {
+      height: 42px;
+      width: auto;
+    }
+
+    .nav-brand {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-brand span {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 7px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.7);
+    }
+
+    .status-pill {
+      background: rgba(255,201,23,0.15);
+      border: 1px solid var(--yellow);
+      color: var(--yellow);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, rgba(26,20,0,0.75) 0%, rgba(42,32,0,0.75) 60%, rgba(26,26,0,0.75) 100%),
+                  url('images/train-station.jpg') center/cover no-repeat;
+      background-attachment: fixed;
+      border-bottom: 3px solid var(--yellow);
+      padding: 44px 32px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -60px;
+      top: -40px;
+      width: 380px;
+      height: 200px;
+      background: rgba(255,201,23,0.06);
+      transform: rotate(-18deg);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: var(--yellow);
+      line-height: 1.15;
+    }
+
+    .hero p {
+      color: rgba(255,201,23,0.6);
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    /* ── SEARCH FORM ── */
+    .search-wrap {
+      background: #0d1117;
+      border-radius: var(--radius);
+      margin-top: 28px;
+      box-shadow: var(--shadow);
+      display: flex;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .search-icon {
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      color: var(--text-dim);
+    }
+
+    .search-wrap input {
+      flex: 1;
+      min-width: 200px;
+      border: none;
+      outline: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      padding: 16px 12px;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .search-wrap input::placeholder { 
+      color: var(--text-dim); 
+    }
+
+    .search-wrap button {
+      background: var(--yellow);
+      color: #000000;
+      border: none;
+      padding: 0 32px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .search-wrap button:hover { 
+      background: var(--yellow-dark); 
+    }
+
+    /* ── MAIN CONTENT ── */
+    .content {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 36px 32px 60px;
+    }
+
+    /* ── RESULT CARD ── */
+    .result-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-top: 20px;
+      box-shadow: var(--shadow);
+      display: none;
+      text-align: center;
+    }
+
+    .result-card.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .train-number {
+      font-size: 4.2rem;
+      font-weight: 800;
+      color: var(--yellow);
+      background: linear-gradient(135deg, rgba(255,201,23,0.1) 0%, rgba(0,84,166,0.1) 100%);
+      padding: 20px 40px;
+      border-radius: var(--radius);
+      margin: 20px 0;
+      border: 2px solid var(--yellow);
+      letter-spacing: 0.05em;
+    }
+
+    .train-times {
+      font-size: 1.2rem;
+      color: var(--text-dim);
+      margin-top: 12px;
+      font-weight: 500;
+    }
+
+    .train-times .time {
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    .status-message {
+      padding: 20px;
+      border-radius: var(--radius);
+      margin-top: 20px;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .status-success {
+      background: rgba(76, 175, 80, 0.15);
+      border: 1px solid rgba(76, 175, 80, 0.3);
+      color: #81c784;
+    }
+
+    .status-error {
+      background: rgba(244, 67, 54, 0.15);
+      border: 1px solid rgba(244, 67, 54, 0.3);
+      color: #ef5350;
+    }
+
+    .status-info {
+      background: rgba(33, 150, 243, 0.15);
+      border: 1px solid rgba(33, 150, 243, 0.3);
+      color: #64b5f6;
+    }
+
+    .status-loading {
+      background: rgba(255, 201, 23, 0.15);
+      border: 1px solid rgba(255, 201, 23, 0.3);
+      color: var(--yellow);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,201,23,0.3);
+      border-top-color: var(--yellow);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .label-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .help-text {
+      background: rgba(33, 150, 243, 0.08);
+      border-left: 3px solid var(--blue-light);
+      padding: 12px 16px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+    }
+
+    .help-text a {
+      color: var(--yellow);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .help-text a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 16px; }
+      .hero h1 { font-size: 1.6rem; }
+      .train-number { font-size: 2.8rem; padding: 16px 24px; }
+      .content { padding: 24px 16px 40px; }
+      .result-card { padding: 20px; }
+      .search-wrap { flex-direction: column; }
+      .search-icon { padding: 16px 18px; border-bottom: 1px solid var(--border); }
+      .search-wrap input { padding: 12px; }
+      .search-wrap button { padding: 12px 20px; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-brand">
+        🚆 Trein Locator
+        <span id="nav-subtitle">Live Tracker</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <span class="status-pill" id="txt-status">OPERATIONEEL</span>
+      <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">FRANÇAIS</button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <div class="hero">
+    <div class="hero-inner">
+      <h1 id="hero-title">📍 Zoek jouw huidge trein</h1>
+      <p id="hero-sub">Voer je Treinposities sharecode in om te zien welke trein je nu rijdt</p>
+      
+      <div class="search-wrap">
+        <div class="search-icon">🔗</div>
+        <input 
+          type="url" 
+          id="tp-link" 
+          placeholder="https://treinposities.nl/rittenvan/.../trip/?sharecode=..."
+          value="https://treinposities.nl/rittenvan/MisterEagle/trip/?sharecode=sfm8AMEQrJcWj03OnmjwfUSImzozmbs4"
+        >
+        <button onclick="zoekHuidigeTrein()" id="txt-search-btn">ZOEKEN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+    <div class="help-text" id="help-text">
+      💡 <strong>Hoe werkt dit?</strong> Ga naar <a href="https://treinposities.nl" target="_blank">treinposities.nl</a>, log in, klik op een rit, en deel via de 'Delen' knop. Kopieer de link met sharecode en plak deze hierboven.
+    </div>
+
+    <div class="result-card" id="resultaat">
+      <div class="label-subtitle" id="result-label">Jij zit nu in:</div>
+      <div class="train-number" id="trein-nummer">—</div>
+      <div class="train-times">
+        <span class="time" id="vertrek-tijd">—</span>
+        <span> tot </span>
+        <span class="time" id="aankomst-tijd">—</span>
+      </div>
+      <div class="train-times" id="rit-details" style="margin-top: 16px; color: var(--text-dim); font-size: 0.95rem;"></div>
+    </div>
+
+    <div id="status" style="margin-top: 20px;"></div>
+  </div>
+
+  <script>
+    // ════════════════════════════════════════════════════════
+    // TRANSLATIONS & LANGUAGE SWITCHING
+    // ════════════════════════════════════════════════════════
+    let currentLang = 'nl';
+    const translations = {
+      nl: {
+        navSubtitle: "Live Tracker",
+        status: "OPERATIONEEL",
+        heroTitle: "📍 Zoek jouw huidge trein",
+        heroSub: "Voer je Treinposities sharecode in om te zien welke trein je nu rijdt",
+        placeholder: "https://treinposities.nl/rittenvan/.../trip/?sharecode=...",
+        searchBtn: "ZOEKEN",
+        resultLabel: "Jij zit nu in:",
+        searchInit: "🔍 Data ophalen via proxy...",
+        notInTrain: "Je zit momenteel niet in een trein (of de rit is nog niet begonnen/al voorbij).",
+        invalidLink: "❌ Ongeldige link. Zorg dat er een sharecode in staat.",
+        fetchError: "❌ Fout bij laden: ",
+        langBtn: "FRANÇAIS",
+        helpText: "💡 <strong>Hoe werkt dit?</strong> Ga naar <a href='https://treinposities.nl' target='_blank'>treinposities.nl</a>, log in, klik op een rit, en deel via de 'Delen' knop. Kopieer de link met sharecode en plak deze hierboven.",
+        success: "✅ Trein gevonden!"
+      },
+      fr: {
+        navSubtitle: "Suivi en direct",
+        status: "OPÉRATIONNEL",
+        heroTitle: "📍 Trouvez votre train actuel",
+        heroSub: "Entrez votre code de partage Treinposities pour voir quel train vous empruntez",
+        placeholder: "https://treinposities.nl/rittenvan/.../trip/?sharecode=...",
+        searchBtn: "CHERCHER",
+        resultLabel: "Vous êtes actuellement dans:",
+        searchInit: "🔍 Récupération des données via proxy...",
+        notInTrain: "Vous n'êtes pas actuellement dans un train (ou le voyage n'a pas encore commencé / est déjà passé).",
+        invalidLink: "❌ Lien invalide. Assurez-vous qu'il y a un code de partage.",
+        fetchError: "❌ Erreur de chargement: ",
+        langBtn: "NEDERLANDS",
+        helpText: "💡 <strong>Comment ça marche?</strong> Allez sur <a href='https://treinposities.nl' target='_blank'>treinposities.nl</a>, connectez-vous, cliquez sur un voyage, et partagez via le bouton 'Partager'. Copiez le lien avec le code de partage et collez-le ci-dessus.",
+        success: "✅ Train trouvé!"
+      }
+    };
+
+    function updateUI() {
+      const t = translations[currentLang];
+      document.getElementById('nav-subtitle').textContent = t.navSubtitle;
+      document.getElementById('txt-status').textContent = t.status;
+      document.getElementById('hero-title').textContent = t.heroTitle;
+      document.getElementById('hero-sub').textContent = t.heroSub;
+      document.getElementById('tp-link').placeholder = t.placeholder;
+      document.getElementById('txt-search-btn').textContent = t.searchBtn;
+      document.getElementById('result-label').textContent = t.resultLabel;
+      document.getElementById('help-text').innerHTML = t.helpText;
+      document.getElementById('langBtn').textContent = t.langBtn;
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'nl' ? 'fr' : 'nl';
+      updateUI();
+    }
+
+    updateUI();
+
+    // ════════════════════════════════════════════════════════
+    // TRAIN LOOKUP LOGIC
+    // ════════════════════════════════════════════════════════
+    async function zoekHuidigeTrein() {
+      const urlInput = document.getElementById('tp-link').value;
+      const statusDiv = document.getElementById('status');
+      const resultaatDiv = document.getElementById('resultaat');
+      const nummerDiv = document.getElementById('trein-nummer');
+      const vertrekDiv = document.getElementById('vertrek-tijd');
+      const aankomstDiv = document.getElementById('aankomst-tijd');
+      const detailsDiv = document.getElementById('rit-details');
+      const t = translations[currentLang];
+
+      if (!urlInput.includes('sharecode=')) {
+        statusDiv.innerHTML = `<div class="status-message status-error">${t.invalidLink}</div>`;
+        resultaatDiv.classList.remove('show');
+        return;
+      }
+
+      statusDiv.innerHTML = `<div class="status-message status-loading"><span class="spinner"></span>${t.searchInit}</div>`;
+      resultaatDiv.classList.remove('show');
+
+      try {
+        // Probeer meerdere CORS proxies
+        const proxies = [
+          url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+          url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+          url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+        ];
+
+        let htmlString = null;
+
+        for (let getProxyUrl of proxies) {
+          try {
+            const proxyUrl = getProxyUrl(urlInput);
+            const response = await fetch(proxyUrl, { timeout: 5000 });
+            
+            if (!response.ok) continue;
+            
+            const data = await response.json();
+            
+            // Controleer welke proxy we gebruiken
+            if (data.contents) {
+              htmlString = data.contents;
+            } else if (typeof data === 'string') {
+              htmlString = data;
+            }
+            
+            if (htmlString) break; // Success!
+          } catch (e) {
+            continue; // Probeer volgende proxy
+          }
+        }
+
+        if (!htmlString) {
+          throw new Error('Kon geen van de proxies bereiken. Probeer het later opnieuw.');
+        }
+
+        // Parse HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, 'text/html');
+
+        const rijen = doc.querySelectorAll('tr');
+        
+        let gevondenTrein = null;
+        const nu = new Date();
+        
+        for (let rij of rijen) {
+          const tekst = rij.innerText.trim();
+          
+          // Zoek naar tijden (bijv 10:30)
+          const tijden = tekst.match(/\b([01]?[0-9]|2[0-3]):([0-5][0-9])\b/g);
+          
+          if (tijden && tijden.length >= 2) {
+            const vertrekTijd = parseTijd(tijden[0]);
+            const aankomstTijd = parseTijd(tijden[tijden.length - 1]);
+
+            // Ligt de huidge tijd tussen vertrek en aankomst?
+            if (nu >= vertrekTijd && nu <= aankomstTijd) {
+              
+              // Zoek treinnummer (3-5 cijfers)
+              const mogelijkeNummers = tekst.match(/\b\d{3,5}\b/g);
+              
+              gevondenTrein = {
+                nummer: mogelijkeNummers ? mogelijkeNummers[0] : "—",
+                vertrek: tijden[0],
+                aankomst: tijden[tijden.length - 1]
+              };
+              break;
+            }
+          }
+        }
+
+        if (gevondenTrein) {
+          statusDiv.innerHTML = `<div class="status-message status-success">${t.success}</div>`;
+          nummerDiv.innerText = gevondenTrein.nummer;
+          vertrekDiv.innerText = gevondenTrein.vertrek;
+          aankomstDiv.innerText = gevondenTrein.aankomst;
+          detailsDiv.innerText = `🚆 Trein ${gevondenTrein.nummer}`;
+          resultaatDiv.classList.add('show');
+        } else {
+          statusDiv.innerHTML = `<div class="status-message status-info">${t.notInTrain}</div>`;
+          resultaatDiv.classList.remove('show');
+        }
+
+      } catch (error) {
+        statusDiv.innerHTML = `<div class="status-message status-error">${t.fetchError}${error.message}</div>`;
+        resultaatDiv.classList.remove('show');
+      }
+    }
+
+    // Helper om "10:30" om te zetten naar een echt moment voor vandaag
+    function parseTijd(tijdString) {
+      const [uren, minuten] = tijdString.split(':');
+      const d = new Date();
+      d.setHours(parseInt(uren, 10), parseInt(minuten, 10), 0, 0);
+      return d;
+    }
+
+    // Enter key support
+    document.getElementById('tp-link').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') zoekHuidigeTrein();
+    });
+  </script>
+</body>
+</html>
