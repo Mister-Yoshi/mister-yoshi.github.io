@@ -85,6 +85,20 @@
       gap: 12px;
     }
 
+    .nav-clock {
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--yellow);
+      letter-spacing: 0.05em;
+      min-width: 70px;
+      text-align: right;
+      padding: 6px 12px;
+      background: rgba(255,201,23,0.08);
+      border-radius: 4px;
+      border: 1px solid rgba(255,201,23,0.2);
+    }
+
     .lang-btn {
       background: transparent;
       border: 1.5px solid rgba(255,255,255,0.4);
@@ -728,6 +742,7 @@
       nav { padding: 0 16px; }
       .hero { padding: 32px 16px 28px; }
       .status-pill { display: none; }
+      .nav-clock { font-size: 0.9rem; min-width: 60px; }
     }
   </style>
 </head>
@@ -743,6 +758,7 @@
       </div>
     </div>
     <div class="nav-right">
+      <div class="nav-clock" id="clock">00:00:00</div>
       <div class="status-pill" id="txt-status">OPERATIONEEL</div>
       <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">FRANÇAIS</button>
     </div>
@@ -752,7 +768,7 @@
   <div class="hero">
     <div class="hero-inner">
       <h1 id="hero-title">Reisinformatie & Diensten</h1>
-      <p id="hero-sub">Hoggynesische Spoorwegen — Versie 6.9.1</p>
+      <p id="hero-sub">Hoggynesische Spoorwegen — Versie 7.0.1</p>
 
       <div class="search-wrap">
         <div class="search-icon">
@@ -880,6 +896,21 @@
   </div>
 
 <script>
+  // ═══════════════════════════════════════════════════════
+  // DIGITAL CLOCK IN NAVBAR
+  // ═══════════════════════════════════════════════════════
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+  }
+
+  // Update clock immediately and then every second
+  updateClock();
+  setInterval(updateClock, 1000);
+
   let currentLang = 'nl';
 
   const translations = {
