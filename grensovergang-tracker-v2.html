@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OV Tracker — Jouw Reisverhaal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --yellow: #FFC917;
+      --yellow-dark: #e6b400;
+      --blue: #001a4d;
+      --blue-nav: #001233;
+      --blue-light: #0054a6;
+      --card-bg: #1e2330;
+      --bg: #141821;
+      --border: #2a2f3d;
+      --text: #e8edf5;
+      --text-dim: #9aa3b8;
+      --radius: 6px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4);
+      --green: #10b981;
+      --red: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      background: var(--blue-nav);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 64px;
+      box-shadow: 0 2px 8px rgba(0,0,48,0.18);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .back-btn {
+      background: rgba(255,201,23,0.15);
+      border: 1px solid var(--yellow);
+      color: var(--yellow);
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-btn:hover {
+      background: var(--yellow);
+      color: #000;
+    }
+
+    .nav-brand {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-brand span {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lang-btn, .settings-btn {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: #ffffff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover, .settings-btn:hover {
+      background: rgba(255,201,23,0.15);
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #666;
+      animation: none;
+      transition: background 0.3s;
+    }
+
+    .status-dot.active {
+      background: var(--green);
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-dot.connecting {
+      background: var(--yellow);
+      animation: blink 1s infinite;
+    }
+
+    .status-dot.idle { background: #333; animation: none; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, rgba(26,20,0,0.75) 0%, rgba(42,32,0,0.75) 60%, rgba(26,26,0,0.75) 100%);
+      border-bottom: 3px solid var(--yellow);
+      padding: 44px 32px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -60px;
+      top: -40px;
+      width: 380px;
+      height: 200px;
+      background: rgba(255,201,23,0.06);
+      transform: rotate(-18deg);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: var(--yellow);
+      line-height: 1.15;
+    }
+
+    .hero p {
+      color: rgba(255,201,23,0.6);
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    /* ── MAIN ── */
+    .content {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 36px 32px 60px;
+    }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
+    /* ── VEHICLE SELECTOR ── */
+    .vehicle-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .vehicle-btn {
+      padding: 16px;
+      border: 2px solid var(--border);
+      background: rgba(255,201,23,0.05);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .vehicle-btn:hover {
+      border-color: var(--yellow);
+      background: rgba(255,201,23,0.1);
+    }
+
+    .vehicle-btn.selected {
+      border-color: var(--yellow);
+      background: rgba(255,201,23,0.15);
+      color: var(--yellow);
+    }
+
+    .vehicle-icon {
+      font-size: 1.8rem;
+    }
+
+    /* ── LOCATION DISPLAY ── */
+    .location-display {
+      background: rgba(255,201,23,0.08);
+      border: 1px solid rgba(255,201,23,0.2);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .location-city {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--yellow);
+      margin-bottom: 4px;
+    }
+
+    .location-country {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+
+    .location-coords {
+      font-size: 0.8rem;
+      font-family: 'Courier New', monospace;
+      color: var(--text);
+      background: rgba(0,0,0,0.2);
+      padding: 8px 12px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* ── STATS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: rgba(255,201,23,0.08);
+      border: 1px solid rgba(255,201,23,0.2);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--yellow);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    /* ── TRIP DISPLAY ── */
+    .trip-info {
+      background: rgba(255,201,23,0.08);
+      border: 1px solid rgba(255,201,23,0.2);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .trip-info.active {
+      display: block;
+    }
+
+    .trip-vehicle {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .trip-time {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--yellow);
+      margin-bottom: 4px;
+    }
+
+    /* ── BUTTONS ── */
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-group.single {
+      grid-template-columns: 1fr;
+    }
+
+    .btn {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      border: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--yellow);
+      color: #000;
+      font-weight: 800;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--yellow-dark);
+    }
+
+    .btn-stop {
+      background: rgba(239,68,68,0.12);
+      color: #f87171;
+      border: 1px solid rgba(239,68,68,0.25);
+    }
+
+    .btn-stop:hover:not(:disabled) {
+      background: rgba(239,68,68,0.2);
+    }
+
+    .btn-green {
+      background: rgba(16,185,129,0.12);
+      color: #34d399;
+      border: 1px solid rgba(16,185,129,0.25);
+    }
+
+    .btn-green:hover:not(:disabled) {
+      background: rgba(16,185,129,0.2);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      color: var(--yellow);
+      border-color: var(--yellow);
+    }
+
+    /* ── ALERTS ── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s ease;
+    }
+
+    .alert.show {
+      display: flex;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-success {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.25);
+      color: #34d399;
+    }
+
+    .alert-danger {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #f87171;
+    }
+
+    .alert-info {
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.25);
+      color: #60a5fa;
+    }
+
+    .alert-warning {
+      background: rgba(255,201,23,0.12);
+      border: 1px solid rgba(255,201,23,0.25);
+      color: var(--yellow);
+    }
+
+    /* ── ACTIVITY LOG ── */
+    .log-list {
+      list-style: none;
+    }
+
+    .log-empty {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    .log-item {
+      display: flex;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,201,23,0.1);
+      animation: slideIn 0.3s ease;
+    }
+
+    .log-item:last-child {
+      border-bottom: none;
+    }
+
+    .log-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .log-body {
+      flex: 1;
+    }
+
+    .log-title {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .log-meta {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-top: 3px;
+    }
+
+    .log-time {
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h2 {
+      color: var(--yellow);
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: var(--yellow);
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .input-group input, .input-group textarea {
+      width: 100%;
+      background: rgba(255,201,23,0.08);
+      border: 1px solid rgba(255,201,23,0.2);
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-group textarea {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .input-group input:focus, .input-group textarea:focus {
+      border-color: var(--yellow);
+    }
+
+    .stats-list {
+      list-style: none;
+      margin: 16px 0;
+    }
+
+    .stats-list li {
+      padding: 12px;
+      background: rgba(255,201,23,0.05);
+      border-left: 3px solid var(--yellow);
+      margin-bottom: 10px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stats-list-label {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    .stats-list-value {
+      color: var(--yellow);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #0a0f1a;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      border-top: 1px solid var(--border);
+    }
+
+    footer strong { color: var(--yellow); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      nav { padding: 0 16px; }
+      .hero { padding: 32px 16px 28px; }
+      .hero h1 { font-size: 1.5rem; }
+      .content { padding: 24px 16px 40px; }
+      .vehicle-grid { grid-template-columns: 1fr 1fr; }
+      .btn-group { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── LOGIN ── */
+    .login-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-overlay.active {
+      display: flex;
+    }
+
+    .login-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      max-width: 320px;
+      width: 100%;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .login-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .login-card h2 {
+      font-size: 1.4rem;
+      color: var(--yellow);
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .login-card p {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    .login-card input {
+      width: 100%;
+      background: rgba(255,201,23,0.08);
+      border: 1px solid rgba(255,201,23,0.2);
+      border-radius: 6px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .login-card input:focus {
+      border-color: var(--yellow);
+    }
+
+    .login-error {
+      color: #f87171;
+      font-size: 0.8rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN OVERLAY -->
+  <div id="loginOverlay" class="login-overlay active">
+    <div class="login-card">
+      <div class="login-icon">🚆</div>
+      <h2 id="loginTitle">OV Tracker</h2>
+      <p id="loginSub">Voer je PIN in</p>
+      
+      <input type="password" id="pinInput" placeholder="4-cijferige PIN" maxlength="4" autocomplete="off">
+      <button class="btn btn-primary" onclick="checkPin()" style="width:100%;">
+        <span id="loginBtn">Unlock</span>
+      </button>
+      
+      <p id="loginError" class="login-error"></p>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settingsModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="settingsTitle">⚙️ Instellingen</h2>
+        <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
+      </div>
+
+      <!-- Discord Status -->
+      <div style="padding: 20px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 6px; margin-bottom: 16px; text-align: center;">
+        <div style="font-size: 1.5rem; margin-bottom: 8px;">✅</div>
+        <div id="webhookStatus" style="color: #34d399; font-weight: 600;">Discord webhook verbonden</div>
+        <small style="color: var(--text-dim); font-size: 0.8rem; margin-top: 4px; display: block;">Automatische updates zijn ingeschakeld</small>
+      </div>
+
+      <button class="btn btn-green" onclick="testWebhook()" style="width:100%; margin-bottom:20px;">
+        🧪 <span id="testBtn">Test Webhook</span>
+      </button>
+
+      <!-- PIN Settings -->
+      <div class="section-label" style="margin-bottom:16px;">
+        🔐 PIN-code
+      </div>
+      <div class="input-group">
+        <label id="currentPinLabel">Huidige PIN:</label>
+        <input type="text" id="currentPinDisplay" readonly style="background: rgba(255,201,23,0.05); cursor: not-allowed;" value="">
+      </div>
+
+      <div class="input-group">
+        <label id="newPinLabel">Nieuwe PIN (4 cijfers):</label>
+        <input type="password" id="newPinInput" placeholder="0000" maxlength="4" inputmode="numeric">
+      </div>
+
+      <button class="btn btn-secondary" onclick="changePIN()" style="width:100%; margin-bottom:20px;">
+        💾 <span id="changePinBtn">PIN Wijzigen</span>
+      </button>
+
+      <button class="btn btn-secondary" onclick="closeModal('settingsModal')" style="width:100%;">
+        Sluiten
+      </button>
+    </div>
+  </div>
+
+  <!-- STATISTICS MODAL -->
+  <div id="statsModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="statsTitle">📊 Statistieken</h2>
+        <button class="modal-close" onclick="closeModal('statsModal')">✕</button>
+      </div>
+
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalTrips">0</div>
+          <div class="stat-label" id="totalTripsLabel">Totale trips</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalBoards">0</div>
+          <div class="stat-label" id="totalBoardsLabel">Instappen</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="uniqueCities">0</div>
+          <div class="stat-label" id="uniqueCitiesLabel">Steden bezocht</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="uniqueCountries">0</div>
+          <div class="stat-label" id="uniqueCountriesLabel">Landen bezocht</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:20px;">
+        Voertuig verdeling
+      </div>
+      <ul class="stats-list" id="vehicleStats"></ul>
+
+      <div class="section-label" style="margin-top:20px;">
+        Top steden
+      </div>
+      <ul class="stats-list" id="topCities"></ul>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
+        <button class="btn btn-secondary" onclick="exportJSON()" style="width:100%;">
+          💾 JSON
+        </button>
+        <button class="btn btn-secondary" onclick="exportCSV()" style="width:100%;">
+          📊 CSV
+        </button>
+      </div>
+
+      <button class="btn btn-secondary" onclick="closeModal('statsModal')" style="width:100%; margin-top:12px;">
+        Sluiten
+      </button>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="nav-left">
+      <a href="index.html" class="back-btn">←</a>
+      <div class="nav-brand">
+        <span id="navTitle">OV Tracker</span>
+        <span id="navSub">Jouw reisverhaal</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">FRANÇAIS</button>
+      <button class="settings-btn" onclick="openModal('settingsModal')" id="settingsBtn">⚙️</button>
+      <button class="settings-btn" onclick="openModal('statsModal')" id="statsBtn">📊</button>
+      <div class="status-dot" id="statusDot"></div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <h1 id="heroTitle">OV Tracker</h1>
+      <p id="heroSub">Volg je reizen en log je OV-trips</p>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+    <div class="alert alert-info" id="alertBox"></div>
+
+    <!-- VEHICLE SELECTION -->
+    <div class="section-label" id="lbl-vehicle">
+      🚌 <span>Voertuig selecteren</span>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="vehicle-grid">
+          <button class="vehicle-btn" onclick="selectVehicle('train')" id="vehicleTrain">
+            <div class="vehicle-icon">🚆</div>
+            <div id="veh-train">Trein</div>
+          </button>
+          <button class="vehicle-btn" onclick="selectVehicle('tram')" id="vehicleTram">
+            <div class="vehicle-icon">🚊</div>
+            <div id="veh-tram">Tram</div>
+          </button>
+          <button class="vehicle-btn" onclick="selectVehicle('bus')" id="vehicleBus">
+            <div class="vehicle-icon">🚌</div>
+            <div id="veh-bus">Bus</div>
+          </button>
+          <button class="vehicle-btn" onclick="selectVehicle('metro')" id="vehicleMetro">
+            <div class="vehicle-icon">🚇</div>
+            <div id="veh-metro">Metro</div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOCATION DISPLAY -->
+    <div class="section-label" id="lbl-location">
+      📍 <span>Huidige locatie</span>
+    </div>
+    <div class="location-display">
+      <div class="location-city" id="cityName">—</div>
+      <div class="location-country" id="countryName">Start tracking om je locatie te zien</div>
+      <div class="location-coords" id="coordsVal">📍 —</div>
+    </div>
+
+    <!-- TRIP INFO -->
+    <div class="section-label" id="lbl-trip">
+      🎫 <span>Actieve trip</span>
+    </div>
+    <div class="trip-info" id="tripInfo">
+      <div class="trip-vehicle" id="tripVehicle">—</div>
+      <div class="trip-time" id="tripTime">00:00</div>
+      <div class="log-meta">
+        <span id="tripCity">—</span> • <span id="tripCountry">—</span>
+      </div>
+    </div>
+
+    <!-- TRACKING CONTROLS -->
+    <div class="section-label" id="lbl-controls">
+      🎛️ <span>Tracking</span>
+    </div>
+    <div class="btn-group single">
+      <button class="btn btn-primary" id="mainBtn" onclick="toggleTracking()" disabled>
+        <span id="btnText">Start Tracking</span>
+      </button>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="section-label" id="lbl-actions">
+      ✏️ <span>Acties</span>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-green" id="boardBtn" onclick="logBoard()" disabled>
+        🚪 <span id="btnBoard">Instappen</span>
+      </button>
+      <button class="btn btn-green" id="exitBtn" onclick="logExit()" disabled>
+        🚪 <span id="btnExit">Uitstappen</span>
+      </button>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="section-label" id="lbl-log">
+      📝 <span>Activiteitenlog</span>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <ul class="log-list" id="logList">
+          <li class="log-empty" id="logEmpty">Nog geen activiteit geregistreerd</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p id="txt-footer">© 2026 <strong>OV TRACKER</strong> — Je persoonlijke reisverhaal</p>
+  </footer>
+
+<script>
+/* ──────────────────────────────
+   TRANSLATIONS
+────────────────────────────────── */
+const T = {
+  nl: {
+    navTitle: 'OV Tracker',
+    navSub: 'Jouw reisverhaal',
+    langBtn: 'FRANÇAIS',
+    heroTitle: 'OV Tracker',
+    heroSub: 'Volg je reizen en log je OV-trips',
+    veh_train: 'Trein',
+    veh_tram: 'Tram',
+    veh_bus: 'Bus',
+    veh_metro: 'Metro',
+    btnStart: '▶ Start Tracking',
+    btnStop: '■ Stop Tracking',
+    btnBoard: 'Instappen',
+    btnExit: 'Uitstappen',
+    logEmpty: 'Nog geen activiteit geregistreerd',
+    startTracking: 'Tracking gestart',
+    selectVehicle: 'Selecteer eerst een voertuig',
+    alertNoGPS: 'GPS niet beschikbaar',
+    alertGPSDenied: 'GPS-toegang geweigerd',
+    alertGPSUnavail: 'GPS niet beschikbaar',
+    fetching: 'Locatie ophalen…',
+    sinceHere: 'Hier sinds',
+    footerText: '© 2026 OV TRACKER — Je persoonlijke reisverhaal',
+    logBoard: 'Ingestapt',
+    logExit: 'Uitgestapt',
+    loginTitle: 'OV Tracker',
+    loginSub: 'Voer je PIN in',
+    loginError: 'Onjuiste PIN',
+    loginSuccess: 'Welkom!',
+    settingsTitle: '⚙️ Instellingen',
+    webhookLabel: 'Discord Webhook URL',
+    webhookHint: 'Optioneel: voer je Discord webhook in voor automatische updates',
+    testBtn: 'Test Webhook',
+    statsTitle: '📊 Statistieken',
+    totalTripsLabel: 'Totale trips',
+    totalBoardsLabel: 'Instappen',
+    uniqueCitiesLabel: 'Steden bezocht',
+    uniqueCountriesLabel: 'Landen bezocht',
+    webhookSuccess: 'Webhook test succesvol! ✓',
+    webhookError: 'Webhook test mislukt',
+    webhookInvalid: 'Voer een geldige URL in',
+    tripStarted: 'Trip gestart',
+    tripEnded: 'Trip beëindigd',
+    currentPinLabel: 'Huidige PIN:',
+    newPinLabel: 'Nieuwe PIN (4 cijfers):',
+    changePinBtn: 'PIN Wijzigen',
+    pinChanged: 'PIN succesvol gewijzigd',
+  },
+  fr: {
+    navTitle: 'Suivi TC',
+    navSub: 'Ton histoire de voyage',
+    langBtn: 'NEDERLANDS',
+    heroTitle: 'Suivi TC',
+    heroSub: 'Suivez vos trajets et enregistrez vos déplacements',
+    veh_train: 'Train',
+    veh_tram: 'Tram',
+    veh_bus: 'Bus',
+    veh_metro: 'Métro',
+    btnStart: '▶ Démarrer le suivi',
+    btnStop: '■ Arrêter le suivi',
+    btnBoard: 'Monter à bord',
+    btnExit: 'Descendre',
+    logEmpty: 'Aucune activité enregistrée',
+    startTracking: 'Suivi démarré',
+    selectVehicle: 'Sélectionnez d\'abord un véhicule',
+    alertNoGPS: 'GPS non disponible',
+    alertGPSDenied: 'Accès GPS refusé',
+    alertGPSUnavail: 'GPS indisponible',
+    fetching: 'Récupération de la position…',
+    sinceHere: 'Ici depuis',
+    footerText: '© 2026 SUIVI TC — Votre histoire de voyage personnelle',
+    logBoard: 'Monté à bord',
+    logExit: 'Descendu',
+    loginTitle: 'Suivi TC',
+    loginSub: 'Entrez votre PIN',
+    loginError: 'PIN incorrect',
+    loginSuccess: 'Bienvenue!',
+    settingsTitle: '⚙️ Paramètres',
+    webhookLabel: 'URL du webhook Discord',
+    webhookHint: 'Optionnel : entrez votre webhook Discord pour les mises à jour automatiques',
+    testBtn: 'Tester le webhook',
+    statsTitle: '📊 Statistiques',
+    totalTripsLabel: 'Trajets totaux',
+    totalBoardsLabel: 'Montées',
+    uniqueCitiesLabel: 'Villes visitées',
+    uniqueCountriesLabel: 'Pays visités',
+    webhookSuccess: 'Test du webhook réussi ! ✓',
+    webhookError: 'Échec du test du webhook',
+    webhookInvalid: 'Entrez une URL valide',
+    tripStarted: 'Trajet commencé',
+    tripEnded: 'Trajet terminé',
+    currentPinLabel: 'PIN actuel:',
+    newPinLabel: 'Nouveau PIN (4 chiffres):',
+    changePinBtn: 'Changer le PIN',
+    pinChanged: 'PIN changé avec succès',
+  }
+};
+
+let lang = localStorage.getItem('ovtrackerLang') || 'nl';
+const t = (key) => T[lang][key] || T['nl'][key];
+
+/* ──────────────────────────────
+   CONSTANTS & STATE
+────────────────────────────────── */
+const COUNTRY_FLAGS = {
+  'NL':'🇳🇱','DE':'🇩🇪','BE':'🇧🇪','FR':'🇫🇷','LU':'🇱🇺','GB':'🇬🇧','DK':'🇩🇰','PL':'🇵🇱','CH':'🇨🇭','AT':'🇦🇹',
+  'IT':'🇮🇹','ES':'🇪🇸','PT':'🇵🇹','CZ':'🇨🇿','SK':'🇸🇰','HU':'🇭🇺','NO':'🇳🇴','SE':'🇸🇪','FI':'🇫🇮','EE':'🇪🇪',
+};
+
+const COUNTRY_NAMES_NL = {
+  'NL':'Nederland','DE':'Duitsland','BE':'België','FR':'Frankrijk','LU':'Luxemburg','GB':'Verenigd Koninkrijk',
+  'CH':'Zwitserland','AT':'Oostenrijk','IT':'Italië','ES':'Spanje','CZ':'Tsjechië','SK':'Slowakije',
+};
+
+const COUNTRY_NAMES_FR = {
+  'NL':'Pays-Bas','DE':'Allemagne','BE':'Belgique','FR':'France','LU':'Luxembourg','GB':'Royaume-Uni',
+  'CH':'Suisse','AT':'Autriche','IT':'Italie','ES':'Espagne','CZ':'Tchéquie','SK':'Slovaquie',
+};
+
+let state = {
+  tracking: false,
+  watchId: null,
+  intervalId: null,
+  vehicleType: null,
+  startTime: null,
+  curCity: null,
+  curCode: null,
+  curName: null,
+  lastLat: null,
+  lastLon: null,
+  lastGeoCall: 0,
+  logs: [],
+};
+
+/* ──────────────────────────────
+   STORAGE & CONFIG
+────────────────────────────────── */
+const WEBHOOK_URL = 'https://discord.com/api/webhooks/1505675660759138426/CeOmLPIvRb5z1bip3Y3h-5yO8pGd17Evc22eb_RTBx8E0XU4khRerU8QHXsHX3IIH9bw';
+
+function saveLogs() {
+  localStorage.setItem('ovtracker_logs', JSON.stringify(state.logs));
+}
+
+function loadLogs() {
+  const saved = localStorage.getItem('ovtracker_logs');
+  state.logs = saved ? JSON.parse(saved) : [];
+  renderLogs();
+}
+
+function getWebhookUrl() {
+  return WEBHOOK_URL;
+}
+
+function setWebhookUrl(url) {
+  // Webhook is hardcoded, maar functie blijft voor compatibiliteit
+}
+
+/* ──────────────────────────────
+   AUTH & PIN
+────────────────────────────────── */
+function getStoredPin() {
+  return localStorage.getItem('ovtracker_pin') || '0000';
+}
+
+function setStoredPin(pin) {
+  if (pin && pin.length === 4 && /^\d+$/.test(pin)) {
+    localStorage.setItem('ovtracker_pin', pin);
+    return true;
+  }
+  return false;
+}
+
+function checkPin() {
+  const pin = document.getElementById('pinInput').value;
+  const storedPin = getStoredPin();
+  
+  if (pin === storedPin) {
+    localStorage.setItem('ovtracker_auth', 'true');
+    const loginOverlay = document.getElementById('loginOverlay');
+    if (loginOverlay) {
+      loginOverlay.classList.remove('active');
+    }
+    alert_(t('loginSuccess'), 'success');
+    loadLogs();
+    updateStats();
+  } else {
+    alert_(t('loginError'), 'danger');
+    document.getElementById('pinInput').value = '';
+  }
+}
+
+function checkAuth() {
+  const isAuth = localStorage.getItem('ovtracker_auth') === 'true';
+  const loginOverlay = document.getElementById('loginOverlay');
+  
+  if (!isAuth && loginOverlay) {
+    loginOverlay.classList.add('active');
+  } else if (isAuth) {
+    loadLogs();
+    updateStats();
+  }
+}
+
+/* ──────────────────────────────
+   MODAL
+────────────────────────────────── */
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  if (id === 'statsModal') updateStats();
+  if (id === 'settingsModal') {
+    document.getElementById('currentPinDisplay').value = getStoredPin();
+    document.getElementById('newPinInput').value = '';
+  }
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+}
+
+function changePIN() {
+  const newPin = document.getElementById('newPinInput').value.trim();
+  
+  if (!newPin) {
+    alert_(lang === 'nl' ? 'Voer een PIN in' : 'Entrez un PIN', 'warning');
+    return;
+  }
+  
+  if (newPin.length !== 4 || !/^\d+$/.test(newPin)) {
+    alert_(lang === 'nl' ? 'PIN moet uit 4 cijfers bestaan' : 'Le PIN doit avoir 4 chiffres', 'danger');
+    return;
+  }
+  
+  if (setStoredPin(newPin)) {
+    alert_(lang === 'nl' ? 'PIN succesvol gewijzigd' : 'PIN changé avec succès', 'success');
+    document.getElementById('currentPinDisplay').value = newPin;
+    document.getElementById('newPinInput').value = '';
+  } else {
+    alert_(lang === 'nl' ? 'Fout bij wijzigen PIN' : 'Erreur lors du changement du PIN', 'danger');
+  }
+}
+
+/* ──────────────────────────────
+   LANGUAGE & UI
+────────────────────────────────── */
+function toggleLanguage() {
+  lang = lang === 'nl' ? 'fr' : 'nl';
+  localStorage.setItem('ovtrackerLang', lang);
+  updateUI();
+}
+
+function updateUI() {
+  document.documentElement.lang = lang;
+  document.getElementById('langBtn').textContent = t('langBtn');
+  document.getElementById('navTitle').textContent = t('navTitle');
+  document.getElementById('navSub').textContent = t('navSub');
+  document.getElementById('heroTitle').textContent = t('heroTitle');
+  document.getElementById('heroSub').textContent = t('heroSub');
+  document.getElementById('mainBtn').innerHTML = state.tracking ? t('btnStop') : t('btnStart');
+  document.getElementById('veh-train').textContent = t('veh_train');
+  document.getElementById('veh-tram').textContent = t('veh_tram');
+  document.getElementById('veh-bus').textContent = t('veh_bus');
+  document.getElementById('veh-metro').textContent = t('veh_metro');
+  
+  document.getElementById('settingsTitle').textContent = t('settingsTitle');
+  document.getElementById('testBtn').textContent = t('testBtn');
+  document.getElementById('statsTitle').textContent = t('statsTitle');
+  document.getElementById('totalTripsLabel').textContent = t('totalTripsLabel');
+  document.getElementById('totalBoardsLabel').textContent = t('totalBoardsLabel');
+  document.getElementById('uniqueCitiesLabel').textContent = t('uniqueCitiesLabel');
+  document.getElementById('uniqueCountriesLabel').textContent = t('uniqueCountriesLabel');
+  document.getElementById('loginTitle').textContent = t('loginTitle');
+  document.getElementById('loginSub').textContent = t('loginSub');
+  
+  // PIN labels
+  const currentPinLabel = document.getElementById('currentPinLabel');
+  if (currentPinLabel) currentPinLabel.textContent = t('currentPinLabel');
+  const newPinLabel = document.getElementById('newPinLabel');
+  if (newPinLabel) newPinLabel.textContent = t('newPinLabel');
+  const changePinBtn = document.getElementById('changePinBtn');
+  if (changePinBtn) changePinBtn.textContent = t('changePinBtn');
+  
+  if(document.getElementById('logEmpty')) document.getElementById('logEmpty').textContent = t('logEmpty');
+  renderLogs();
+}
+
+/* ──────────────────────────────
+   HELPERS
+────────────────────────────────── */
+function fl(code) { return COUNTRY_FLAGS[code] || '🌍'; }
+
+function nm(code, fallback) {
+  const map = lang === 'nl' ? COUNTRY_NAMES_NL : COUNTRY_NAMES_FR;
+  return map[code] || fallback || code || (lang === 'nl' ? 'Onbekend' : 'Inconnu');
+}
+
+function fmtTime() {
+  return new Date().toLocaleString(lang === 'nl' ? 'nl-NL' : 'fr-FR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+function alert_(msg, type = 'info') {
+  const box = document.getElementById('alertBox');
+  box.textContent = msg;
+  box.className = `alert alert-${type} show`;
+  clearTimeout(box._t);
+  box._t = setTimeout(() => box.classList.remove('show'), 3500);
+}
+
+function setStatus(s) {
+  const dot = document.getElementById('statusDot');
+  if (s === 'on') {
+    dot.className = 'status-dot active';
+  } else if (s === 'connecting') {
+    dot.className = 'status-dot connecting';
+  } else {
+    dot.className = 'status-dot idle';
+  }
+}
+
+/* ──────────────────────────────
+   VEHICLE SELECTION
+────────────────────────────────── */
+function selectVehicle(type) {
+  if (state.vehicleType === type) {
+    state.vehicleType = null;
+    document.getElementById(`vehicle${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.remove('selected');
+  } else {
+    if (state.vehicleType) {
+      document.getElementById(`vehicle${state.vehicleType.charAt(0).toUpperCase() + state.vehicleType.slice(1)}`).classList.remove('selected');
+    }
+    state.vehicleType = type;
+    document.getElementById(`vehicle${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('selected');
+    document.getElementById('mainBtn').disabled = false;
+  }
+}
+
+/* ──────────────────────────────
+   GEOLOCATION
+────────────────────────────────── */
+async function geo(lat, lon, zoom = 3) {
+  const accept = lang === 'fr' ? 'fr' : 'nl';
+  try {
+    const r = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=${zoom}&accept-language=${accept}`,
+      { headers: { 'User-Agent': 'OVTracker/1.0' } }
+    );
+    if (!r.ok) throw 0;
+    return r.json();
+  } catch {
+    return null;
+  }
+}
+
+async function getCity(lat, lon) {
+  try {
+    const d = await geo(lat, lon, 12);
+    if (!d) return null;
+    return d.address?.city || d.address?.town || d.address?.village || d.address?.municipality || null;
+  } catch {
+    return null;
+  }
+}
+
+async function checkLocation(lat, lon) {
+  if (Date.now() - state.lastGeoCall < 5000) return;
+  
+  state.lastGeoCall = Date.now();
+  state.lastLat = lat;
+  state.lastLon = lon;
+  
+  setStatus('connecting');
+  
+  try {
+    const d = await geo(lat, lon, 3);
+    if (!d) throw 0;
+    
+    const code = d.address?.country_code?.toUpperCase();
+    const cname = d.address?.country;
+    const city = d.address?.city || d.address?.town || d.address?.village;
+    
+    if (!code) throw 0;
+    
+    setStatus('on');
+    
+    state.curCode = code;
+    state.curName = cname;
+    state.curCity = city || (lang === 'nl' ? 'Onbekend' : 'Inconnu');
+    
+    document.getElementById('cityName').textContent = state.curCity;
+    document.getElementById('countryName').textContent = `${fl(code)} ${nm(code, cname)}`;
+    document.getElementById('coordsVal').textContent = `📍 ${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+    
+    if (state.tracking && state.startTime) {
+      const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      document.getElementById('tripTime').textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      document.getElementById('tripCity').textContent = state.curCity;
+      document.getElementById('tripCountry').textContent = nm(code, cname);
+    }
+    
+    document.getElementById('boardBtn').disabled = false;
+    document.getElementById('exitBtn').disabled = false;
+  } catch {
+    setStatus('idle');
+  }
+}
+
+/* ──────────────────────────────
+   DISCORD WEBHOOK
+────────────────────────────────── */
+async function sendDiscordMessage(title, description, color = 3394611) {
+  const webhook = getWebhookUrl();
+  if (!webhook) return false;
+  
+  try {
+    const r = await fetch(webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'OV Tracker',
+        embeds: [{
+          title: title,
+          description: description,
+          color: color,
+          timestamp: new Date().toISOString(),
+          footer: { text: 'OV Tracker' }
+        }]
+      })
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function testWebhook() {
+  try {
+    const r = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'OV Tracker',
+        embeds: [{
+          title: '✅ Test bericht',
+          description: 'Je Discord webhook is correct ingesteld!',
+          color: 3394611,
+          footer: { text: 'OV Tracker' }
+        }]
+      })
+    });
+    
+    if (r.ok) {
+      alert_(t('webhookSuccess'), 'success');
+    } else {
+      alert_(t('webhookError'), 'danger');
+    }
+  } catch {
+    alert_(t('webhookError'), 'danger');
+  }
+}
+
+/* ──────────────────────────────
+   TRACKING
+────────────────────────────────── */
+function toggleTracking() {
+  state.tracking ? stopTracking() : startTracking();
+}
+
+function startTracking() {
+  if (!state.vehicleType) {
+    alert_(t('selectVehicle'), 'warning');
+    return;
+  }
+  
+  if (!navigator.geolocation) {
+    alert_(t('alertNoGPS'), 'danger');
+    return;
+  }
+  
+  state.tracking = true;
+  state.startTime = Date.now();
+  
+  const btn = document.getElementById('mainBtn');
+  btn.innerHTML = t('btnStop');
+  btn.className = 'btn btn-stop';
+  
+  document.getElementById('tripInfo').classList.add('active');
+  const vehicleNames = { train: t('veh_train'), tram: t('veh_tram'), bus: t('veh_bus'), metro: t('veh_metro') };
+  document.getElementById('tripVehicle').textContent = vehicleNames[state.vehicleType].toUpperCase();
+  
+  setStatus('connecting');
+  
+  state.watchId = navigator.geolocation.watchPosition(
+    p => checkLocation(p.coords.latitude, p.coords.longitude),
+    e => {
+      const msg = e.code === 1 ? t('alertGPSDenied') : e.code === 2 ? t('alertGPSUnavail') : t('alertNoGPS');
+      alert_(msg, 'danger');
+      setStatus('idle');
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+  
+  state.intervalId = setInterval(() => {
+    if (state.lastLat !== null) {
+      checkLocation(state.lastLat, state.lastLon);
+    }
+  }, 30000);
+  
+  alert_(t('startTracking'), 'success');
+  sendDiscordMessage(`🚌 ${t('tripStarted')}`, `${t('veh_' + state.vehicleType)}`);
+}
+
+function stopTracking() {
+  state.tracking = false;
+  
+  if (state.watchId !== null) {
+    navigator.geolocation.clearWatch(state.watchId);
+    state.watchId = null;
+  }
+  
+  if (state.intervalId !== null) {
+    clearInterval(state.intervalId);
+    state.intervalId = null;
+  }
+  
+  const btn = document.getElementById('mainBtn');
+  btn.innerHTML = t('btnStart');
+  btn.className = 'btn btn-primary';
+  
+  document.getElementById('tripInfo').classList.remove('active');
+  setStatus('idle');
+  document.getElementById('boardBtn').disabled = true;
+  document.getElementById('exitBtn').disabled = true;
+  
+  alert_(lang === 'nl' ? 'Tracking gestopt' : 'Suivi arrêté', 'info');
+  sendDiscordMessage(`🚪 ${t('tripEnded')}`, `${t('veh_' + state.vehicleType)}`);
+}
+
+/* ──────────────────────────────
+   LOGGING
+────────────────────────────────── */
+function logBoard() {
+  const log = {
+    type: 'board',
+    timestamp: fmtTime(),
+    city: state.curCity,
+    country: state.curName,
+    code: state.curCode,
+    vehicle: state.vehicleType,
+    coords: `${state.lastLat?.toFixed(5)}, ${state.lastLon?.toFixed(5)}`
+  };
+  state.logs.push(log);
+  saveLogs();
+  renderLogs();
+  alert_(t('logBoard'), 'success');
+  
+  const desc = `**${state.curCity}**, ${nm(state.curCode, state.curName)} 🚪`;
+  sendDiscordMessage(`🚪 ${t('logBoard')}`, desc, 10995255);
+}
+
+function logExit() {
+  const log = {
+    type: 'exit',
+    timestamp: fmtTime(),
+    city: state.curCity,
+    country: state.curName,
+    code: state.curCode,
+    vehicle: state.vehicleType,
+    coords: `${state.lastLat?.toFixed(5)}, ${state.lastLon?.toFixed(5)}`
+  };
+  state.logs.push(log);
+  saveLogs();
+  renderLogs();
+  alert_(t('logExit'), 'success');
+  
+  const desc = `**${state.curCity}**, ${nm(state.curCode, state.curName)} 🚪`;
+  sendDiscordMessage(`🚪 ${t('logExit')}`, desc, 15548997);
+}
+
+function renderLogs() {
+  const ul = document.getElementById('logList');
+  if (state.logs.length === 0) {
+    ul.innerHTML = `<li class="log-empty" id="logEmpty">${t('logEmpty')}</li>`;
+    return;
+  }
+  
+  ul.innerHTML = state.logs.slice().reverse().map(log => `
+    <li class="log-item">
+      <div class="log-icon">${log.type === 'board' ? '🚪' : '🚪'} ${log.code ? fl(log.code) : ''}</div>
+      <div class="log-body">
+        <div class="log-title">${log.type === 'board' ? t('logBoard') : t('logExit')} — ${log.city}</div>
+        <div class="log-meta">
+          <span class="log-time">${log.timestamp}</span>
+          <span style="margin:0 6px;">•</span>
+          <span>${nm(log.code, log.country)}</span>
+          <span style="margin:0 6px;">•</span>
+          <span style="text-transform:uppercase; font-size:0.75rem;">${log.vehicle}</span>
+        </div>
+      </div>
+    </li>
+  `).join('');
+}
+
+/* ──────────────────────────────
+   STATISTICS
+────────────────────────────────── */
+function updateStats() {
+  const boards = state.logs.filter(l => l.type === 'board').length;
+  const exits = state.logs.filter(l => l.type === 'exit').length;
+  const totalTrips = state.logs.length;
+  
+  const cities = new Set(state.logs.map(l => l.city).filter(Boolean));
+  const countries = new Set(state.logs.map(l => l.code).filter(Boolean));
+  
+  const vehicleCount = {};
+  state.logs.forEach(l => {
+    vehicleCount[l.vehicle] = (vehicleCount[l.vehicle] || 0) + 1;
+  });
+  
+  const cityCount = {};
+  state.logs.forEach(l => {
+    if (l.city) cityCount[l.city] = (cityCount[l.city] || 0) + 1;
+  });
+  
+  document.getElementById('totalTrips').textContent = totalTrips;
+  document.getElementById('totalBoards').textContent = boards;
+  document.getElementById('uniqueCities').textContent = cities.size;
+  document.getElementById('uniqueCountries').textContent = countries.size;
+  
+  const vehicleNames = { train: t('veh_train'), tram: t('veh_tram'), bus: t('veh_bus'), metro: t('veh_metro') };
+  const vehicleList = document.getElementById('vehicleStats');
+  vehicleList.innerHTML = Object.entries(vehicleCount)
+    .sort((a, b) => b[1] - a[1])
+    .map(([v, count]) => `
+      <li>
+        <span class="stats-list-label">${vehicleNames[v] || v}</span>
+        <span class="stats-list-value">${count}</span>
+      </li>
+    `).join('');
+  
+  const topCitiesList = document.getElementById('topCities');
+  topCitiesList.innerHTML = Object.entries(cityCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([city, count]) => `
+      <li>
+        <span class="stats-list-label">${city}</span>
+        <span class="stats-list-value">${count}</span>
+      </li>
+    `).join('');
+}
+
+/* ──────────────────────────────
+   EXPORT
+────────────────────────────────── */
+function exportJSON() {
+  const data = {
+    exported: new Date().toISOString(),
+    version: '1.0',
+    logs: state.logs
+  };
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ov-tracker-${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  alert_(lang === 'nl' ? 'JSON geëxporteerd' : 'JSON exporté', 'success');
+}
+
+function exportCSV() {
+  let csv = 'Timestamp,Type,City,Country,Code,Vehicle,Coordinates\n';
+  state.logs.forEach(log => {
+    csv += `"${log.timestamp}","${log.type}","${log.city}","${log.country}","${log.code}","${log.vehicle}","${log.coords}"\n`;
+  });
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ov-tracker-${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  alert_(lang === 'nl' ? 'CSV geëxporteerd' : 'CSV exporté', 'success');
+}
+
+/* ──────────────────────────────
+   INIT
+────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuth();
+  updateUI();
+  setStatus('idle');
+  
+  document.getElementById('pinInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') checkPin();
+  });
+});
+
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('active');
+  }
+});
+</script>
+</body>
+</html>
