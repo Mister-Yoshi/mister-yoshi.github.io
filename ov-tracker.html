@@ -996,6 +996,12 @@ const T = {
     langBtn: 'FRANÇAIS',
     heroTitle: 'OV Tracker',
     heroSub: 'Volg je reizen en log je OV-trips',
+    lbl_vehicle: '🚌 Voertuig selecteren',
+    lbl_location: '📍 Huidige locatie',
+    lbl_trip: '🎫 Actieve trip',
+    lbl_controls: '🎛️ Tracking',
+    lbl_actions: '✏️ Acties',
+    lbl_log: '📝 Activiteitenlog',
     veh_train: 'Trein',
     veh_tram: 'Tram',
     veh_bus: 'Bus',
@@ -1020,8 +1026,6 @@ const T = {
     loginError: 'Onjuiste PIN',
     loginSuccess: 'Welkom!',
     settingsTitle: '⚙️ Instellingen',
-    webhookLabel: 'Discord Webhook URL',
-    webhookHint: 'Optioneel: voer je Discord webhook in voor automatische updates',
     testBtn: 'Test Webhook',
     statsTitle: '📊 Statistieken',
     totalTripsLabel: 'Totale trips',
@@ -1044,6 +1048,12 @@ const T = {
     langBtn: 'NEDERLANDS',
     heroTitle: 'Suivi TC',
     heroSub: 'Suivez vos trajets et enregistrez vos déplacements',
+    lbl_vehicle: '🚌 Sélectionner un véhicule',
+    lbl_location: '📍 Position actuelle',
+    lbl_trip: '🎫 Trajet actif',
+    lbl_controls: '🎛️ Suivi',
+    lbl_actions: '✏️ Actions',
+    lbl_log: '📝 Journal d\'activité',
     veh_train: 'Train',
     veh_tram: 'Tram',
     veh_bus: 'Bus',
@@ -1068,8 +1078,6 @@ const T = {
     loginError: 'PIN incorrect',
     loginSuccess: 'Bienvenue!',
     settingsTitle: '⚙️ Paramètres',
-    webhookLabel: 'URL du webhook Discord',
-    webhookHint: 'Optionnel : entrez votre webhook Discord pour les mises à jour automatiques',
     testBtn: 'Tester le webhook',
     statsTitle: '📊 Statistiques',
     totalTripsLabel: 'Trajets totaux',
@@ -1253,6 +1261,26 @@ function updateUI() {
   document.getElementById('veh-bus').textContent = t('veh_bus');
   document.getElementById('veh-metro').textContent = t('veh_metro');
   
+  // Section labels
+  const lblVehicle = document.getElementById('lbl-vehicle');
+  if (lblVehicle) {
+    const span = lblVehicle.querySelector('span') || lblVehicle;
+    span.innerHTML = '<span>' + t('lbl_vehicle') + '</span>';
+    lblVehicle.innerHTML = t('lbl_vehicle') + lblVehicle.innerHTML.substring(lblVehicle.innerHTML.indexOf('<span')) || t('lbl_vehicle');
+  }
+  
+  const sections = ['location', 'trip', 'controls', 'actions', 'log'];
+  sections.forEach(s => {
+    const el = document.getElementById(`lbl-${s}`);
+    if (el) {
+      const key = `lbl_${s}`;
+      if (T[lang][key]) {
+        el.innerHTML = t(key);
+      }
+    }
+  });
+  
+  // Settings & Stats
   document.getElementById('settingsTitle').textContent = t('settingsTitle');
   document.getElementById('testBtn').textContent = t('testBtn');
   document.getElementById('statsTitle').textContent = t('statsTitle');
@@ -1262,6 +1290,9 @@ function updateUI() {
   document.getElementById('uniqueCountriesLabel').textContent = t('uniqueCountriesLabel');
   document.getElementById('loginTitle').textContent = t('loginTitle');
   document.getElementById('loginSub').textContent = t('loginSub');
+  document.getElementById('btnText').textContent = state.tracking ? t('btnStop') : t('btnStart');
+  document.getElementById('btnBoard').textContent = t('btnBoard');
+  document.getElementById('btnExit').textContent = t('btnExit');
   
   // PIN labels
   const currentPinLabel = document.getElementById('currentPinLabel');
@@ -1271,6 +1302,11 @@ function updateUI() {
   const changePinBtn = document.getElementById('changePinBtn');
   if (changePinBtn) changePinBtn.textContent = t('changePinBtn');
   
+  // Footer
+  const footer = document.getElementById('txt-footer');
+  if (footer) footer.textContent = t('footerText');
+  
+  // Log empty
   if(document.getElementById('logEmpty')) document.getElementById('logEmpty').textContent = t('logEmpty');
   renderLogs();
 }
@@ -1365,12 +1401,13 @@ async function checkLocation(lat, lon) {
   setStatus('connecting');
   
   try {
-    const d = await geo(lat, lon, 3);
+    // Use zoom 10 to get better city details instead of zoom 3
+    const d = await geo(lat, lon, 10);
     if (!d) throw 0;
     
     const code = d.address?.country_code?.toUpperCase();
     const cname = d.address?.country;
-    const city = d.address?.city || d.address?.town || d.address?.village;
+    const city = d.address?.city || d.address?.town || d.address?.village || d.address?.municipality || d.address?.suburb || d.address?.county;
     
     if (!code) throw 0;
     
