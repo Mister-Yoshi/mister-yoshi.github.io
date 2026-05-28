@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hoggynesische Spoorwegen</title>
- <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#003366">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#001233">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -38,18 +38,65 @@
       min-height: 100vh;
     }
 
+    /* ── ALERT BAR ── */
+    .alert-bar {
+      background: var(--yellow);
+      color: #000;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-align: center;
+      padding: 7px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .alert-bar::before {
+      content: '';
+      position: absolute;
+      left: -100%;
+      top: 0; bottom: 0;
+      width: 40%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: alertShine 4s ease-in-out infinite;
+    }
+
+    @keyframes alertShine {
+      0%   { left: -40%; }
+      100% { left: 140%; }
+    }
+
+    .alert-dot {
+      width: 8px;
+      height: 8px;
+      background: #000;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: alertPulse 2s infinite;
+    }
+
+    @keyframes alertPulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
     /* ── NAVBAR ── */
-    nav {
+    nav.topnav {
       background: var(--blue-nav);
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 32px;
       height: 64px;
-      box-shadow: 0 2px 8px rgba(0,0,48,0.18);
+      box-shadow: 0 2px 8px rgba(0,0,48,0.3);
       position: sticky;
       top: 0;
       z-index: 100;
+      border-bottom: 2px solid rgba(255,201,23,0.25);
     }
 
     .nav-logo {
@@ -64,46 +111,56 @@
     }
 
     .nav-brand {
-      color: #ffffff;
-      font-weight: 700;
-      font-size: 1.15rem;
-      letter-spacing: 0.02em;
-      margin-right: 32px;
-      padding-right: 32px;
-      border-right: 2px solid var(--yellow);
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 18px;
+      padding-right: 24px;
+      margin-right: 24px;
+      border-right: 2px solid rgba(255,201,23,0.35);
     }
 
     .nav-brand-text {
       display: flex;
       flex-direction: column;
+      gap: 2px;
     }
 
-    .nav-brand span {
+    #nav-subtitle {
       display: block;
-      font-size: 0.72rem;
-      font-weight: 400;
-      color: rgba(255,255,255,0.6);
-      letter-spacing: 0.08em;
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.1em;
       text-transform: uppercase;
+    }
+
+    #txt-title {
+      display: block;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
     }
 
     .nav-clock {
       font-family: 'Courier New', monospace;
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--yellow);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       white-space: nowrap;
+      background: rgba(255,201,23,0.07);
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,201,23,0.2);
     }
 
     .nav-info-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
+      gap: 6px;
+      font-size: 0.85rem;
       color: var(--text-dim);
       white-space: nowrap;
     }
@@ -111,20 +168,6 @@
     .nav-info-item.temperature {
       color: var(--yellow);
       font-weight: 600;
-    }
-
-    .nav-info-item.location {
-      font-size: 0.85rem;
-    }
-
-    .nav-info-item.os {
-      font-family: 'Courier New', monospace;
-      font-size: 0.8rem;
-      color: rgba(255,201,23,0.7);
-    }
-
-    .info-icon {
-      font-size: 1.1em;
     }
 
     .nav-right {
@@ -142,43 +185,14 @@
       border-right: 1px solid rgba(255,201,23,0.2);
     }
 
-    .lang-btn {
-      background: transparent;
-      border: 1.5px solid rgba(255,255,255,0.4);
-      color: #ffffff;
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 7px 18px;
-      border-radius: 20px;
-      cursor: pointer;
-      letter-spacing: 0.05em;
-      transition: all 0.2s;
-    }
-    .lang-btn:hover {
-      background: rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.7);
-    }
-
-    .status-pill {
-      background: rgba(255,201,23,0.15);
-      border: 1px solid var(--yellow);
-      color: var(--yellow);
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 5px 14px;
-      border-radius: 20px;
-      letter-spacing: 0.06em;
-    }
-
-    /* ── STICKY NAVBAR SEARCH ── */
+    /* Sticky search */
     .nav-search-wrap {
       display: none;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       margin: 0 auto;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       opacity: 0;
       transition: opacity 0.3s ease;
     }
@@ -197,7 +211,7 @@
 
     .nav-search-input {
       flex: 1;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,201,23,0.3);
       border-radius: 4px;
       padding: 8px 12px;
@@ -208,12 +222,9 @@
       transition: all 0.2s;
     }
 
-    .nav-search-input::placeholder {
-      color: rgba(255,255,255,0.5);
-    }
-
+    .nav-search-input::placeholder { color: rgba(255,255,255,0.4); }
     .nav-search-input:focus {
-      background: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.12);
       border-color: var(--yellow);
     }
 
@@ -222,40 +233,134 @@
       color: #000;
       border: none;
       padding: 8px 16px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 0.82rem;
+      font-weight: 700;
       border-radius: 4px;
       cursor: pointer;
       transition: background 0.2s;
       flex-shrink: 0;
       font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.04em;
+    }
+    .nav-search-btn:hover { background: var(--yellow-dark); }
+
+    .lang-btn {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 7px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.6);
     }
 
-    .nav-search-btn:hover {
-      background: var(--yellow-dark);
+    .status-pill {
+      background: rgba(255,201,23,0.12);
+      border: 1px solid rgba(255,201,23,0.5);
+      color: var(--yellow);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.07em;
+    }
+
+    /* ── SUBNAV ── */
+    .subnav {
+      background: #0a0f1c;
+      border-bottom: 1px solid rgba(255,201,23,0.12);
+      position: sticky;
+      top: 64px;
+      z-index: 99;
+    }
+
+    .subnav-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .subnav-inner::-webkit-scrollbar { display: none; }
+
+    .subnav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 18px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+      position: relative;
+      bottom: -1px;
+    }
+
+    .subnav-link:hover {
+      color: var(--text);
+      background: rgba(255,201,23,0.04);
+      border-bottom-color: rgba(255,201,23,0.4);
+    }
+
+    .subnav-link.active {
+      color: var(--yellow);
+      border-bottom-color: var(--yellow);
+    }
+
+    .subnav-link .sn-icon {
+      font-size: 0.9em;
+      opacity: 0.8;
     }
 
     /* ── HERO ── */
     .hero {
-      background: linear-gradient(135deg, rgba(26,20,0,0.75) 0%, rgba(42,32,0,0.75) 60%, rgba(26,26,0,0.75) 100%),
-                  url('images/train-station.jpg') center/cover no-repeat;
+      background:
+        linear-gradient(135deg, rgba(0,10,30,0.82) 0%, rgba(0,20,55,0.78) 60%, rgba(0,15,35,0.82) 100%),
+        url('images/train-station.jpg') center/cover no-repeat;
       background-attachment: fixed;
       border-bottom: 3px solid var(--yellow);
-      padding: 44px 32px 36px;
+      padding: 52px 32px 44px;
       position: relative;
       overflow: hidden;
+    }
+
+    /* Decorative track lines */
+    .hero::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--yellow) 0px, var(--yellow) 40px,
+        transparent 40px, transparent 60px
+      );
+      opacity: 0.4;
     }
 
     .hero::after {
       content: '';
       position: absolute;
-      right: -60px;
-      top: -40px;
-      width: 380px;
-      height: 200px;
-      background: rgba(255,201,23,0.06);
-      transform: rotate(-18deg);
-      border-radius: 8px;
+      right: -80px;
+      top: -50px;
+      width: 420px;
+      height: 240px;
+      background: radial-gradient(ellipse, rgba(255,201,23,0.06) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -266,29 +371,64 @@
       z-index: 1;
     }
 
-    .hero h1 {
-      font-size: 2.1rem;
-      font-weight: 800;
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,201,23,0.12);
+      border: 1px solid rgba(255,201,23,0.35);
       color: var(--yellow);
-      line-height: 1.15;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 3px;
+      margin-bottom: 16px;
     }
 
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--yellow);
+      border-radius: 50%;
+      animation: alertPulse 2s infinite;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .hero h1 span { color: var(--yellow); }
+
     .hero p {
-      color: rgba(255,201,23,0.6);
-      font-size: 1rem;
-      font-weight: 500;
-      margin-top: 4px;
+      color: rgba(255,255,255,0.55);
+      font-size: 0.95rem;
+      font-weight: 400;
+      margin-bottom: 28px;
     }
 
     /* ── SEARCH ── */
     .search-wrap {
-      background: #0d1117;
+      background: rgba(255,255,255,0.05);
       border-radius: var(--radius);
-      margin-top: 28px;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow), 0 0 0 1px rgba(255,201,23,0.15);
       display: flex;
       overflow: hidden;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,201,23,0.2);
+      backdrop-filter: blur(8px);
+      max-width: 680px;
+      transition: box-shadow 0.2s;
+    }
+
+    .search-wrap:focus-within {
+      box-shadow: var(--shadow), 0 0 0 2px rgba(255,201,23,0.4);
+      border-color: rgba(255,201,23,0.5);
     }
 
     .search-icon {
@@ -303,13 +443,13 @@
       border: none;
       outline: none;
       font-family: 'Outfit', sans-serif;
-      font-size: 1.05rem;
+      font-size: 1rem;
       padding: 16px 0;
       color: var(--text);
       background: transparent;
     }
 
-    .search-wrap input::placeholder { color: var(--text-dim); }
+    .search-wrap input::placeholder { color: rgba(255,255,255,0.4); }
 
     .search-wrap button {
       background: var(--yellow);
@@ -317,11 +457,11 @@
       border: none;
       padding: 0 32px;
       font-family: 'Outfit', sans-serif;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
       transition: background 0.2s;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.04em;
     }
     .search-wrap button:hover { background: var(--yellow-dark); }
 
@@ -329,33 +469,42 @@
     .content {
       max-width: 1260px;
       margin: 0 auto;
-      padding: 36px 32px 60px;
+      padding: 40px 32px 64px;
     }
 
     .section-label {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--yellow);
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: var(--yellow);
+      border-radius: 2px;
+      flex-shrink: 0;
     }
 
     .section-label::after {
       content: '';
       flex: 1;
       height: 1px;
-      background: var(--grey-mid);
+      background: linear-gradient(90deg, var(--border), transparent);
     }
 
     /* ── LINKS GRID ── */
     .links-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+      gap: 10px;
       margin-bottom: 44px;
     }
 
@@ -365,35 +514,57 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      padding: 22px 12px;
+      padding: 22px 12px 18px;
       background: var(--card-bg);
       border-radius: var(--radius);
       text-decoration: none;
       color: var(--text);
       font-weight: 600;
-      font-size: 0.95rem;
-      border: 1.5px solid var(--border);
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
       box-shadow: var(--shadow);
       transition: all 0.18s;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quick-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--yellow);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.2s ease;
     }
 
     .quick-link:hover {
-      border-color: var(--yellow);
-      box-shadow: 0 4px 20px rgba(255,201,23,0.15);
-      transform: translateY(-2px);
+      border-color: rgba(255,201,23,0.4);
+      box-shadow: 0 4px 24px rgba(255,201,23,0.12);
+      transform: translateY(-3px);
       color: var(--yellow);
+      background: rgba(30,35,48,1);
     }
 
+    .quick-link:hover::after { transform: scaleX(1); }
+
     .quick-link .link-icon {
-      width: 38px;
-      height: 38px;
-      background: var(--yellow);
+      width: 40px;
+      height: 40px;
+      background: rgba(255,201,23,0.12);
+      border: 1px solid rgba(255,201,23,0.25);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.2rem;
+      transition: background 0.18s;
+    }
+
+    .quick-link:hover .link-icon {
+      background: rgba(255,201,23,0.2);
     }
 
     /* ── NEWS SECTION ── */
@@ -408,31 +579,30 @@
 
     .news-header {
       background: #0a0f1a;
-      padding: 18px 24px;
+      padding: 16px 24px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       border-bottom: 2px solid var(--yellow);
     }
 
     .news-header h2 {
-      color: #ffffff;
-      font-size: 1.1rem;
+      color: #fff;
+      font-size: 1rem;
       font-weight: 700;
       flex: 1;
     }
 
     .rss-refresh-btn {
-      background: rgba(255, 201, 23, 0.15);
-      border: 1.5px solid var(--yellow);
+      background: rgba(255,201,23,0.1);
+      border: 1px solid rgba(255,201,23,0.4);
       color: var(--yellow);
-      font-size: 1.2rem;
-      font-weight: 700;
-      width: 38px;
-      height: 38px;
-      border-radius: 6px;
+      font-size: 1.1rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 5px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -441,12 +611,8 @@
     }
 
     .rss-refresh-btn:hover {
-      background: rgba(255, 201, 23, 0.25);
+      background: rgba(255,201,23,0.2);
       transform: scale(1.05);
-    }
-
-    .rss-refresh-btn:active {
-      transform: scale(0.95);
     }
 
     .rss-refresh-btn.loading {
@@ -455,64 +621,58 @@
 
     @keyframes spinRefresh {
       from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      to   { transform: rotate(360deg); }
     }
 
     .news-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       background: var(--yellow);
       border-radius: 50%;
       animation: pulse 2s infinite;
+      flex-shrink: 0;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      50%       { opacity: 0.3; }
     }
 
-    /* ── RSS FEED TABS ── */
     .rss-tabs {
       display: flex;
-      gap: 8px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid var(--border);
-      flex-wrap: wrap;
-      padding-bottom: 0;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
     }
+    .rss-tabs::-webkit-scrollbar { display: none; }
 
     .rss-tab-btn {
-      padding: 12px 18px;
+      padding: 13px 20px;
       background: transparent;
       border: none;
-      border-bottom: 3px solid transparent;
+      border-bottom: 2px solid transparent;
       color: var(--text-dim);
       font-family: 'Outfit', sans-serif;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s;
       white-space: nowrap;
       position: relative;
-      bottom: -2px;
+      bottom: -1px;
+      letter-spacing: 0.02em;
     }
 
     .rss-tab-btn:hover {
       color: var(--text);
-      background: rgba(255,201,23,0.05);
+      background: rgba(255,201,23,0.04);
     }
 
     .rss-tab-btn.active {
       color: var(--yellow);
       border-bottom-color: var(--yellow);
-      animation: tabPulse 0.6s ease-out;
-    }
-
-    @keyframes tabPulse {
-      0% { transform: scale(0.95); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
     }
 
     .news-grid {
@@ -520,23 +680,22 @@
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 1px;
       background: var(--border);
-      padding: 1px;
       animation: gridFadeIn 0.4s ease-out;
     }
 
     @keyframes gridFadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
 
     .news-card {
       background: var(--card-bg);
-      padding: 18px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       text-decoration: none;
       color: inherit;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
       border-left: 3px solid transparent;
       cursor: pointer;
       position: relative;
@@ -544,30 +703,22 @@
       animation: cardSlideUp 0.5s ease-out both;
     }
 
-    .news-card:nth-child(1) { animation-delay: 0.05s; }
-    .news-card:nth-child(2) { animation-delay: 0.10s; }
-    .news-card:nth-child(3) { animation-delay: 0.15s; }
-    .news-card:nth-child(4) { animation-delay: 0.20s; }
-    .news-card:nth-child(5) { animation-delay: 0.25s; }
-    .news-card:nth-child(6) { animation-delay: 0.30s; }
+    .news-card:nth-child(1) { animation-delay: 0.04s; }
+    .news-card:nth-child(2) { animation-delay: 0.08s; }
+    .news-card:nth-child(3) { animation-delay: 0.12s; }
+    .news-card:nth-child(4) { animation-delay: 0.16s; }
+    .news-card:nth-child(5) { animation-delay: 0.20s; }
+    .news-card:nth-child(6) { animation-delay: 0.24s; }
 
     @keyframes cardSlideUp {
-      0% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .news-card::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       height: 2px;
       background: linear-gradient(90deg, transparent, var(--yellow), transparent);
       transform: scaleX(0);
@@ -577,52 +728,62 @@
 
     .news-card:hover {
       border-left-color: var(--yellow);
-      background: rgba(255,201,23,0.04);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(255,201,23,0.1);
+      background: rgba(255,201,23,0.03);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
 
-    .news-card:hover::before {
-      transform: scaleX(1);
-    }
+    .news-card:hover::before { transform: scaleX(1); }
 
-    /* ── SHIMMER LOADING EFFECT ── */
     .news-loading {
       grid-column: 1 / -1;
+      padding: 60px 20px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 40px 20px;
+      gap: 16px;
     }
 
     #txt-news-loading {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--text-dim);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
+    }
+
+    .news-spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255,201,23,0.12);
+      border-top-color: var(--yellow);
+      border-radius: 50%;
+      animation: spinRotate 0.85s linear infinite;
+    }
+
+    @keyframes spinRotate {
+      to { transform: rotate(360deg); }
     }
 
     .news-title {
-      font-size: 0.95rem;
+      font-size: 0.93rem;
       font-weight: 700;
       color: var(--text);
       margin-bottom: 8px;
-      line-height: 1.3;
+      line-height: 1.35;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      transition: color 0.3s ease;
+      transition: color 0.2s;
     }
 
-    .news-card:hover .news-title {
-      color: var(--yellow);
-    }
+    .news-card:hover .news-title { color: var(--yellow); }
 
     .news-desc {
       font-size: 0.8rem;
       color: var(--text-dim);
-      margin-bottom: 12px;
-      line-height: 1.4;
+      margin-bottom: 14px;
+      line-height: 1.45;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -634,8 +795,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255,201,23,0.1);
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,201,23,0.08);
       font-size: 0.72rem;
       color: var(--text-dim);
     }
@@ -650,64 +811,11 @@
     .news-source {
       background: rgba(255,201,23,0.1);
       color: var(--yellow);
-      padding: 3px 8px;
+      padding: 3px 9px;
       border-radius: 3px;
-      font-weight: 600;
-      font-size: 0.65rem;
+      font-weight: 700;
+      font-size: 0.62rem;
       letter-spacing: 0.05em;
-    }
-
-    .news-loading {
-      padding: 60px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      grid-column: 1 / -1;
-    }
-
-    .news-spinner {
-      width: 48px;
-      height: 48px;
-      border: 3px solid rgba(255,201,23,0.15);
-      border-top-color: var(--yellow);
-      border-right-color: rgba(255,201,23,0.3);
-      border-radius: 50%;
-      animation: spinRotate 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-      position: relative;
-      box-shadow: 0 0 20px rgba(255,201,23,0.2);
-    }
-
-    .news-spinner::after {
-      content: '';
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border: 2px solid transparent;
-      border-right-color: rgba(255,201,23,0.4);
-      border-radius: 50%;
-      animation: spinRotate 1.2s linear infinite reverse;
-    }
-
-    @keyframes spinRotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .news-loading p {
-      color: var(--text-dim);
-      font-size: 0.9rem;
-      letter-spacing: 0.05em;
-      animation: fadePulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes fadePulse {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
     }
 
     .news-error {
@@ -729,25 +837,27 @@
 
     .boards-header {
       background: #0a0f1a;
-      padding: 18px 24px;
+      padding: 16px 24px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       border-bottom: 2px solid var(--yellow);
     }
 
     .boards-header h2 {
-      color: #ffffff;
-      font-size: 1.1rem;
+      color: #fff;
+      font-size: 1rem;
       font-weight: 700;
+      flex: 1;
     }
 
     .boards-header .dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       background: var(--yellow);
       border-radius: 50%;
       animation: pulse 2s infinite;
+      flex-shrink: 0;
     }
 
     .boards-grid {
@@ -765,12 +875,20 @@
     .board-cell .station-label {
       background: #111827;
       padding: 10px 16px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 700;
       color: var(--yellow);
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .board-cell .station-label::before {
+      content: '🚉';
+      font-size: 0.9rem;
     }
 
     .board-cell iframe {
@@ -785,7 +903,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,48,130,0.96);
+      background: rgba(0,18,51,0.97);
       z-index: 9999;
       flex-direction: column;
       align-items: center;
@@ -798,38 +916,106 @@
     .overlay-spinner {
       width: 44px;
       height: 44px;
-      border: 3px solid rgba(255,201,23,0.3);
+      border: 3px solid rgba(255,201,23,0.25);
       border-top-color: var(--yellow);
       border-radius: 50%;
-      animation: spin 0.7s linear infinite;
+      animation: spinRotate 0.7s linear infinite;
       margin-bottom: 8px;
     }
 
     .overlay-text {
       color: #e8edf5;
-      font-size: 1rem;
-      font-weight: 500;
-      opacity: 0.8;
+      font-size: 0.95rem;
+      font-weight: 400;
+      opacity: 0.75;
     }
 
     .overlay-query {
       color: var(--yellow);
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 700;
     }
 
     /* ── FOOTER ── */
-  footer {
-      background: #0a0f1a;
-      color: rgba(255,255,255,0.5);
-      text-align: center;
-      padding: 28px 20px;
-      font-size: 0.82rem;
-      letter-spacing: 0.04em;
+    footer {
+      background: #07090f;
       border-top: 1px solid var(--border);
+      padding: 0;
     }
 
-    footer strong { color: var(--yellow); }
+    .footer-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 36px 32px 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-brand-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--yellow);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .footer-tagline {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.03em;
+      line-height: 1.5;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--yellow); }
+
+    .footer-bottom {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 16px 32px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.04em;
+    }
+
+    .footer-copy strong { color: rgba(255,201,23,0.7); }
+
+    .footer-tech {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.03em;
+    }
 
     /* ── NOW PLAYING ── */
     .nowplaying-section {
@@ -843,16 +1029,16 @@
 
     .nowplaying-header {
       background: #0a0f1a;
-      padding: 18px 24px;
+      padding: 16px 24px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       border-bottom: 2px solid var(--yellow);
     }
 
     .nowplaying-header h2 {
-      color: #ffffff;
-      font-size: 1.1rem;
+      color: #fff;
+      font-size: 1rem;
       font-weight: 700;
       flex: 1;
     }
@@ -861,22 +1047,19 @@
       background: var(--yellow);
       color: #000;
       border: none;
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: var(--radius);
       font-family: 'Outfit', sans-serif;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
       transition: background 0.2s;
       white-space: nowrap;
+      letter-spacing: 0.03em;
     }
-
-    .spotify-toggle-btn:hover {
-      background: var(--yellow-dark);
-    }
-
+    .spotify-toggle-btn:hover { background: var(--yellow-dark); }
     .spotify-toggle-btn.disabled {
-      background: rgba(255,201,23,0.3);
+      background: rgba(255,201,23,0.25);
       color: rgba(0,0,0,0.5);
       cursor: not-allowed;
     }
@@ -884,19 +1067,15 @@
     .np-dot {
       width: 8px;
       height: 8px;
-      background: var(--yellow);
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .np-dot.playing { animation: pulse 2s infinite; }
-    .np-dot.paused  { background: #444; animation: none; }
+    .np-dot.playing { background: #22c55e; animation: pulse 2s infinite; }
+    .np-dot.paused  { background: #555; animation: none; }
     .np-dot.idle    { background: #333; animation: none; }
 
-    .nowplaying-body {
-      padding: 20px 24px;
-    }
+    .nowplaying-body { padding: 20px 24px; }
 
-    /* setup link */
     .np-setup-link {
       font-size: 0.78rem;
       color: var(--text-dim);
@@ -911,7 +1090,6 @@
     }
     .np-setup-link:hover { color: var(--yellow); }
 
-    /* track card */
     .np-track {
       display: flex;
       align-items: center;
@@ -938,7 +1116,6 @@
       justify-content: center;
       flex-shrink: 0;
     }
-
     .np-art-placeholder svg { opacity: 0.2; }
 
     .np-info { flex: 1; min-width: 0; }
@@ -983,7 +1160,6 @@
       justify-content: space-between;
       font-size: 0.72rem;
       color: var(--text-dim);
-      font-feature-settings: 'tnum';
       margin-bottom: 12px;
     }
 
@@ -1022,10 +1198,9 @@
       justify-content: center;
       transition: background 0.15s, transform 0.1s;
     }
-    .np-play:hover { background: var(--yellow-dark); }
+    .np-play:hover  { background: var(--yellow-dark); }
     .np-play:active { transform: scale(0.95); }
 
-    /* nothing state */
     .np-idle {
       display: flex;
       align-items: center;
@@ -1033,7 +1208,6 @@
       color: var(--text-dim);
       font-size: 0.9rem;
     }
-
     .np-idle svg { opacity: 0.2; flex-shrink: 0; }
 
     /* ── SETUP MODAL ── */
@@ -1091,7 +1265,7 @@
     .np-step-num {
       min-width: 20px;
       height: 20px;
-      background: rgba(255,201,23,0.15);
+      background: rgba(255,201,23,0.12);
       border: 1px solid var(--yellow);
       border-radius: 50%;
       display: flex;
@@ -1118,9 +1292,9 @@
     }
 
     .np-input-label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--text-dim);
       margin-bottom: 6px;
@@ -1177,37 +1351,38 @@
       font-family: 'Outfit', sans-serif;
       font-size: 0.85rem;
       cursor: pointer;
-      transition: border-color 0.2s, color 0.2s;
+      transition: all 0.2s;
     }
     .np-cancel-btn:hover { border-color: var(--text-dim); color: var(--text); }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 680px) {
-      .hero h1 { font-size: 1.5rem; }
+      .hero h1 { font-size: 1.6rem; }
       .content { padding: 24px 16px 40px; }
-      nav { padding: 0 16px; }
+      nav.topnav { padding: 0 16px; }
       .hero { padding: 32px 16px 28px; }
       .status-pill { display: none; }
-      .nav-clock { font-size: 0.9rem; min-width: 60px; }
+      .nav-clock { font-size: 0.9rem; }
       .nav-info-group { display: none; }
-      .lang-btn { padding: 6px 14px; font-size: 0.75rem; }
-      .rss-tabs {
-        gap: 4px;
-      }
-      .rss-tab-btn {
-        padding: 10px 14px;
-        font-size: 0.85rem;
-      }
-      .news-grid {
-        grid-template-columns: 1fr;
-      }
+      .lang-btn { padding: 6px 12px; font-size: 0.75rem; }
+      .news-grid { grid-template-columns: 1fr; }
+      .subnav-inner { padding: 0 16px; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .footer-links { justify-content: flex-start; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- ALERT BAR -->
+  <div class="alert-bar" id="alert-bar-wrap">
+    <div class="alert-dot"></div>
+    <span id="txt-alert">OPERATIONEEL — Geen actuele storingen op het netwerk</span>
+  </div>
+
   <!-- NAVBAR -->
-  <nav>
+  <nav class="topnav">
     <div class="nav-logo">
       <img src="images/hs.jpg" alt="HS Logo">
       <div class="nav-brand">
@@ -1218,11 +1393,11 @@
         <div class="nav-clock" id="clock">00:00:00</div>
       </div>
     </div>
-    
-    <!-- Sticky Search Bar (appears on scroll) -->
+
+    <!-- Sticky Search Bar -->
     <div class="nav-search-wrap" id="nav-search-wrap">
       <div class="nav-search-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
       </div>
@@ -1231,15 +1406,15 @@
         <button type="submit" class="nav-search-btn" id="nav-search-btn">ZOEK</button>
       </form>
     </div>
-    
+
     <div class="nav-right">
       <div class="nav-info-group">
-        <div class="nav-info-item temperature" id="temp-info">
-          <span class="info-icon">🌡️</span>
+        <div class="nav-info-item temperature">
+          <span>🌡️</span>
           <span id="temp-value">--°C</span>
         </div>
-        <div class="nav-info-item location" id="location-info">
-          <span class="info-icon">📍</span>
+        <div class="nav-info-item">
+          <span>📍</span>
           <span id="location-value">--</span>
         </div>
       </div>
@@ -1248,10 +1423,32 @@
     </div>
   </nav>
 
+  <!-- SECONDARY NAV -->
+  <div class="subnav">
+    <div class="subnav-inner">
+      <a href="https://www.ns.nl/reisplanner" target="_blank" class="subnav-link" id="snav-1">
+        <span class="sn-icon">🗓️</span> Dienstregeling
+      </a>
+      <a href="https://www.ns.nl/storingen" target="_blank" class="subnav-link" id="snav-2">
+        <span class="sn-icon">⚠️</span> Storingen
+      </a>
+      <a href="https://www.ns.nl/kaartjes/bestellen/kaartjes-kopen" target="_blank" class="subnav-link" id="snav-3">
+        <span class="sn-icon">🎫</span> Kaartjes
+      </a>
+      <a href="grensovergang-tracker-v2.html" class="subnav-link" id="snav-4">
+        <span class="sn-icon">🗺️</span> Rail Tracker
+      </a>
+      <a href="HS_MentaleBijstand.html" class="subnav-link" id="snav-5">
+        <span class="sn-icon">💙</span> HS Bijstand
+      </a>
+    </div>
+  </div>
+
   <!-- HERO + SEARCH -->
   <div class="hero">
     <div class="hero-inner">
-      <h1 id="hero-title">Reisinformatie & Diensten</h1>
+      <div class="hero-badge" id="hero-badge">Hoggynesische Spoorwegen</div>
+      <h1 id="hero-title">Reisinformatie &amp; <span>Diensten</span></h1>
       <p id="hero-sub">Hoggynesische Spoorwegen — Versie 7.0.1</p>
 
       <div class="search-wrap">
@@ -1301,8 +1498,8 @@
       <a href="grensovergang-tracker-v2.html" class="quick-link" id="btn-hsg">
         <div class="link-icon">🚆</div>Rail Tracker
       </a>
-        <a href="hs_qr_ticketing_styled.html" class="quick-link" id="btn-tit">
-        <div class="link-icon">🚆</div>Ticketing
+      <a href="hs_qr_ticketing_styled.html" class="quick-link" id="btn-tit">
+        <div class="link-icon">🎫</div>Ticketing
       </a>
     </div>
 
@@ -1313,7 +1510,7 @@
         <div class="np-dot idle" id="np-dot"></div>
         <h2 id="np-header-title">Spotify</h2>
         <button id="spotify-toggle-btn" class="spotify-toggle-btn" onclick="toggleSpotify()" title="Schakel Spotify in/uit">
-          <span id="spotify-toggle-text">Inschakelen</span>
+          Inschakelen
         </button>
       </div>
       <div class="nowplaying-body" id="np-body">
@@ -1343,7 +1540,7 @@
       <div class="news-header">
         <div class="news-dot"></div>
         <h2 id="txt-news-title">Nieuwsbronnen</h2>
-        <button id="rss-refresh-btn" class="rss-refresh-btn" title="Handmatig herladen">↻</button>
+        <button id="rss-refresh-btn" class="rss-refresh-btn" title="Herladen">↻</button>
       </div>
       <div class="rss-tabs" id="rss-tabs">
         <button class="rss-tab-btn active" data-feed="nu" onclick="switchFeed('nu')">NU.nl</button>
@@ -1352,7 +1549,8 @@
       </div>
       <div class="news-grid" id="news-grid">
         <div class="news-loading" id="news-loading">
-          <p id="txt-news-loading">(Laden...)</p>
+          <div class="news-spinner"></div>
+          <p id="txt-news-loading">Nieuws laden...</p>
         </div>
       </div>
     </div>
@@ -1367,27 +1565,27 @@
       <div class="boards-grid">
         <div class="board-cell">
           <div class="station-label">Assen</div>
-          <iframe src="https://treinposities.nl/embedvertrekstaat/assen"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/assen" title="Vertrekstaat Assen"></iframe>
         </div>
         <div class="board-cell">
           <div class="station-label">Roosendaal</div>
-          <iframe src="https://treinposities.nl/embedvertrekstaat/roosendaal"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/roosendaal" title="Vertrekstaat Roosendaal"></iframe>
         </div>
         <div class="board-cell">
           <div class="station-label">Maastricht</div>
-          <iframe src="https://treinposities.nl/embedvertrekstaat/maastricht"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/maastricht" title="Vertrekstaat Maastricht"></iframe>
         </div>
         <div class="board-cell">
           <div class="station-label">Breda</div>
-          <iframe src="https://treinposities.nl/embedvertrekstaat/breda"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/breda" title="Vertrekstaat Breda"></iframe>
         </div>
         <div class="board-cell">
           <div class="station-label">Arnhem Centraal</div>
-          <iframe src="https://treinposities.nl/embedvertrekstaat/arnhem-centraal"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/arnhem-centraal" title="Vertrekstaat Arnhem Centraal"></iframe>
         </div>
         <div class="board-cell">
           <div class="station-label">Utrecht Centraal</div>
-          <iframe src="https://treinposities.nl/embedvertrekstaat/utrecht-centraal"></iframe>
+          <iframe src="https://treinposities.nl/embedvertrekstaat/utrecht-centraal" title="Vertrekstaat Utrecht Centraal"></iframe>
         </div>
       </div>
     </div>
@@ -1396,7 +1594,22 @@
 
   <!-- FOOTER -->
   <footer>
-    <p id="txt-footer">© 2026 <strong>HOGGYNESISCHE SPOORWEGEN</strong> — PROTOCOL HS-X</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-name" id="footer-brand-name">Hoggynesische Spoorwegen</div>
+        <div class="footer-tagline" id="footer-tagline">Betrouwbaar reizen door heel Hoggynesië — Protocol HS-X</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://www.ns.nl" target="_blank">NS.nl</a>
+        <a href="https://www.belgiantrain.be" target="_blank">NMBS</a>
+        <a href="https://treinposities.nl" target="_blank">Treinposities</a>
+        <a href="hs_qr_ticketing_styled.html" id="footer-tickets">Kaartjes</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy" id="txt-footer">© 2026 <strong>HOGGYNESISCHE SPOORWEGEN</strong> — PROTOCOL HS-X</span>
+      <span class="footer-tech" id="footer-tech">Gemaakt met hulp van Gemini &amp; Claude</span>
+    </div>
   </footer>
 
   <!-- SEARCH OVERLAY -->
@@ -1408,227 +1621,249 @@
 
 <script>
   // ═══════════════════════════════════════════════════════
-  // DIGITAL CLOCK IN NAVBAR
+  // DIGITAL CLOCK
   // ═══════════════════════════════════════════════════════
   function updateClock() {
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+    document.getElementById('clock').textContent =
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0') + ':' +
+      String(now.getSeconds()).padStart(2,'0');
   }
-
-  // Update clock immediately and then every second
   updateClock();
   setInterval(updateClock, 1000);
-
-  // ═══════════════════════════════════════════════════════
-  // OS DETECTION
-  // ═══════════════════════════════════════════════════════
-  function detectOS() {
-    let osName = 'Unknown';
-    const userAgent = navigator.userAgent;
-    
-    if (userAgent.indexOf('Win') > -1) osName = 'Windows';
-    else if (userAgent.indexOf('Mac') > -1) osName = 'macOS';
-    else if (userAgent.indexOf('Linux') > -1) osName = 'Linux';
-    else if (userAgent.indexOf('Android') > -1) osName = 'Android';
-    else if (userAgent.indexOf('iPhone') > -1 || userAgent.indexOf('iPad') > -1) osName = 'iOS';
-    
-    // Hidden OS info (removed from navbar)
-    // document.getElementById('os-value').textContent = `OS: ${osName}`;
-  }
-
-  detectOS();
 
   // ═══════════════════════════════════════════════════════
   // GEOLOCATION & WEATHER
   // ═══════════════════════════════════════════════════════
   function getWeatherAndLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          
-          // Get location name from coordinates (reverse geocoding)
-          try {
-            const geoResponse = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
-            );
-            const geoData = await geoResponse.json();
-            const city = geoData.address?.city || geoData.address?.town || 'Onbekend';
-            document.getElementById('location-value').textContent = city;
-          } catch (e) {
-            document.getElementById('location-value').textContent = 'Locatie';
-          }
-          
-          // Get weather from Open-Meteo API (no API key needed)
-          try {
-            const weatherResponse = await fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code&temperature_unit=celsius`
-            );
-            const weatherData = await weatherResponse.json();
-            const temp = Math.round(weatherData.current.temperature_2m);
-            document.getElementById('temp-value').textContent = `${temp}°C`;
-          } catch (e) {
-            document.getElementById('temp-value').textContent = '--°C';
-          }
-        },
-        (error) => {
-          // Fallback als geolocation denied
-          document.getElementById('location-value').textContent = 'GPS uit';
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        try {
+          const geoRes = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+          );
+          const geoData = await geoRes.json();
+          const city = geoData.address?.city || geoData.address?.town || '—';
+          document.getElementById('location-value').textContent = city;
+        } catch(e) {
+          document.getElementById('location-value').textContent = '—';
+        }
+        try {
+          const wRes = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m&temperature_unit=celsius`
+          );
+          const wData = await wRes.json();
+          const temp = Math.round(wData.current.temperature_2m);
+          document.getElementById('temp-value').textContent = `${temp}°C`;
+        } catch(e) {
           document.getElementById('temp-value').textContent = '--°C';
         }
-      );
-    }
+      },
+      () => {
+        document.getElementById('location-value').textContent = 'GPS uit';
+        document.getElementById('temp-value').textContent = '--°C';
+      }
+    );
   }
-
-  // Get weather on load
   getWeatherAndLocation();
-  
-  // Refresh weather every 10 minutes
   setInterval(getWeatherAndLocation, 10 * 60 * 1000);
 
-  let currentLang = 'nl';
-  
   // ═══════════════════════════════════════════════════════
-  // SPOTIFY TOGGLE VARIABLES (EARLY INIT)
+  // SPOTIFY TOGGLE (early init)
   // ═══════════════════════════════════════════════════════
   let spotifyEnabled = localStorage.getItem('spotify_enabled') === 'true';
   let spotifyFetchInterval = null;
 
+  // ═══════════════════════════════════════════════════════
+  // TRANSLATIONS
+  // ═══════════════════════════════════════════════════════
+  let currentLang = 'nl';
+
   const translations = {
     nl: {
-      navSubtitle: "Nationale Spoorwegen",
-      title: "Hoggynesische Spoorwegen",
-      status: "OPERATIONEEL",
-      heroTitle: "Reisinformatie & Diensten",
-      heroSub: "Hoggynesische Spoorwegen — Versie 7.0.1",
-      search: "Zoeken...",
-      searchBtn: "ZOEK",
-      lblLinks: "SNELLE LINKS",
-      lblBoards: "VERTREKSTATEN",
-      lblNp: "WAT LUISTERT MITCHELL?",
-      lblNews: "ACTUEEL NIEUWS",
-      npIdleText: "Verbind Spotify om te zien wat je luistert.",
-      npConnect: "verbinden",
-      npDisconnect: "instellingen",
-      npNothing: "Niets speelt momenteel",
-      npNothingSub: "Start iets op Spotify en het verschijnt hier.",
-      npModalTitle: "Spotify verbinden",
-      npModalDesc: "Volg de stappen en plak je Client ID om de widget te activeren.",
-      npStep1: "Ga naar developer.spotify.com/dashboard en maak een app aan.",
-      npStep2: "Voeg deze Redirect URI toe aan je app:",
-      npStep3: "Kopieer je Client ID en plak hieronder.",
-      npLblInput: "CLIENT ID",
-      npAuthBtn: "Inloggen met Spotify",
-      npCancelBtn: "Annuleren",
-      npLogoutBtn: "Uitloggen uit Spotify",
-      npErr: "Voer een geldig Client ID in.",
-      ns: "NS", nsi: "NS International", tp: "Treinposities",
-      nmbs: "NMBS", nmbsi: "NMBS International", hsm: "HS Mentale Bijstand", hsg: "Rail Tracker", tit: "HS Ticketing",
-      feature: "Live Vertrekstaten",
-      footer: "© 2026 HOGGYNESISCHE SPOORWEGEN — PROTOCOL HS-X | Gemaakt met hulp van Gemini en Claude",
-      langBtn: "FRANÇAIS",
-      sInit: "Verbinding maken met zoekmachine...",
-      sQuery: "Zoeken naar: ",
-      spotifyEnable: "Inschakelen",
-      spotifyDisable: "Uitschakelen",
-      spotifyDisabledMsg: "Klik op 'Inschakelen' om Spotify te verbinden.",
-      newsLoading: "Nieuws laden...",
-      newsError: "Kon nieuws niet laden",
+      navSubtitle:       "Nationale Spoorwegen",
+      title:             "Hoggynesische Spoorwegen",
+      status:            "OPERATIONEEL",
+      alert:             "OPERATIONEEL — Geen actuele storingen op het netwerk",
+      heroTitle:         "Reisinformatie & Diensten",
+      heroSub:           "Hoggynesische Spoorwegen — Versie 7.0.1",
+      heroBadge:         "Hoggynesische Spoorwegen",
+      search:            "Bestemming, station of dienst zoeken...",
+      searchBtn:         "ZOEK",
+      lblLinks:          "SNELLE LINKS",
+      lblBoards:         "VERTREKSTATEN",
+      lblNp:             "WAT LUISTERT MITCHELL?",
+      lblNews:           "ACTUEEL NIEUWS",
+      subNav1:           "Dienstregeling",
+      subNav2:           "Storingen",
+      subNav3:           "Kaartjes",
+      subNav4:           "Rail Tracker",
+      subNav5:           "HS Bijstand",
+      npIdleText:        "Verbind Spotify om te zien wat er gespeeld wordt.",
+      npNothing:         "Niets speelt momenteel",
+      spotifyEnable:     "Inschakelen",
+      spotifyDisable:    "Uitschakelen",
+      spotifyDisabledMsg:"Klik op 'Inschakelen' om Spotify te verbinden.",
+      ns:                "NS",
+      nsi:               "NS International",
+      tp:                "Treinposities",
+      nmbs:              "NMBS",
+      nmbsi:             "NMBS International",
+      hsm:               "HS Mentale Bijstand",
+      hsg:               "Rail Tracker",
+      tit:               "HS Ticketing",
+      feature:           "Live Vertrekstaten",
+      footerBrand:       "Hoggynesische Spoorwegen",
+      footerTagline:     "Betrouwbaar reizen door heel Hoggynesië — Protocol HS-X",
+      footerTickets:     "Kaartjes",
+      footerTech:        "Gemaakt met hulp van Gemini & Claude",
+      footer:            "© 2026 <strong>HOGGYNESISCHE SPOORWEGEN</strong> — PROTOCOL HS-X",
+      langBtn:           "FRANÇAIS",
+      sInit:             "Verbinding maken met zoekmachine...",
+      sQuery:            "Zoeken naar: ",
+      newsLoading:       "Nieuws laden...",
+      newsError:         "Kon nieuws niet laden",
+      justNow:           "Zojuist",
     },
     fr: {
-      navSubtitle: "Chemins de fer nationaux",
-      title: "Chemin de fer Hoggynésiens",
-      status: "OPÉRATIONNEL",
-      heroTitle: "Informations & Services de voyage",
-      heroSub: "Chemin de fer Hoggynésiens — Version 7.0.1",
-      search: "Recherche...",
-      searchBtn: "CHERCHER",
-      lblLinks: "LIENS RAPIDES",
-      lblBoards: "HORAIRES DE DÉPART",
-      lblNp: "QUE ÉCOUTE MITCHELL ?",
-      lblNews: "ACTUALITÉS EN DIRECT",
-      npIdleText: "Connectez Spotify pour voir ce que vous écoutez.",
-      npConnect: "connecter",
-      npDisconnect: "paramètres",
-      npNothing: "Rien ne joue en ce moment",
-      npNothingSub: "Lancez quelque chose sur Spotify et ça apparaîtra ici.",
-      npModalTitle: "Connecter Spotify",
-      npModalDesc: "Suivez les étapes et collez votre Client ID pour activer le widget.",
-      npStep1: "Allez sur developer.spotify.com/dashboard et créez une app.",
-      npStep2: "Ajoutez cet URI de redirection à votre app :",
-      npStep3: "Copiez votre Client ID et collez-le ci-dessous.",
-      npLblInput: "CLIENT ID",
-      npAuthBtn: "Se connecter avec Spotify",
-      npCancelBtn: "Annuler",
-      npLogoutBtn: "Se déconnecter de Spotify",
-      npErr: "Veuillez saisir un Client ID valide.",
-      ns: "NS", nsi: "NS International", tp: "Treinposities",
-      nmbs: "SNCB", nmbsi: "SNCB International", hsm: "CFH Soutien Psychologique", hsg: "Rail Tracker", tit: "CFH Billetterie",
-      feature: "Horaires en direct",
-      footer: "© 2026 CHEMIN DE FER HOGGYNÉSIENS — PROTOCOLE HS-X | Créé avec l'aide de Gemini et Claude",
-      langBtn: "NEDERLANDS",
-      sInit: "Connexion au moteur de recherche...",
-      sQuery: "Recherche : ",
-      spotifyEnable: "Activer",
-      spotifyDisable: "Désactiver",
-      spotifyDisabledMsg: "Cliquez sur 'Activer' pour connecter Spotify.",
-      newsLoading: "Chargement des actualités...",
-      newsError: "Impossible de charger les actualités",
+      navSubtitle:       "Chemins de fer nationaux",
+      title:             "Chemin de fer Hoggynésiens",
+      status:            "OPÉRATIONNEL",
+      alert:             "OPÉRATIONNEL — Aucune perturbation en cours sur le réseau",
+      heroTitle:         "Informations & Services de voyage",
+      heroSub:           "Chemin de fer Hoggynésiens — Version 7.0.1",
+      heroBadge:         "Chemin de fer Hoggynésiens",
+      search:            "Chercher une destination, gare ou service...",
+      searchBtn:         "CHERCHER",
+      lblLinks:          "LIENS RAPIDES",
+      lblBoards:         "HORAIRES DE DÉPART",
+      lblNp:             "QUE ÉCOUTE MITCHELL ?",
+      lblNews:           "ACTUALITÉS EN DIRECT",
+      subNav1:           "Horaires",
+      subNav2:           "Perturbations",
+      subNav3:           "Billets",
+      subNav4:           "Rail Tracker",
+      subNav5:           "CFH Assistance",
+      npIdleText:        "Connectez Spotify pour voir ce qui est en cours de lecture.",
+      npNothing:         "Rien ne joue en ce moment",
+      spotifyEnable:     "Activer",
+      spotifyDisable:    "Désactiver",
+      spotifyDisabledMsg:"Cliquez sur 'Activer' pour connecter Spotify.",
+      ns:                "NS",
+      nsi:               "NS International",
+      tp:                "Treinposities",
+      nmbs:              "SNCB",
+      nmbsi:             "SNCB International",
+      hsm:               "CFH Soutien Psychologique",
+      hsg:               "Rail Tracker",
+      tit:               "CFH Billetterie",
+      feature:           "Horaires en direct",
+      footerBrand:       "Chemin de fer Hoggynésiens",
+      footerTagline:     "Voyager en toute confiance dans Hoggynesie — Protocole HS-X",
+      footerTickets:     "Billets",
+      footerTech:        "Créé avec l'aide de Gemini & Claude",
+      footer:            "© 2026 <strong>CHEMIN DE FER HOGGYNÉSIENS</strong> — PROTOCOLE HS-X",
+      langBtn:           "NEDERLANDS",
+      sInit:             "Connexion au moteur de recherche...",
+      sQuery:            "Recherche : ",
+      newsLoading:       "Chargement des actualités...",
+      newsError:         "Impossible de charger les actualités",
+      justNow:           "À l'instant",
     }
   };
 
+  // ═══════════════════════════════════════════════════════
+  // UPDATE UI (full translation sweep)
+  // ═══════════════════════════════════════════════════════
   function updateUI() {
     const t = translations[currentLang];
+
     const safeSet = (id, text, isHtml = false) => {
       const el = document.getElementById(id);
-      if (el) {
-        if (isHtml) el.innerHTML = text;
-        else el.textContent = text;
-      }
+      if (!el) return;
+      if (isHtml) el.innerHTML = text;
+      else el.textContent = text;
     };
-    
+
+    // Navbar
     safeSet('nav-subtitle', t.navSubtitle);
     safeSet('txt-title', t.title);
     safeSet('txt-status', t.status);
-    safeSet('hero-title', t.heroTitle);
+    safeSet('langBtn', t.langBtn);
+
+    // Alert bar
+    safeSet('txt-alert', t.alert);
+
+    // Hero
+    safeSet('hero-badge', t.heroBadge);
     safeSet('hero-sub', t.heroSub);
-    
+
+    // Hero title: keep <span> yellow highlight
+    const heroTitleEl = document.getElementById('hero-title');
+    if (heroTitleEl) {
+      const parts = t.heroTitle.split('&');
+      if (parts.length === 2) {
+        heroTitleEl.innerHTML = parts[0] + '&amp; <span>' + parts[1].trim() + '</span>';
+      } else {
+        heroTitleEl.textContent = t.heroTitle;
+      }
+    }
+
+    // Search inputs & buttons
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.placeholder = t.search;
-    
     const navSearchInput = document.getElementById('nav-searchInput');
     if (navSearchInput) navSearchInput.placeholder = t.search;
-    
     safeSet('txt-search-btn', t.searchBtn);
+    safeSet('nav-search-btn', t.searchBtn);
+
+    // Section labels
     safeSet('lbl-links', t.lblLinks);
     safeSet('lbl-boards', t.lblBoards);
     safeSet('lbl-np', t.lblNp);
     safeSet('lbl-news', t.lblNews);
-    
-    const npIdleState = document.getElementById('np-idle-state');
-    if (npIdleState && npIdleState.style.display !== 'none') {
-      safeSet('np-idle-text', t.npIdleText);
-    }
-    
-    safeSet('txt-news-loading', t.newsLoading);
-    safeSet('txt-news-title', currentLang === 'nl' ? 'NU.NL Live' : 'NU.NL Direct');
-    
-    setLinkText('btn-ns',   '🚆', t.ns);
-    setLinkText('btn-nsi',  '🌍', t.nsi);
-    setLinkText('btn-tp',   '📡', t.tp);
-    setLinkText('btn-nmbs', '🇧🇪', t.nmbs);
-    setLinkText('btn-nmbsi','🛤️', t.nmbsi);
-    setLinkText('btn-hsm',  '💙', t.hsm);
-    
+
+    // Subnav
+    safeSet('snav-1', '🗓️ ' + t.subNav1);
+    safeSet('snav-2', '⚠️ ' + t.subNav2);
+    safeSet('snav-3', '🎫 ' + t.subNav3);
+    safeSet('snav-4', '🗺️ ' + t.subNav4);
+    safeSet('snav-5', '💙 ' + t.subNav5);
+
+    // Now Playing
+    safeSet('np-idle-text', t.npIdleText);
+    safeSet('np-disabled-text', t.spotifyDisabledMsg);
+
+    // RSS news title
+    safeSet('txt-news-title', RSSFeeds[currentFeed]?.title || t.lblNews);
+
+    // Quick links
+    setLinkText('btn-ns',    '🚆', t.ns);
+    setLinkText('btn-nsi',   '🌍', t.nsi);
+    setLinkText('btn-tp',    '📡', t.tp);
+    setLinkText('btn-nmbs',  '🇧🇪', t.nmbs);
+    setLinkText('btn-nmbsi', '🛤️', t.nmbsi);
+    setLinkText('btn-hsm',   '💙', t.hsm);
+    setLinkText('btn-hsg',   '🚆', t.hsg);
+    setLinkText('btn-tit',   '🎫', t.tit);
+
+    // Boards
     safeSet('txt-feature-title', t.feature);
+
+    // Footer
+    safeSet('footer-brand-name', t.footerBrand);
+    safeSet('footer-tagline', t.footerTagline);
+    safeSet('footer-tickets', t.footerTickets);
+    safeSet('footer-tech', t.footerTech);
     safeSet('txt-footer', t.footer, true);
-    safeSet('langBtn', t.langBtn);
+
+    // Search overlay
     safeSet('txt-search-init', t.sInit);
-    
+
     document.documentElement.lang = currentLang;
     updateSpotifyUI();
   }
@@ -1644,9 +1879,13 @@
     updateUI();
   }
 
+  // ═══════════════════════════════════════════════════════
+  // SEARCH
+  // ═══════════════════════════════════════════════════════
   async function handleSearch(event) {
     event.preventDefault();
-    const q = document.getElementById('searchInput').value.trim();
+    const input = document.getElementById('searchInput') || document.getElementById('nav-searchInput');
+    const q = input ? input.value.trim() : '';
     if (!q) return;
     const t = translations[currentLang];
     document.getElementById('search-query-display').textContent = `${t.sQuery}"${q}"`;
@@ -1656,326 +1895,208 @@
     setTimeout(() => document.getElementById('search-overlay').classList.remove('active'), 400);
   }
 
-  updateUI();
-
   // ═══════════════════════════════════════════════════════
-  // RSS FEED FETCHER - MULTIPLE SOURCES WITH CACHING
+  // RSS FEED
   // ═══════════════════════════════════════════════════════
-  
   const RSSFeeds = {
-    nu: {
-      url: 'https://www.nu.nl/rss/algemeen',
-      title: 'NU.nl',
-      name: 'NU.NL'
-    },
-    standaard: {
-      url: 'https://www.standaard.be/binnenland/rss/',
-      title: 'De Standaard',
-      name: 'De Standaard'
-    },
-    lemonde: {
-      url: 'https://www.lemonde.fr/rss/une.xml',
-      title: 'Le Monde',
-      name: 'Le Monde'
-    }
+    nu:        { url: 'https://www.nu.nl/rss/algemeen',        title: 'NU.nl',        name: 'NU.NL' },
+    standaard: { url: 'https://www.standaard.be/binnenland/rss/', title: 'De Standaard', name: 'De Standaard' },
+    lemonde:   { url: 'https://www.lemonde.fr/rss/une.xml',    title: 'Le Monde',     name: 'Le Monde' }
   };
 
   let currentFeed = 'nu';
   const feedCache = {};
-  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+  const CACHE_DURATION = 5 * 60 * 1000;
 
   function getCachedFeed(feedKey) {
     const cached = feedCache[feedKey];
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      return cached.data;
-    }
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) return cached.data;
     return null;
   }
 
   function setCachedFeed(feedKey, data) {
-    feedCache[feedKey] = {
-      data: data,
-      timestamp: Date.now()
-    };
+    feedCache[feedKey] = { data, timestamp: Date.now() };
   }
 
   function switchFeed(feedKey) {
     currentFeed = feedKey;
-    
-    // Update tab buttons
     document.querySelectorAll('.rss-tab-btn').forEach(btn => {
-      btn.classList.remove('active');
-      if (btn.dataset.feed === feedKey) {
-        btn.classList.add('active');
-      }
+      btn.classList.toggle('active', btn.dataset.feed === feedKey);
     });
-    
-    // Update title
     const titleEl = document.getElementById('txt-news-title');
-    if (titleEl) {
-      titleEl.textContent = RSSFeeds[feedKey].title;
-    }
-    
-    // Show loading state
+    if (titleEl) titleEl.textContent = RSSFeeds[feedKey].title;
     showLoadingState();
-    
-    // Try cache first
     const cached = getCachedFeed(feedKey);
-    if (cached) {
-      parseRSSFeed(cached, feedKey);
-      return;
-    }
-    
-    // Fetch fresh data
+    if (cached) { parseRSSFeed(cached, feedKey); return; }
     fetchRSSFeed(feedKey);
   }
 
   function refreshRSSFeed() {
-    const refreshBtn = document.getElementById('rss-refresh-btn');
-    if (!refreshBtn || refreshBtn.classList.contains('loading')) return; // Already loading
-    
-    // Add loading animation
-    refreshBtn.classList.add('loading');
-    refreshBtn.disabled = true;
-    
-    // Fetch fresh data
-    fetchRSSFeed(currentFeed).then(() => {
-      // Remove loading animation
-      refreshBtn.classList.remove('loading');
-      refreshBtn.disabled = false;
-    }).catch(() => {
-      // Remove loading animation even on error
-      refreshBtn.classList.remove('loading');
-      refreshBtn.disabled = false;
+    const btn = document.getElementById('rss-refresh-btn');
+    if (!btn || btn.classList.contains('loading')) return;
+    btn.classList.add('loading');
+    btn.disabled = true;
+    fetchRSSFeed(currentFeed).finally(() => {
+      btn.classList.remove('loading');
+      btn.disabled = false;
     });
   }
 
-  // Set up refresh button listener
   document.addEventListener('DOMContentLoaded', () => {
     const refreshBtn = document.getElementById('rss-refresh-btn');
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', refreshRSSFeed);
-    }
+    if (refreshBtn) refreshBtn.addEventListener('click', refreshRSSFeed);
   });
 
   function showLoadingState() {
     const newsGrid = document.getElementById('news-grid');
-    if (newsGrid) {
-      newsGrid.innerHTML = `
-        <div class="news-loading">
-          <div class="news-spinner"></div>
-          <p id="txt-news-loading">Nieuws laden...</p>
-        </div>
-      `;
-    }
+    if (!newsGrid) return;
+    const msg = translations[currentLang]?.newsLoading || 'Nieuws laden...';
+    newsGrid.innerHTML = `
+      <div class="news-loading">
+        <div class="news-spinner"></div>
+        <p id="txt-news-loading">${msg}</p>
+      </div>
+    `;
   }
 
   async function fetchRSSFeed(feedKey = currentFeed) {
     const feedUrl = RSSFeeds[feedKey].url;
     const newsGrid = document.getElementById('news-grid');
-    
-    // Show loading state
+    const msg = translations[currentLang]?.newsLoading || 'Nieuws laden...';
     if (newsGrid) {
-      newsGrid.innerHTML = '<div class="news-loading"><p id="txt-news-loading">(Laden...)</p></div>';
+      newsGrid.innerHTML = `
+        <div class="news-loading">
+          <div class="news-spinner"></div>
+          <p id="txt-news-loading">${msg}</p>
+        </div>
+      `;
     }
-    
-    // Multiple CORS proxies - carefully ordered
+
     const corsProxies = [
       url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
       url => 'https://corsproxy.io/?url=' + encodeURIComponent(url),
       url => 'https://cors-anywhere.herokuapp.com/' + url,
       url => 'https://thingproxy.freeboard.io/fetch/' + url,
     ];
-    
+
     for (let i = 0; i < corsProxies.length; i++) {
       try {
-        const proxyFunc = corsProxies[i];
-        const fetchUrl = proxyFunc(feedUrl);
-        
-        console.log(`[RSS] Attempting proxy ${i + 1} for ${feedKey}...`);
-        
+        const fetchUrl = corsProxies[i](feedUrl);
         const response = await Promise.race([
-          fetch(fetchUrl, { 
+          fetch(fetchUrl, {
             mode: 'cors',
-            headers: {
-              'Accept': 'application/rss+xml, application/xml, text/xml',
-              'User-Agent': 'Mozilla/5.0'
-            }
+            headers: { 'Accept': 'application/rss+xml, application/xml, text/xml' }
           }),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout')), 10000)
-          )
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
         ]);
-        
-        if (!response.ok) {
-          console.log(`[RSS] Proxy ${i + 1} returned status ${response.status}`);
-          continue;
-        }
-        
+        if (!response.ok) continue;
         let text = await response.text();
-        if (!text || text.length < 100) {
-          console.log(`[RSS] Invalid response from proxy ${i + 1}`);
-          continue;
-        }
-        
-        // Clean HTML wrapper if present
+        if (!text || text.length < 100) continue;
         if (text.includes('<html') || text.includes('<!DOCTYPE')) {
           const rssStart = text.indexOf('<rss');
           if (rssStart !== -1) {
             text = text.substring(rssStart);
             const rssEnd = text.lastIndexOf('</rss>');
-            if (rssEnd !== -1) {
-              text = text.substring(0, rssEnd + 6);
-            }
+            if (rssEnd !== -1) text = text.substring(0, rssEnd + 6);
           }
         }
-        
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(text, 'text/xml');
-        
-        if (xmlDoc.getElementsByTagName('parsererror').length > 0) {
-          console.log(`[RSS] Parse error from proxy ${i + 1}`);
-          continue;
-        }
-        
+        if (xmlDoc.getElementsByTagName('parsererror').length > 0) continue;
         const items = xmlDoc.getElementsByTagName('item');
-        if (items.length === 0) {
-          console.log(`[RSS] No items found from proxy ${i + 1}`);
-          continue;
-        }
-        
-        console.log(`[RSS] ✓ Success with proxy ${i + 1}! Found ${items.length} items`);
-        
-        // Success! Cache and display
+        if (items.length === 0) continue;
         setCachedFeed(feedKey, xmlDoc);
         parseRSSFeed(xmlDoc, feedKey);
         return;
-        
-      } catch (error) {
-        console.log(`[RSS] Proxy ${i + 1} failed:`, error.message);
-        continue;
-      }
+      } catch(e) { continue; }
     }
-    
-    // If all proxies fail, try cached data from ANY feed
-    console.warn('[RSS] All proxies failed, checking cache...');
-    const anyCached = Object.keys(feedCache).find(key => {
-      return Date.now() - feedCache[key].timestamp < 30 * 60 * 1000; // 30 min fallback
-    });
-    
-    if (anyCached) {
-      console.log(`[RSS] Using cached data from ${anyCached}`);
-      parseRSSFeed(feedCache[anyCached].data, feedKey, true);
-      return;
-    }
-    
-    // Last resort: show demo content
-    console.error('[RSS] All proxies failed and no cache, showing demo content');
+
+    // Fallback: show demo
     showDemoNews(feedKey);
   }
 
   function parseRSSFeed(xmlDoc, feedKey = currentFeed, isCached = false) {
     const newsGrid = document.getElementById('news-grid');
     if (!newsGrid) return;
-    
     const items = xmlDoc.getElementsByTagName('item');
-
-    if (items.length === 0) {
-      showNewsError();
-      return;
-    }
-
+    if (items.length === 0) { showNewsError(); return; }
     newsGrid.innerHTML = '';
     let successCount = 0;
-
-    // Show first 6 news items
     for (let i = 0; i < Math.min(6, items.length); i++) {
       try {
         const item = items[i];
-        const title = item.getElementsByTagName('title')[0]?.textContent || 'Untitled';
+        const title       = item.getElementsByTagName('title')[0]?.textContent || 'Untitled';
         const description = item.getElementsByTagName('description')[0]?.textContent || '';
-        const link = item.getElementsByTagName('link')[0]?.textContent || '#';
-        const pubDate = item.getElementsByTagName('pubDate')[0]?.textContent || '';
-        
-        // Parse pub date
-        const date = new Date(pubDate);
+        const link        = item.getElementsByTagName('link')[0]?.textContent || '#';
+        const pubDate     = item.getElementsByTagName('pubDate')[0]?.textContent || '';
+        const date    = new Date(pubDate);
         const timeStr = isNaN(date.getTime()) ? 'Recent' : formatTimeAgo(date);
-
-        // Strip HTML from description
-        const plainDesc = description
-          .replace(/<[^>]*>/g, '')
-          .substring(0, 150)
-          .trim();
-
+        const plainDesc = description.replace(/<[^>]*>/g, '').substring(0, 150).trim();
         const card = document.createElement('a');
         card.href = link;
         card.target = '_blank';
         card.className = 'news-card';
         card.innerHTML = `
           <div class="news-title">${escapeHtml(title)}</div>
-          <div class="news-desc">${escapeHtml(plainDesc)}${plainDesc.length > 140 ? '...' : ''}</div>
+          <div class="news-desc">${escapeHtml(plainDesc)}${plainDesc.length >= 150 ? '...' : ''}</div>
           <div class="news-meta">
-            <span class="news-time">${timeStr}${isCached ? ' (cached)' : ''}</span>
+            <span class="news-time">${timeStr}${isCached ? ' (cache)' : ''}</span>
             <span class="news-source">${RSSFeeds[feedKey].name}</span>
           </div>
         `;
         newsGrid.appendChild(card);
         successCount++;
-      } catch (err) {
-        console.error('Error parsing RSS item:', err);
-      }
+      } catch(err) {}
     }
-    
-    if (successCount === 0) {
-      showNewsError();
-    }
+    if (successCount === 0) showNewsError();
   }
 
   function showDemoNews(feedKey = currentFeed) {
     const newsGrid = document.getElementById('news-grid');
     if (!newsGrid) return;
-    
     const demoNews = [
-      { title: 'Spoorwegen: Nieuwe snelverbinding geopend', desc: 'De Hoggynesische Spoorwegen hebben vandaag een nieuwe snelverbinding tussen de hoofdstad en het zuiden geopend.', time: '2h' },
-      { title: 'Treinstations vernieuwd', desc: 'Alle treinstations in het land worden gerenoveerd met moderne voorzieningen en betere toegankelijkheid.', time: '4h' },
-      { title: 'Reizigers tevreden met service', desc: 'Enquête toont aan dat reizigers zeer tevreden zijn met de verbeterde klantenservice van de spoorwegen.', time: '6h' },
-      { title: 'Meer directe verbindingen', desc: 'Vanaf volgende maand worden er meer directe treinverbindingen tussen grote steden gerealiseerd.', time: '8h' },
-      { title: 'Groene treinen ingevoerd', desc: 'De Hoggynesische Spoorwegen investeren in groene technologie en voeren nieuwe elektrische treinen in.', time: '1d' },
-      { title: 'Reizigers kunnen nu online checken', desc: 'Passagiers kunnen nu online hun stoelplek reserveren en hebben altijd zicht op hun reservering.', time: '1d' }
+      { title: 'Spoorwegen: Nieuwe snelverbinding geopend',      desc: 'De Hoggynesische Spoorwegen openden vandaag een nieuwe snelverbinding tussen de hoofdstad en het zuiden.',   time: '2h' },
+      { title: 'Treinstations vernieuwd',                        desc: 'Alle treinstations worden gerenoveerd met moderne voorzieningen en verbeterde toegankelijkheid.',             time: '4h' },
+      { title: 'Reizigers tevreden met service',                 desc: 'Enquête toont aan dat reizigers zeer tevreden zijn met de verbeterde klantenservice van de spoorwegen.',     time: '6h' },
+      { title: 'Meer directe verbindingen',                      desc: 'Vanaf volgende maand worden er meer directe treinverbindingen tussen grote steden gerealiseerd.',            time: '8h' },
+      { title: 'Groene treinen ingevoerd',                       desc: 'De HS investeert in groene technologie en voert nieuwe elektrische treinen in voor het hele netwerk.',       time: '1d' },
+      { title: 'Online inchecken nu mogelijk',                   desc: 'Passagiers kunnen nu online hun stoelplek reserveren en hebben altijd zicht op hun boeking via de app.',     time: '1d' }
     ];
-    
     newsGrid.innerHTML = '';
     demoNews.forEach(news => {
-      try {
-        const card = document.createElement('a');
-        card.href = '#';
-        card.className = 'news-card';
-        card.innerHTML = `
-          <div class="news-title">${escapeHtml(news.title)}</div>
-          <div class="news-desc">${escapeHtml(news.desc)}${news.desc.length > 140 ? '...' : ''}</div>
-          <div class="news-meta">
-            <span class="news-time">${news.time} (demo)</span>
-            <span class="news-source">${RSSFeeds[feedKey].name}</span>
-          </div>
-        `;
-        newsGrid.appendChild(card);
-      } catch (err) {
-        console.error('Error creating demo news card:', err);
-      }
+      const card = document.createElement('a');
+      card.href = '#';
+      card.className = 'news-card';
+      card.innerHTML = `
+        <div class="news-title">${escapeHtml(news.title)}</div>
+        <div class="news-desc">${escapeHtml(news.desc)}</div>
+        <div class="news-meta">
+          <span class="news-time">${news.time} (demo)</span>
+          <span class="news-source">${RSSFeeds[feedKey].name}</span>
+        </div>
+      `;
+      newsGrid.appendChild(card);
     });
   }
 
+  function showNewsError() {
+    const newsGrid = document.getElementById('news-grid');
+    if (newsGrid) {
+      const msg = translations[currentLang]?.newsError || 'Kon nieuws niet laden';
+      newsGrid.innerHTML = `<div class="news-error">${msg}</div>`;
+    }
+  }
+
   function formatTimeAgo(date) {
-    const now = new Date();
+    const now     = new Date();
     const seconds = Math.floor((now - date) / 1000);
-    
-    if (seconds < 60) return 'Zojuist';
+    const t       = translations[currentLang];
+    if (seconds < 60) return t.justNow || 'Zojuist';
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `${minutes}m`;
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours}h`;
-    const days = Math.floor(hours / 24);
-    return `${days}d`;
+    return `${Math.floor(hours / 24)}d`;
   }
 
   function escapeHtml(text) {
@@ -1984,27 +2105,16 @@
     return div.innerHTML;
   }
 
-  function showNewsError() {
-    const newsGrid = document.getElementById('news-grid');
-    if (newsGrid) {
-      const lang = currentLang || 'nl';
-      const msg = translations[lang]?.newsError || 'Kon nieuws niet laden';
-      newsGrid.innerHTML = `<div class="news-error">${msg}</div>`;
-    }
-  }
-
-  // Fetch RSS on page load
+  // Fetch RSS on load & refresh every 5 min
   fetchRSSFeed();
-
-  // Refresh every 5 minutes
   setInterval(fetchRSSFeed, 5 * 60 * 1000);
 
-  /* ══════════════════════════════
-     SPOTIFY NOW PLAYING
-  ══════════════════════════════ */
+  // ═══════════════════════════════════════════════════════
+  // SPOTIFY NOW PLAYING
+  // ═══════════════════════════════════════════════════════
   const NP_CLIENT_ID = '648a7665fcbf4f5cb63b56173cf8e02f';
-  const NP_SCOPES = 'user-read-currently-playing';
-  const NP_REDIRECT = window.location.href.split('?')[0].split('#')[0];
+  const NP_SCOPES    = 'user-read-currently-playing';
+  const NP_REDIRECT  = window.location.href.split('?')[0].split('#')[0];
 
   function npRand(len) {
     const a = new Uint8Array(len);
@@ -2021,16 +2131,16 @@
 
   async function npExchange(code) {
     const body = new URLSearchParams({
-      grant_type: 'authorization_code', code,
-      redirect_uri: NP_REDIRECT,
-      client_id: NP_CLIENT_ID,
-      code_verifier: localStorage.getItem('sp_verifier')
+      grant_type:     'authorization_code', code,
+      redirect_uri:   NP_REDIRECT,
+      client_id:      NP_CLIENT_ID,
+      code_verifier:  localStorage.getItem('sp_verifier')
     });
     const r = await fetch('https://accounts.spotify.com/api/token',
       { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: body.toString() });
     const d = await r.json();
     if (d.access_token) {
-      localStorage.setItem('sp_token', d.access_token);
+      localStorage.setItem('sp_token',   d.access_token);
       localStorage.setItem('sp_refresh', d.refresh_token);
       localStorage.setItem('sp_expires', Date.now() + d.expires_in * 1000);
       return true;
@@ -2040,15 +2150,15 @@
 
   async function npRefresh() {
     const body = new URLSearchParams({
-      grant_type: 'refresh_token',
+      grant_type:    'refresh_token',
       refresh_token: localStorage.getItem('sp_refresh'),
-      client_id: NP_CLIENT_ID
+      client_id:     NP_CLIENT_ID
     });
     const r = await fetch('https://accounts.spotify.com/api/token',
       { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: body.toString() });
     const d = await r.json();
     if (d.access_token) {
-      localStorage.setItem('sp_token', d.access_token);
+      localStorage.setItem('sp_token',   d.access_token);
       localStorage.setItem('sp_expires', Date.now() + d.expires_in * 1000);
       if (d.refresh_token) localStorage.setItem('sp_refresh', d.refresh_token);
       return true;
@@ -2063,9 +2173,9 @@
   }
 
   async function npDoAuth() {
-    const verifier = npRand(64);
-    const challenge = npB64url(await npSha256(verifier));
-    const state = npRand(16);
+    const verifier   = npRand(64);
+    const challenge  = npB64url(await npSha256(verifier));
+    const state      = npRand(16);
     localStorage.setItem('sp_verifier', verifier);
     localStorage.setItem('sp_state', state);
     const p = new URLSearchParams({
@@ -2076,17 +2186,12 @@
     window.location.href = 'https://accounts.spotify.com/authorize?' + p.toString();
   }
 
-  function npMs(ms) {
-    const s = Math.floor(ms/1000);
-    return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
-  }
-
-  let npLastId = null, npIsPlaying = false, npProgress = 0, npDuration = 0;
+  let npLastId = null;
 
   function npShowIdle() {
     document.getElementById('np-idle-text').textContent = translations[currentLang].npIdleText;
     document.getElementById('np-track-state').style.display = 'none';
-    document.getElementById('np-idle-state').style.display = 'flex';
+    document.getElementById('np-idle-state').style.display  = 'flex';
     document.getElementById('np-dot').className = 'np-dot idle';
   }
 
@@ -2100,11 +2205,7 @@
       const d = await r.json();
       if (!d || !d.item) { npShowNothing(); return; }
 
-      npIsPlaying = d.is_playing;
-      npProgress  = d.progress_ms;
-      npDuration  = d.item.duration_ms;
-
-      document.getElementById('np-dot').className = 'np-dot ' + (npIsPlaying ? 'playing' : 'paused');
+      document.getElementById('np-dot').className = 'np-dot ' + (d.is_playing ? 'playing' : 'paused');
 
       if (d.item.id !== npLastId) {
         npLastId = d.item.id;
@@ -2132,19 +2233,13 @@
     spotifyEnabled = !spotifyEnabled;
     localStorage.setItem('spotify_enabled', spotifyEnabled);
     updateSpotifyUI();
-    
     if (spotifyEnabled) {
-      // Start Spotify if enabled
       const params = new URLSearchParams(window.location.search);
       const code = params.get('code'), state = params.get('state');
-      
       if (code && state && state === localStorage.getItem('sp_state')) {
         history.replaceState({}, '', window.location.pathname);
         npExchange(code).then(success => {
-          if (success) {
-            npFetch();
-            spotifyFetchInterval = setInterval(npFetch, 5000);
-          }
+          if (success) { npFetch(); spotifyFetchInterval = setInterval(npFetch, 5000); }
         });
       } else if (localStorage.getItem('sp_refresh')) {
         npFetch();
@@ -2153,23 +2248,18 @@
         npDoAuth();
       }
     } else {
-      // Stop Spotify if disabled
-      if (spotifyFetchInterval) {
-        clearInterval(spotifyFetchInterval);
-        spotifyFetchInterval = null;
-      }
-      document.getElementById('np-track-state').style.display = 'none';
-      document.getElementById('np-idle-state').style.display = 'none';
+      if (spotifyFetchInterval) { clearInterval(spotifyFetchInterval); spotifyFetchInterval = null; }
+      document.getElementById('np-track-state').style.display   = 'none';
+      document.getElementById('np-idle-state').style.display    = 'none';
       document.getElementById('np-disabled-state').style.display = 'flex';
       document.getElementById('np-dot').className = 'np-dot idle';
     }
   }
 
   function updateSpotifyUI() {
-    const btn = document.getElementById('spotify-toggle-btn');
+    const btn          = document.getElementById('spotify-toggle-btn');
     const disabledState = document.getElementById('np-disabled-state');
     const t = translations[currentLang];
-    
     if (spotifyEnabled) {
       btn.textContent = t.spotifyDisable;
       btn.classList.remove('disabled');
@@ -2178,74 +2268,63 @@
       btn.textContent = t.spotifyEnable;
       btn.classList.add('disabled');
       disabledState.style.display = 'flex';
-      document.getElementById('np-disabled-text').textContent = t.spotifyDisabledMsg;
+      const disabledText = document.getElementById('np-disabled-text');
+      if (disabledText) disabledText.textContent = t.spotifyDisabledMsg;
     }
   }
-  
-  // ══════════════════════════════
+
+  // ═══════════════════════════════════════════════════════
   // STICKY NAVBAR SEARCH
-  // ══════════════════════════════
-  const heroSection = document.querySelector('.hero');
+  // ═══════════════════════════════════════════════════════
+  const heroSection   = document.querySelector('.hero');
   const navSearchWrap = document.getElementById('nav-search-wrap');
-  const navSearchInput = document.getElementById('nav-searchInput');
-  const navSearchBtn = document.getElementById('nav-search-btn');
 
   if (heroSection && navSearchWrap) {
     window.addEventListener('scroll', () => {
       const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
-      const scrollPos = window.scrollY;
-      
-      // Show sticky search bar when hero section is scrolled past
-      if (scrollPos > heroBottom - 64) {
+      if (window.scrollY > heroBottom - 64) {
         navSearchWrap.classList.add('visible');
       } else {
         navSearchWrap.classList.remove('visible');
       }
     }, { passive: true });
-    
-    // Sync search input values
-    const mainSearchInput = document.getElementById('searchInput');
-    if (mainSearchInput) {
-      mainSearchInput.addEventListener('input', (e) => {
-        navSearchInput.value = e.target.value;
-      });
-      navSearchInput.addEventListener('input', (e) => {
-        mainSearchInput.value = e.target.value;
-      });
+
+    // Sync search values
+    const mainInput = document.getElementById('searchInput');
+    const navInput  = document.getElementById('nav-searchInput');
+    if (mainInput && navInput) {
+      mainInput.addEventListener('input', e => navInput.value = e.target.value);
+      navInput.addEventListener('input',  e => mainInput.value = e.target.value);
     }
   }
 
+  // ═══════════════════════════════════════════════════════
+  // SERVICE WORKER (PWA)
+  // ═══════════════════════════════════════════════════════
   if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .then(registration => {
-                    console.log('HS App is klaar voor gebruik als PWA.', registration.scope);
-                })
-                .catch(err => {
-                    console.log('ServiceWorker registratie mislukt: ', err);
-                });
-        });
-    }
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(r => console.log('PWA klaar.', r.scope))
+        .catch(e => console.log('SW mislukt:', e));
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // INIT
+  // ═══════════════════════════════════════════════════════
+  updateUI();
+  updateSpotifyUI();
 
   (async function npInit() {
-    // Initialize UI based on saved state
-    updateSpotifyUI();
-    
-    // Only auto-init if Spotify was previously enabled
     if (!spotifyEnabled) return;
-    
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code'), state = params.get('state');
     if (code && state && state === localStorage.getItem('sp_state')) {
       history.replaceState({}, '', window.location.pathname);
-      if (await npExchange(code)) { 
-        npFetch(); 
-        spotifyFetchInterval = setInterval(npFetch, 5000); 
-        return; 
-      }
+      if (await npExchange(code)) { npFetch(); spotifyFetchInterval = setInterval(npFetch, 5000); return; }
     }
     if (localStorage.getItem('sp_refresh')) {
-      npFetch(); 
+      npFetch();
       spotifyFetchInterval = setInterval(npFetch, 5000);
     }
   })();
