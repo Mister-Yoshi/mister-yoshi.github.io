@@ -1,0 +1,3157 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoggynesische Spoorwegen</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#001233">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --yellow: #FFC917;
+      --yellow-dark: #e6b400;
+      --blue: #001a4d;
+      --blue-nav: #001233;
+      --blue-light: #0054a6;
+      --card-bg: #1e2330;
+      --bg: #141821;
+      --border: #2a2f3d;
+      --text: #e8edf5;
+      --text-dim: #9aa3b8;
+      --radius: 6px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── ALERT BAR ── */
+    .alert-bar {
+      background: var(--yellow);
+      color: #000;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-align: center;
+      padding: 7px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .alert-bar::before {
+      content: '';
+      position: absolute;
+      left: -100%;
+      top: 0; bottom: 0;
+      width: 40%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: alertShine 4s ease-in-out infinite;
+    }
+
+    @keyframes alertShine {
+      0%   { left: -40%; }
+      100% { left: 140%; }
+    }
+
+    .alert-dot {
+      width: 8px;
+      height: 8px;
+      background: #000;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: alertPulse 2s infinite;
+    }
+
+    @keyframes alertPulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* ── NAVBAR ── */
+    nav.topnav {
+      background: var(--blue-nav);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 64px;
+      box-shadow: 0 2px 8px rgba(0,0,48,0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid rgba(255,201,23,0.25);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-logo img {
+      height: 42px;
+      width: auto;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding-right: 24px;
+      margin-right: 24px;
+      border-right: 2px solid rgba(255,201,23,0.35);
+    }
+
+    .nav-brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    #nav-subtitle {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    #txt-title {
+      display: block;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .nav-clock {
+      font-family: 'Courier New', monospace;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--yellow);
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+      background: rgba(255,201,23,0.07);
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,201,23,0.2);
+    }
+
+    .nav-weather-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,201,23,0.07);
+      border: 1px solid rgba(255,201,23,0.2);
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--yellow);
+      white-space: nowrap;
+    }
+
+    .nav-weather-pill span:first-child {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .nav-info-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .nav-info-item.temperature {
+      color: var(--yellow);
+      font-weight: 600;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-left: auto;
+    }
+
+    .nav-info-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-right: 20px;
+      border-right: 1px solid rgba(255,201,23,0.2);
+    }
+
+    /* Sticky search */
+    .nav-search-wrap {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 420px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .nav-search-wrap.visible {
+      display: flex;
+      opacity: 1;
+    }
+
+    .nav-search-icon {
+      display: flex;
+      align-items: center;
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .nav-search-input {
+      flex: 1;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,201,23,0.3);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .nav-search-input::placeholder { color: rgba(255,255,255,0.4); }
+    .nav-search-input:focus {
+      background: rgba(255,255,255,0.12);
+      border-color: var(--yellow);
+    }
+
+    .nav-search-btn {
+      background: var(--yellow);
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.04em;
+    }
+    .nav-search-btn:hover { background: var(--yellow-dark); }
+
+    .lang-btn {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 7px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.6);
+    }
+
+    .status-pill {
+      background: rgba(255,201,23,0.12);
+      border: 1px solid rgba(255,201,23,0.5);
+      color: var(--yellow);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.07em;
+    }
+
+    /* ── SUBNAV ── */
+    .subnav {
+      background: #0a0f1c;
+      border-bottom: 1px solid rgba(255,201,23,0.12);
+      position: sticky;
+      top: 64px;
+      z-index: 99;
+    }
+
+    .subnav-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .subnav-inner::-webkit-scrollbar { display: none; }
+
+    .subnav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 18px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+      position: relative;
+      bottom: -1px;
+    }
+
+    .subnav-link:hover {
+      color: var(--text);
+      background: rgba(255,201,23,0.04);
+      border-bottom-color: rgba(255,201,23,0.4);
+    }
+
+    .subnav-link.active {
+      color: var(--yellow);
+      border-bottom-color: var(--yellow);
+    }
+
+    .subnav-link .sn-icon {
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    /* ── DROPDOWN ── */
+    .subnav-dropdown { position: relative; }
+
+    .subnav-dropdown-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 18px;
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      border: none;
+      border-bottom: 2px solid transparent;
+      position: relative;
+      bottom: -1px;
+      background: transparent;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .subnav-dropdown-btn:hover,
+    .subnav-dropdown.open .subnav-dropdown-btn {
+      color: var(--text);
+      background: rgba(255,201,23,0.04);
+      border-bottom-color: rgba(255,201,23,0.4);
+    }
+
+    .subnav-dropdown-btn .chevron {
+      font-size: 0.65em;
+      opacity: 0.6;
+      transition: transform 0.2s;
+    }
+    .subnav-dropdown.open .chevron { transform: rotate(180deg); }
+
+    .subnav-dropdown-menu {
+      display: none;
+      position: fixed;
+      min-width: 270px;
+      background: #0d1320;
+      border: 1px solid rgba(255,201,23,0.18);
+      border-top: 2px solid var(--yellow);
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.55);
+      z-index: 9000;
+      overflow: hidden;
+      animation: dropdownFade 0.15s ease-out;
+    }
+
+    @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .subnav-dropdown-menu.open { display: block; }
+
+    .dropdown-header {
+      padding: 8px 18px 6px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,201,23,0.5);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 18px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.15s;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-item:hover {
+      background: rgba(255,201,23,0.07);
+      padding-left: 24px;
+    }
+    .dropdown-item-flag { font-size: 1.1rem; flex-shrink: 0; }
+    .dropdown-item-info { display: flex; flex-direction: column; gap: 1px; }
+    .dropdown-item-name {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.88rem;
+      transition: color 0.15s;
+    }
+    .dropdown-item:hover .dropdown-item-name { color: var(--yellow); }
+    .dropdown-item-desc { font-size: 0.72rem; color: var(--text-dim); opacity: 0.7; }
+
+    /* ── HERO ── */
+    .hero {
+      background:
+        linear-gradient(135deg, rgba(0,10,30,0.88) 0%, rgba(0,20,55,0.85) 60%, rgba(0,15,35,0.88) 100%),
+        var(--hero-bg, #0a0f1c) center/cover no-repeat;
+      background-attachment: fixed;
+      border-bottom: 3px solid var(--yellow);
+      padding: 52px 32px 44px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative track lines */
+    .hero::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--yellow) 0px, var(--yellow) 40px,
+        transparent 40px, transparent 60px
+      );
+      opacity: 0.4;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -80px;
+      top: -50px;
+      width: 420px;
+      height: 240px;
+      background: radial-gradient(ellipse, rgba(255,201,23,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,201,23,0.12);
+      border: 1px solid rgba(255,201,23,0.35);
+      color: var(--yellow);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 3px;
+      margin-bottom: 16px;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--yellow);
+      border-radius: 50%;
+      animation: alertPulse 2s infinite;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+
+    .hero h1 span { color: var(--yellow); }
+
+    .hero p {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.95rem;
+      font-weight: 400;
+      margin-bottom: 28px;
+    }
+
+    /* ── SEARCH ── */
+    .search-wrap {
+      background: rgba(255,255,255,0.05);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow), 0 0 0 1px rgba(255,201,23,0.15);
+      display: flex;
+      overflow: hidden;
+      border: 1px solid rgba(255,201,23,0.2);
+      backdrop-filter: blur(8px);
+      max-width: 680px;
+      transition: box-shadow 0.2s;
+    }
+
+    .search-wrap:focus-within {
+      box-shadow: var(--shadow), 0 0 0 2px rgba(255,201,23,0.4);
+      border-color: rgba(255,201,23,0.5);
+    }
+
+    .search-icon {
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      color: var(--text-dim);
+    }
+
+    .search-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      padding: 16px 0;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .search-wrap input::placeholder { color: rgba(255,255,255,0.4); }
+
+    .search-wrap button {
+      background: var(--yellow);
+      color: #000000;
+      border: none;
+      padding: 0 32px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 0.04em;
+    }
+    .search-wrap button:hover { background: var(--yellow-dark); }
+
+    /* ── MAIN CONTENT ── */
+    .content {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 40px 32px 64px;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: var(--yellow);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* ── LINKS GRID ── */
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 8px;
+      margin-bottom: 44px;
+    }
+
+    /* Base card shared by links and dropdown wrapper */
+    .quick-link,
+    .ql-dropdown-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: all 0.18s;
+      position: relative;
+      overflow: hidden;
+      border-left: 3px solid transparent;
+    }
+
+    .quick-link::before,
+    .ql-dropdown-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(255,201,23,0.04), transparent);
+      opacity: 0;
+      transition: opacity 0.18s;
+    }
+
+    .quick-link:hover,
+    .ql-dropdown-btn:hover,
+    .ql-dropdown-wrap.open .ql-dropdown-btn {
+      border-left-color: var(--yellow);
+      border-color: rgba(255,201,23,0.35);
+      box-shadow: 0 4px 20px rgba(255,201,23,0.1);
+    }
+
+    .quick-link:hover::before,
+    .ql-dropdown-btn:hover::before,
+    .ql-dropdown-wrap.open .ql-dropdown-btn::before { opacity: 1; }
+
+    .quick-link .link-icon,
+    .ql-dropdown-btn .link-icon {
+      width: 42px;
+      height: 42px;
+      background: rgba(255,201,23,0.1);
+      border: 1px solid rgba(255,201,23,0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      transition: all 0.18s;
+    }
+
+    .quick-link:hover .link-icon,
+    .ql-dropdown-btn:hover .link-icon,
+    .ql-dropdown-wrap.open .ql-dropdown-btn .link-icon {
+      background: rgba(255,201,23,0.18);
+      border-color: rgba(255,201,23,0.45);
+    }
+
+    .link-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .link-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      transition: color 0.18s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .quick-link:hover .link-name,
+    .ql-dropdown-btn:hover .link-name,
+    .ql-dropdown-wrap.open .ql-dropdown-btn .link-name { color: var(--yellow); }
+
+    .link-desc {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .link-arrow {
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      opacity: 0.45;
+      flex-shrink: 0;
+      transition: all 0.18s;
+    }
+
+    .quick-link:hover .link-arrow { opacity: 1; color: var(--yellow); transform: translateX(2px); }
+
+    /* ── QUICK-LINK DROPDOWN ── */
+    .ql-dropdown-wrap {
+      position: relative;
+    }
+
+    .ql-dropdown-btn {
+      width: 100%;
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+      border-top: none;
+      border-right: none;
+    }
+
+    .ql-chevron {
+      color: var(--text-dim);
+      font-size: 0.65rem;
+      opacity: 0.5;
+      flex-shrink: 0;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .ql-dropdown-wrap.open .ql-chevron {
+      transform: rotate(180deg);
+      opacity: 1;
+      color: var(--yellow);
+    }
+
+    .ql-dropdown-menu {
+      display: none;
+      position: fixed;
+      min-width: 260px;
+      background: #0d1320;
+      border: 1px solid rgba(255,201,23,0.18);
+      border-top: 2px solid var(--yellow);
+      border-radius: 0 var(--radius) var(--radius) var(--radius);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+      z-index: 9000;
+      overflow: hidden;
+      animation: dropdownFade 0.15s ease-out;
+    }
+
+    .ql-dropdown-menu.open { display: block; }
+
+    .ql-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 18px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: all 0.15s;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .ql-dropdown-item:last-child { border-bottom: none; }
+    .ql-dropdown-item:hover {
+      background: rgba(255,201,23,0.07);
+      padding-left: 24px;
+    }
+    .ql-dropdown-item-flag { font-size: 1.1rem; flex-shrink: 0; }
+    .ql-dropdown-item-info { display: flex; flex-direction: column; gap: 2px; }
+    .ql-dropdown-item-name {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text);
+      transition: color 0.15s;
+    }
+    .ql-dropdown-item:hover .ql-dropdown-item-name { color: var(--yellow); }
+    .ql-dropdown-item-sub {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      opacity: 0.65;
+    }
+
+    /* ── NEWS SECTION ── */
+    .news-section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 44px;
+    }
+
+    .news-header {
+      background: #0a0f1a;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid var(--yellow);
+    }
+
+    .news-header h2 {
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .rss-refresh-btn {
+      background: rgba(255,201,23,0.1);
+      border: 1px solid rgba(255,201,23,0.4);
+      color: var(--yellow);
+      font-size: 1.1rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .rss-refresh-btn:hover {
+      background: rgba(255,201,23,0.2);
+      transform: scale(1.05);
+    }
+
+    .rss-refresh-btn.loading {
+      animation: spinRefresh 1s linear infinite;
+    }
+
+    @keyframes spinRefresh {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .news-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--yellow);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    .rss-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .rss-tabs::-webkit-scrollbar { display: none; }
+
+    .rss-tab-btn {
+      padding: 13px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-dim);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      position: relative;
+      bottom: -1px;
+      letter-spacing: 0.02em;
+    }
+
+    .rss-tab-btn:hover {
+      color: var(--text);
+      background: rgba(255,201,23,0.04);
+    }
+
+    .rss-tab-btn.active {
+      color: var(--yellow);
+      border-bottom-color: var(--yellow);
+    }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      animation: gridFadeIn 0.4s ease-out;
+    }
+
+    @keyframes gridFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .news-card {
+      background: var(--card-bg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      animation: cardSlideUp 0.5s ease-out both;
+    }
+
+    .news-card:nth-child(1) { animation-delay: 0.04s; }
+    .news-card:nth-child(2) { animation-delay: 0.08s; }
+    .news-card:nth-child(3) { animation-delay: 0.12s; }
+    .news-card:nth-child(4) { animation-delay: 0.16s; }
+    .news-card:nth-child(5) { animation-delay: 0.20s; }
+    .news-card:nth-child(6) { animation-delay: 0.24s; }
+
+    @keyframes cardSlideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .news-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .news-card:hover {
+      border-left-color: var(--yellow);
+      background: rgba(255,201,23,0.03);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    .news-card:hover::before { transform: scaleX(1); }
+
+    .news-loading {
+      grid-column: 1 / -1;
+      padding: 60px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    #txt-news-loading {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    .news-spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255,201,23,0.12);
+      border-top-color: var(--yellow);
+      border-radius: 50%;
+      animation: spinRotate 0.85s linear infinite;
+    }
+
+    @keyframes spinRotate {
+      to { transform: rotate(360deg); }
+    }
+
+    .news-title {
+      font-size: 0.93rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      transition: color 0.2s;
+    }
+
+    .news-card:hover .news-title { color: var(--yellow); }
+
+    .news-desc {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex-grow: 1;
+    }
+
+    .news-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,201,23,0.08);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .news-time {
+      font-family: 'Courier New', monospace;
+      font-size: 0.7rem;
+      color: var(--yellow);
+      opacity: 0.7;
+    }
+
+    .news-source {
+      background: rgba(255,201,23,0.1);
+      color: var(--yellow);
+      padding: 3px 9px;
+      border-radius: 3px;
+      font-weight: 700;
+      font-size: 0.62rem;
+      letter-spacing: 0.05em;
+    }
+
+    .news-error {
+      padding: 40px 20px;
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    /* ── DEPARTURE BOARDS ── */
+    .boards-section { display: flex; flex-direction: column; gap: 20px; }
+
+    .boards-group {
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+    }
+    .boards-group-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 22px; background: #07090f;
+    }
+    .boards-group-header h2 {
+      font-size: 0.95rem; font-weight: 700; color: #fff; flex: 1; letter-spacing: 0.02em;
+    }
+    .boards-group--train .boards-group-header { border-bottom: 2px solid var(--yellow); }
+    .boards-group--train .boards-group-icon {
+      width: 32px; height: 32px; background: var(--yellow); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;
+    }
+    .boards-group--train .live-pill {
+      background: rgba(255,201,23,0.12); border: 1px solid rgba(255,201,23,0.4);
+      color: var(--yellow); font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px; display: flex; align-items: center; gap: 5px;
+    }
+    .boards-group--train .live-pill::before {
+      content: ''; width: 5px; height: 5px; background: var(--yellow);
+      border-radius: 50%; animation: alertPulse 2s infinite;
+    }
+    .boards-group--bus .boards-group-header { border-bottom: 2px solid #00c9a7; }
+    .boards-group--bus .boards-group-icon {
+      width: 32px; height: 32px; background: #00c9a7; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;
+    }
+    .boards-group--bus .live-pill {
+      background: rgba(0,201,167,0.12); border: 1px solid rgba(0,201,167,0.4);
+      color: #00c9a7; font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px; display: flex; align-items: center; gap: 5px;
+    }
+    .boards-group--bus .live-pill::before {
+      content: ''; width: 5px; height: 5px; background: #00c9a7;
+      border-radius: 50%; animation: alertPulse 2s infinite;
+    }
+    .boards-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1px; background: var(--border);
+    }
+    .board-cell { background: var(--card-bg); padding: 0; }
+    .boards-group--train .board-cell .station-label {
+      background: #0d1220; padding: 9px 16px; font-size: 0.72rem; font-weight: 700;
+      color: var(--yellow); letter-spacing: 0.1em; text-transform: uppercase;
+      border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 7px;
+    }
+    .boards-group--train .board-cell .station-label::before { content: '🚉'; font-size: 0.85rem; }
+    .boards-group--bus .board-cell .station-label {
+      background: #081812; padding: 9px 16px; font-size: 0.72rem; font-weight: 700;
+      color: #00c9a7; letter-spacing: 0.1em; text-transform: uppercase;
+      border-bottom: 1px solid rgba(0,201,167,0.15); display: flex; align-items: center; gap: 7px;
+    }
+    .boards-group--bus .board-cell .station-label::before { content: '🚌'; font-size: 0.85rem; }
+    .board-cell iframe { width: 100%; height: 400px; border: none; display: block; }
+
+    /* ── TIP MODAL ── */
+    #tip-modal-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,10,30,0.78); backdrop-filter: blur(4px);
+      z-index: 10000; align-items: center; justify-content: center;
+    }
+    #tip-modal-backdrop.active { display: flex; animation: tipFadeIn 0.18s ease; }
+    @keyframes tipFadeIn { from { opacity:0; } to { opacity:1; } }
+    #tip-modal {
+      background: #0d1320; border: 1px solid rgba(255,201,23,0.22);
+      border-top: 3px solid var(--yellow); border-radius: 10px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.75);
+      max-width: 440px; width: calc(100% - 48px); overflow: hidden;
+      animation: tipSlideUp 0.2s ease;
+    }
+    @keyframes tipSlideUp {
+      from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); }
+    }
+    .tip-header { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid var(--border); }
+    .tip-header-icon {
+      width:34px; height:34px; background:rgba(255,201,23,0.1);
+      border:1px solid rgba(255,201,23,0.28); border-radius:7px;
+      display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0;
+    }
+    .tip-header-text { display:flex; flex-direction:column; gap:2px; }
+    .tip-header-label { font-size:0.62rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--yellow); opacity:0.8; }
+    .tip-header-title { font-size:0.92rem; font-weight:700; color:#fff; }
+    .tip-body { padding:18px 20px 16px; font-size:0.9rem; color:rgba(232,237,245,0.88); line-height:1.65; }
+    .tip-footer { display:flex; gap:8px; padding:0 20px 18px; }
+    .tip-btn-go {
+      flex:1; background:var(--yellow); color:#000; border:none; padding:10px 16px;
+      border-radius:6px; font-family:'Outfit',sans-serif; font-size:0.84rem; font-weight:700;
+      cursor:pointer; letter-spacing:0.03em; transition:background 0.2s;
+    }
+    .tip-btn-go:hover { background:var(--yellow-dark); }
+    .tip-btn-close {
+      background:transparent; color:var(--text-dim); border:1px solid var(--border);
+      padding:10px 16px; border-radius:6px; font-family:'Outfit',sans-serif;
+      font-size:0.84rem; font-weight:600; cursor:pointer; transition:all 0.2s; white-space:nowrap;
+    }
+    .tip-btn-close:hover { background:rgba(255,255,255,0.06); color:var(--text); }
+
+    /* ── SEARCH OVERLAY ── */
+    #search-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,18,51,0.97);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    #search-overlay.active { display: flex; }
+
+    .overlay-spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255,201,23,0.25);
+      border-top-color: var(--yellow);
+      border-radius: 50%;
+      animation: spinRotate 0.7s linear infinite;
+      margin-bottom: 8px;
+    }
+
+    .overlay-text {
+      color: #e8edf5;
+      font-size: 0.95rem;
+      font-weight: 400;
+      opacity: 0.75;
+    }
+
+    .overlay-query {
+      color: var(--yellow);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #07090f;
+      border-top: 1px solid var(--border);
+      padding: 0;
+    }
+
+    .footer-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 36px 32px 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-brand-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--yellow);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .footer-tagline {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.03em;
+      line-height: 1.5;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--yellow); }
+
+    .footer-bottom {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 16px 32px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.04em;
+    }
+
+    .footer-copy strong { color: rgba(255,201,23,0.7); }
+
+    .footer-tech {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.03em;
+    }
+
+    /* ── NOW PLAYING ── */
+    .nowplaying-section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 44px;
+    }
+
+    .nowplaying-header {
+      background: #0a0f1a;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid var(--yellow);
+    }
+
+    .nowplaying-header h2 {
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .spotify-toggle-btn {
+      background: var(--yellow);
+      color: #000;
+      border: none;
+      padding: 6px 16px;
+      border-radius: var(--radius);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+    }
+    .spotify-toggle-btn:hover { background: var(--yellow-dark); }
+    .spotify-toggle-btn.disabled {
+      background: rgba(255,201,23,0.25);
+      color: rgba(0,0,0,0.5);
+      cursor: not-allowed;
+    }
+
+    .np-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .np-dot.playing { background: #22c55e; animation: pulse 2s infinite; }
+    .np-dot.paused  { background: #555; animation: none; }
+    .np-dot.idle    { background: #333; animation: none; }
+
+    .nowplaying-body { padding: 20px 24px; }
+
+    .np-setup-link {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      background: none;
+      border: none;
+      font-family: 'Outfit', sans-serif;
+      padding: 0;
+      transition: color 0.15s;
+    }
+    .np-setup-link:hover { color: var(--yellow); }
+
+    .np-track {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .np-art {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius);
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .np-art-placeholder {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius);
+      background: #111827;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .np-art-placeholder svg { opacity: 0.2; }
+
+    .np-info { flex: 1; min-width: 0; }
+
+    .np-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+
+    .np-artist {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 10px;
+    }
+
+    .np-progress-bar {
+      height: 3px;
+      background: #2a2f3d;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+
+    .np-progress-fill {
+      height: 100%;
+      background: var(--yellow);
+      border-radius: 99px;
+      transition: width 0.5s linear;
+      width: 0%;
+    }
+
+    .np-time-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .np-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .np-ctrl {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      font-family: 'Outfit', sans-serif;
+    }
+    .np-ctrl:hover { color: var(--yellow); border-color: var(--yellow); background: rgba(255,201,23,0.08); }
+
+    .np-play {
+      background: var(--yellow);
+      border: none;
+      color: #000;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .np-play:hover  { background: var(--yellow-dark); }
+    .np-play:active { transform: scale(0.95); }
+
+    .np-idle {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+    .np-idle svg { opacity: 0.2; flex-shrink: 0; }
+
+    /* ── SETUP MODAL ── */
+    #np-setup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,18,51,0.97);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #np-setup-overlay.active { display: flex; }
+
+    .np-setup-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 460px;
+      width: 100%;
+    }
+
+    .np-setup-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--yellow);
+      margin-bottom: 0.4rem;
+    }
+
+    .np-setup-card p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .np-steps {
+      list-style: none;
+      margin-bottom: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .np-steps li {
+      display: flex;
+      gap: 10px;
+      font-size: 0.83rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .np-step-num {
+      min-width: 20px;
+      height: 20px;
+      background: rgba(255,201,23,0.12);
+      border: 1px solid var(--yellow);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--yellow);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .np-uri-box {
+      background: #0a0f1a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 13px;
+      font-size: 0.78rem;
+      font-family: 'Courier New', monospace;
+      color: var(--yellow);
+      word-break: break-all;
+      margin: 4px 0 8px;
+      user-select: all;
+    }
+
+    .np-input-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .np-input {
+      width: 100%;
+      background: #0a0f1a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px 13px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 0.5rem;
+    }
+    .np-input:focus { border-color: var(--yellow); }
+    .np-input::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+    .np-err {
+      color: #ff6b6b;
+      font-size: 0.78rem;
+      margin-bottom: 0.6rem;
+      display: none;
+    }
+
+    .np-setup-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--yellow);
+      color: #000;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background 0.2s;
+      margin-bottom: 10px;
+    }
+    .np-setup-btn:hover { background: var(--yellow-dark); }
+
+    .np-cancel-btn {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .np-cancel-btn:hover { border-color: var(--text-dim); color: var(--text); }
+
+    /* ── RESPONSIVE ── */
+    /* ── TABLET ≤ 900px ── */
+    @media (max-width: 900px) {
+      .boards-grid { grid-template-columns: 1fr; }
+      .news-grid   { grid-template-columns: 1fr; }
+      .links-grid  { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+      .footer-inner { grid-template-columns: 1fr; gap: 20px; }
+      .footer-links { justify-content: flex-start; flex-wrap: wrap; }
+    }
+
+    /* ── PHONE ≤ 600px ── */
+    @media (max-width: 600px) {
+      /* Alert bar */
+      .alert-bar { font-size: 0.7rem; padding: 6px 12px; }
+
+      /* Navbar */
+      nav.topnav { padding: 0 12px; height: 56px; gap: 8px; }
+      .nav-logo img { height: 34px; }
+      .nav-brand { padding-right: 12px; margin-right: 0; border-right: none; gap: 10px; }
+      #nav-subtitle { display: none; }
+      #txt-title { font-size: 0.82rem; }
+      .nav-clock { font-size: 0.82rem; padding: 4px 7px; }
+      .nav-weather-pill { font-size: 0.78rem; padding: 4px 8px; }
+      .nav-info-group { display: none; }
+      .status-pill { display: none; }
+      .lang-btn { padding: 6px 12px; font-size: 0.74rem; }
+      .nav-right { gap: 8px; }
+
+      /* Sticky nav adjusts */
+      .subnav { top: 56px; }
+
+      /* Subnav links smaller */
+      .subnav-inner { padding: 0 8px; }
+      .subnav-link,
+      .subnav-dropdown-btn { font-size: 0.78rem; padding: 10px 10px; }
+
+      /* Sticky search bar */
+      .nav-search-wrap { max-width: 100%; }
+      .nav-search-input { font-size: 0.85rem; padding: 7px 10px; }
+      .nav-search-btn { padding: 7px 12px; font-size: 0.75rem; }
+
+      /* Hero */
+      .hero { padding: 28px 16px 24px; background-attachment: scroll; }
+      .hero h1 { font-size: 1.35rem; }
+      .hero p { font-size: 0.82rem; margin-bottom: 20px; }
+      .hero-badge { font-size: 0.65rem; }
+      .search-wrap input { font-size: 0.9rem; padding: 13px 0; }
+      .search-wrap button { padding: 0 18px; font-size: 0.82rem; }
+
+      /* Content */
+      .content { padding: 20px 12px 40px; }
+      .section-label { font-size: 0.68rem; }
+
+      /* Quick links: 1 col on very narrow */
+      .links-grid { grid-template-columns: 1fr; gap: 6px; }
+      .quick-link, .ql-dropdown-btn { padding: 12px 14px; }
+      .quick-link .link-icon, .ql-dropdown-btn .link-icon { width: 38px; height: 38px; font-size: 1rem; }
+
+      /* Now Playing */
+      .nowplaying-header { padding: 12px 16px; }
+      .nowplaying-body { padding: 16px; }
+      .np-art { width: 64px; height: 64px; }
+
+      /* News */
+      .news-header { padding: 12px 16px; }
+      .rss-tabs { padding: 0 12px; }
+      .rss-tab-btn { padding: 11px 13px; font-size: 0.82rem; }
+      .news-card { padding: 16px; }
+      .news-title { font-size: 0.88rem; }
+
+      /* Boards */
+      .boards-header { padding: 12px 16px; }
+      .board-cell iframe { height: 260px; }
+
+      /* Footer */
+      .footer-inner { padding: 24px 16px 20px; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 6px; padding: 12px 16px; }
+      .footer-links { gap: 16px; }
+      .footer-links a { font-size: 0.75rem; }
+    }
+
+    /* ── SMALL PHONE ≤ 380px ── */
+    @media (max-width: 380px) {
+      #txt-title { font-size: 0.74rem; }
+      .nav-clock { display: none; }
+      .nav-weather-pill { font-size: 0.72rem; padding: 3px 6px; }
+      .hero h1 { font-size: 1.2rem; }
+      .links-grid { gap: 5px; }
+      .rss-tab-btn { padding: 10px 10px; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ALERT BAR -->
+  <div class="alert-bar" id="alert-bar-wrap">
+    <div class="alert-dot"></div>
+    <span id="txt-alert">OPERATIONEEL — Geen actuele storingen op het netwerk</span>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="topnav">
+    <div class="nav-logo">
+      <img src="images/hs.jpg" alt="HS Logo">
+      <div class="nav-brand">
+        <div class="nav-brand-text">
+          <span id="nav-subtitle">Nationale Spoorwegen</span>
+          <span id="txt-title">Hoggynesische Spoorwegen</span>
+        </div>
+        <div class="nav-clock" id="clock">00:00:00</div>
+      </div>
+    </div>
+
+    <!-- Sticky Search Bar -->
+    <div class="nav-search-wrap" id="nav-search-wrap">
+      <div class="nav-search-icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </div>
+      <form onsubmit="handleSearch(event)" style="flex:1;display:flex;gap:8px;">
+        <input type="text" class="nav-search-input" id="nav-searchInput" placeholder="" name="q" autocomplete="off">
+        <button type="submit" class="nav-search-btn" id="nav-search-btn">ZOEK</button>
+      </form>
+    </div>
+
+    <div class="nav-right">
+      <div class="nav-info-group">
+        <div class="nav-info-item">
+          <span>📍</span>
+          <span id="location-value">--</span>
+        </div>
+      </div>
+      <div class="nav-weather-pill">
+        <span id="weather-icon">🌡️</span>
+        <span id="temp-value">--°C</span>
+      </div>
+      <div class="status-pill" id="txt-status">OPERATIONEEL</div>
+      <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">FRANÇAIS</button>
+    </div>
+  </nav>
+
+  <!-- SECONDARY NAV -->
+  <div class="subnav">
+    <div class="subnav-inner">
+      <a href="https://www.ns.nl/reisplanner" target="_blank" class="subnav-link" id="snav-1">
+        <span class="sn-icon">🗓️</span> Dienstregeling
+      </a>
+      <a href="https://www.ns.nl/storingen" target="_blank" class="subnav-link" id="snav-2">
+        <span class="sn-icon">⚠️</span> Storingen
+      </a>
+      <div class="subnav-dropdown" id="tickets-dropdown">
+        <button class="subnav-dropdown-btn" onclick="toggleIntlDropdown(event,'tickets-dropdown','tickets-dropdown-menu')">
+          <span class="sn-icon">🎫</span>
+          <span id="snav-3">Kaartjes</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="subnav-dropdown-menu" id="tickets-dropdown-menu">
+          <div class="dropdown-header" id="dd-tickets-header">OPERATOR KIEZEN</div>
+          <a href="https://www.ns.nl/kaartjes/bestellen/kaartjes-kopen" target="_blank" class="dropdown-item">
+            <span class="dropdown-item-flag">🇳🇱</span>
+            <div class="dropdown-item-info">
+              <span class="dropdown-item-name">NS</span>
+              <span class="dropdown-item-desc" id="dd-tickets-ns">Kaartjes kopen via NS.nl</span>
+            </div>
+          </a>
+          <a href="https://www.belgiantrain.be/nl/buy/tickets/search" target="_blank" class="dropdown-item">
+            <span class="dropdown-item-flag">🇧🇪</span>
+            <div class="dropdown-item-info">
+              <span class="dropdown-item-name" id="dd-tickets-nmbs-name">NMBS</span>
+              <span class="dropdown-item-desc" id="dd-tickets-nmbs">Kaartjes kopen via NMBS</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="subnav-dropdown" id="intl-dropdown">
+        <button class="subnav-dropdown-btn" onclick="toggleIntlDropdown(event)">
+          <span class="sn-icon">🌍</span>
+          <span id="snav-6-label">Internationale Kaartjes</span>
+          <span class="chevron">▼</span>
+        </button>
+        <div class="subnav-dropdown-menu" id="intl-dropdown-menu">
+          <div class="dropdown-header" id="dd-header">OPERATOR KIEZEN</div>
+          <button onclick="showTipModal('nmbs')" class="dropdown-item" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:inherit;">
+            <span class="dropdown-item-flag">🇧🇪</span>
+            <div class="dropdown-item-info">
+              <span class="dropdown-item-name" id="dd-name-nmbs">NMBS / B-Europe</span>
+              <span class="dropdown-item-desc" id="dd-desc-nmbs">België &amp; internationale verbindingen</span>
+            </div>
+          </button>
+          <a href="https://www.nsinternational.com/nl" target="_blank" class="dropdown-item">
+            <span class="dropdown-item-flag">🇳🇱</span>
+            <div class="dropdown-item-info">
+              <span class="dropdown-item-name">NS International</span>
+              <span class="dropdown-item-desc" id="dd-desc-nsi">Nederland naar het buitenland</span>
+            </div>
+          </a>
+          <button onclick="showTipModal('eurostar')" class="dropdown-item" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:inherit;">
+            <span class="dropdown-item-flag">🚅</span>
+            <div class="dropdown-item-info">
+              <span class="dropdown-item-name">Eurostar</span>
+              <span class="dropdown-item-desc" id="dd-desc-eurostar">Londen, Parijs, Brussel &amp; meer</span>
+            </div>
+          </button>
+          <a href="https://govolta.nl/nl/" target="_blank" class="dropdown-item">
+            <span class="dropdown-item-flag">⚡</span>
+            <div class="dropdown-item-info">
+              <span class="dropdown-item-name">GoVolta</span>
+              <span class="dropdown-item-desc" id="dd-desc-govolta">Goedkoop treinreizen — Amsterdam → Berlijn/Parijs</span>
+            </div>
+          </a>
+          <a href="https://www.ouigo.com/" target="_blank" class="dropdown-item">
+            <span class="dropdown-item-flag">🟢</span>
+            <div class="dropdown-item-info">
+              <span class="dropdown-item-name">Ouigo</span>
+              <span class="dropdown-item-desc" id="dd-desc-ouigo">Goedkope hogesnelheidstreinen</span>
+            </div>
+          </a>
+          <a href="https://www.sncf-connect.com/" target="_blank" class="dropdown-item">
+            <span class="dropdown-item-flag">🇫🇷</span>
+            <div class="dropdown-item-info">
+              <span class="dropdown-item-name">SNCF Connect</span>
+              <span class="dropdown-item-desc" id="dd-desc-sncf">Franse spoorwegen &amp; TGV</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <a href="grensovergang-tracker-v2.html" class="subnav-link" id="snav-4">
+        <span class="sn-icon">🗺️</span> Rail Tracker
+      </a>
+      <a href="HS_MentaleBijstand.html" class="subnav-link" id="snav-5">
+        <span class="sn-icon">💙</span> HS Bijstand
+      </a>    </div>
+  </div>
+
+  <!-- HERO + SEARCH -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge" id="hero-badge">Hoggynesische Spoorwegen</div>
+      <h1 id="hero-title">Reisinformatie &amp; <span>Diensten</span></h1>
+      <p id="hero-sub">Hoggynesische Spoorwegen — Versie 7.0.1</p>
+
+      <div class="search-wrap">
+        <div class="search-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </div>
+        <form onsubmit="handleSearch(event)" style="flex:1;display:flex;">
+          <input type="text" id="searchInput" placeholder="" name="q" autocomplete="off">
+          <button type="submit" id="txt-search-btn">ZOEK</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="content">
+
+    <!-- Quick links -->
+    <div class="section-label" id="lbl-links">SNELLE LINKS</div>
+    <div class="links-grid">
+
+      <a href="https://www.ns.nl/" target="_blank" class="quick-link" id="btn-ns">
+        <div class="link-icon">🚆</div>
+        <div class="link-text">
+          <span class="link-name">NS</span>
+          <span class="link-desc" id="desc-ns">Reisplanner &amp; reisinformatie</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+      <a href="https://www.nsinternational.com/nl" target="_blank" class="quick-link" id="btn-nsi">
+        <div class="link-icon">🌍</div>
+        <div class="link-text">
+          <span class="link-name">NS International</span>
+          <span class="link-desc" id="desc-nsi">Trein naar het buitenland</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+      <a href="https://treinposities.nl/" target="_blank" class="quick-link" id="btn-tp">
+        <div class="link-icon">📡</div>
+        <div class="link-text">
+          <span class="link-name">Treinposities</span>
+          <span class="link-desc" id="desc-tp">Live treinposities Nederland</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+      <a href="https://www.belgiantrain.be/" target="_blank" class="quick-link" id="btn-nmbs">
+        <div class="link-icon">🇧🇪</div>
+        <div class="link-text">
+          <span class="link-name">NMBS</span>
+          <span class="link-desc" id="desc-nmbs">Belgische spoorwegen</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+      <a href="https://www.b-europe.com/" target="_blank" class="quick-link" id="btn-nmbsi">
+        <div class="link-icon">🛤️</div>
+        <div class="link-text">
+          <span class="link-name">NMBS International</span>
+          <span class="link-desc" id="desc-nmbsi">Internationaal via België</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+      <a href="https://gemini.google.com/" target="_blank" class="quick-link">
+        <div class="link-icon">✨</div>
+        <div class="link-text">
+          <span class="link-name">Gemini</span>
+          <span class="link-desc" id="desc-gemini">Google AI assistent</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/" target="_blank" class="quick-link">
+        <div class="link-icon">💻</div>
+        <div class="link-text">
+          <span class="link-name">GitHub</span>
+          <span class="link-desc" id="desc-github">Code &amp; repositories</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+      <a href="HS_MentaleBijstand.html" class="quick-link" id="btn-hsm">
+        <div class="link-icon">💙</div>
+        <div class="link-text">
+          <span class="link-name">HS Mentale Bijstand</span>
+          <span class="link-desc" id="desc-hsm">Psychologische ondersteuning</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+
+      <a href="grensovergang-tracker-v2.html" class="quick-link" id="btn-hsg">
+        <div class="link-icon">🗺️</div>
+        <div class="link-text">
+          <span class="link-name">Rail Tracker</span>
+          <span class="link-desc" id="desc-hsg">Live trein- &amp; grensmonitoring</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+
+      <a href="hs_qr_ticketing_styled.html" class="quick-link" id="btn-tit">
+        <div class="link-icon">🎫</div>
+        <div class="link-text">
+          <span class="link-name">HS Ticketing</span>
+          <span class="link-desc" id="desc-tit">HS kaartjes &amp; QR-codes</span>
+        </div>
+        <span class="link-arrow">›</span>
+      </a>
+    </div>
+
+    <!-- Now Playing -->
+    <div class="section-label" id="lbl-np">WAT LUISTERT MITCHELL?</div>
+    <div class="nowplaying-section">
+      <div class="nowplaying-header">
+        <div class="np-dot idle" id="np-dot"></div>
+        <h2 id="np-header-title">Spotify</h2>
+        <button id="spotify-toggle-btn" class="spotify-toggle-btn" onclick="toggleSpotify()" title="Schakel Spotify in/uit">
+          Inschakelen
+        </button>
+      </div>
+      <div class="nowplaying-body" id="np-body">
+        <div id="np-disabled-state" style="display: flex; align-items: center; gap: 14px; color: var(--text-dim); font-size: 0.9rem;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v9.28a4.39 4.39 0 0 0-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>
+          <span id="np-disabled-text">Klik op 'Inschakelen' om Spotify te verbinden.</span>
+        </div>
+        <div id="np-track-state" style="display:none">
+          <div class="np-track">
+            <img class="np-art" id="np-art" src="" alt="Album art" style="opacity:0;transition:opacity 0.3s">
+            <div class="np-info">
+              <div class="np-title" id="np-title">—</div>
+              <div class="np-artist" id="np-artist">—</div>
+            </div>
+          </div>
+        </div>
+        <div id="np-idle-state" class="np-idle" style="display:none">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v9.28a4.39 4.39 0 0 0-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>
+          <span id="np-idle-text">Niets speelt momenteel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RSS News Feed -->
+    <div class="section-label" id="lbl-news">ACTUEEL NIEUWS</div>
+    <div class="news-section">
+      <div class="news-header">
+        <div class="news-dot"></div>
+        <h2 id="txt-news-title">Nieuwsbronnen</h2>
+        <button id="rss-refresh-btn" class="rss-refresh-btn" title="Herladen">↻</button>
+      </div>
+      <div class="rss-tabs" id="rss-tabs">
+        <button class="rss-tab-btn active" data-feed="nu" onclick="switchFeed('nu')">NU.nl</button>
+        <button class="rss-tab-btn" data-feed="standaard" onclick="switchFeed('standaard')">De Standaard</button>
+        <button class="rss-tab-btn" data-feed="lemonde" onclick="switchFeed('lemonde')">Le Monde</button>
+      </div>
+      <div class="news-grid" id="news-grid">
+        <div class="news-loading" id="news-loading">
+          <div class="news-spinner"></div>
+          <p id="txt-news-loading">Nieuws laden...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Departure boards -->
+    <div class="section-label" id="lbl-boards">VERTREKSTATEN</div>
+    <div class="boards-section">
+
+      <!-- TREIN -->
+      <div class="boards-group boards-group--train">
+        <div class="boards-group-header">
+          <div class="boards-group-icon">🚆</div>
+          <h2 id="txt-feature-title">Trein — Live Vertrekstaten</h2>
+          <div class="live-pill" id="txt-boards-train-live">Live</div>
+        </div>
+        <div class="boards-grid">
+          <div class="board-cell"><div class="station-label">Assen</div>
+            <iframe src="https://treinposities.nl/embedvertrekstaat/assen" title="Vertrekstaat Assen"></iframe></div>
+          <div class="board-cell"><div class="station-label">Roosendaal</div>
+            <iframe src="https://treinposities.nl/embedvertrekstaat/roosendaal" title="Vertrekstaat Roosendaal"></iframe></div>
+          <div class="board-cell"><div class="station-label">Maastricht</div>
+            <iframe src="https://treinposities.nl/embedvertrekstaat/maastricht" title="Vertrekstaat Maastricht"></iframe></div>
+          <div class="board-cell"><div class="station-label">Breda</div>
+            <iframe src="https://treinposities.nl/embedvertrekstaat/breda" title="Vertrekstaat Breda"></iframe></div>
+          <div class="board-cell"><div class="station-label">Arnhem Centraal</div>
+            <iframe src="https://treinposities.nl/embedvertrekstaat/arnhem-centraal" title="Vertrekstaat Arnhem Centraal"></iframe></div>
+          <div class="board-cell"><div class="station-label">Utrecht Centraal</div>
+            <iframe src="https://treinposities.nl/embedvertrekstaat/utrecht-centraal" title="Vertrekstaat Utrecht Centraal"></iframe></div>
+        </div>
+      </div>
+
+      <!-- BUS -->
+      <div class="boards-group boards-group--bus">
+        <div class="boards-group-header">
+          <div class="boards-group-icon">🚌</div>
+          <h2 id="txt-bus-title">Bus — Vertrektijden Assen</h2>
+          <div class="live-pill" id="txt-boards-bus-live">Live</div>
+        </div>
+        <div class="boards-grid">
+          <div class="board-cell"><div class="station-label">Noorderstaete</div>
+            <iframe src="https://drgl.nl/stop/NL:S:15001310" title="Vertrektijden Noorderstaete Assen"></iframe></div>
+          <div class="board-cell"><div class="station-label">Smetanalaan</div>
+            <iframe src="https://drgl.nl/stop/NL:S:15002710" title="Vertrektijden Smetanalaan Assen"></iframe></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- TIP MODAL -->
+  <div id="tip-modal-backdrop" onclick="handleTipBackdropClick(event)">
+    <div id="tip-modal" role="dialog" aria-modal="true">
+      <div class="tip-header">
+        <div class="tip-header-icon" id="tip-icon"></div>
+        <div class="tip-header-text">
+          <span class="tip-header-label" id="tip-label"></span>
+          <span class="tip-header-title" id="tip-title"></span>
+        </div>
+      </div>
+      <div class="tip-body" id="tip-body"></div>
+      <div class="tip-footer">
+        <button class="tip-btn-go" id="tip-btn-go" onclick="tipProceed()"></button>
+        <button class="tip-btn-close" id="tip-btn-close" onclick="closeTipModal()"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-name" id="footer-brand-name">Hoggynesische Spoorwegen</div>
+        <div class="footer-tagline" id="footer-tagline">Betrouwbaar reizen door heel Hoggynesië — Protocol HS-X</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://www.ns.nl" target="_blank">NS.nl</a>
+        <a href="https://www.belgiantrain.be" target="_blank">NMBS</a>
+        <a href="https://treinposities.nl" target="_blank">Treinposities</a>
+        <a href="hs_qr_ticketing_styled.html" id="footer-tickets">Kaartjes</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy" id="txt-footer">© 2026 <strong>HOGGYNESISCHE SPOORWEGEN</strong> — PROTOCOL HS-X</span>
+      <span class="footer-tech" id="footer-tech">Gemaakt met hulp van Gemini &amp; Claude</span>
+    </div>
+  </footer>
+
+  <!-- SEARCH OVERLAY -->
+  <div id="search-overlay">
+    <div class="overlay-spinner"></div>
+    <div class="overlay-text" id="txt-search-init">Verbinding maken met zoekmachine...</div>
+    <div class="overlay-query" id="search-query-display"></div>
+  </div>
+
+<script>
+  // ═══════════════════════════════════════════════════════
+  // DIGITAL CLOCK
+  // ═══════════════════════════════════════════════════════
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0') + ':' +
+      String(now.getSeconds()).padStart(2,'0');
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ═══════════════════════════════════════════════════════
+  // GEOLOCATION & WEATHER
+  // ═══════════════════════════════════════════════════════
+  // WMO weather interpretation codes → emoji
+  function getWeatherEmoji(code, isDay) {
+    if (code === 0)                       return isDay ? '☀️' : '🌙';   // Clear
+    if (code === 1)                       return isDay ? '🌤️' : '🌙';  // Mainly clear
+    if (code === 2)                       return '⛅';                   // Partly cloudy
+    if (code === 3)                       return '☁️';                   // Overcast
+    if (code >= 45 && code <= 48)         return '🌫️';                  // Fog
+    if (code >= 51 && code <= 55)         return '🌦️';                  // Drizzle
+    if (code >= 56 && code <= 57)         return '🌨️';                  // Freezing drizzle
+    if (code >= 61 && code <= 65)         return '🌧️';                  // Rain
+    if (code >= 66 && code <= 67)         return '🌨️';                  // Freezing rain
+    if (code >= 71 && code <= 77)         return '❄️';                   // Snow
+    if (code >= 80 && code <= 82)         return '🌦️';                  // Rain showers
+    if (code >= 85 && code <= 86)         return '🌨️';                  // Snow showers
+    if (code >= 95 && code <= 99)         return '⛈️';                   // Thunderstorm
+    return '🌡️';
+  }
+
+  function getWeatherAndLocation() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        try {
+          const geoRes = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+          );
+          const geoData = await geoRes.json();
+          const city = geoData.address?.city || geoData.address?.town || '—';
+          document.getElementById('location-value').textContent = city;
+        } catch(e) {
+          document.getElementById('location-value').textContent = '—';
+        }
+        try {
+          const wRes = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weathercode,is_day&temperature_unit=celsius`
+          );
+          const wData = await wRes.json();
+          const temp  = Math.round(wData.current.temperature_2m);
+          const code  = wData.current.weathercode ?? -1;
+          const isDay = wData.current.is_day !== 0;
+          document.getElementById('temp-value').textContent = `${temp}°C`;
+          document.getElementById('weather-icon').textContent = getWeatherEmoji(code, isDay);
+        } catch(e) {
+          document.getElementById('temp-value').textContent = '--°C';
+        }
+      },
+      () => {
+        document.getElementById('location-value').textContent = 'GPS uit';
+        document.getElementById('temp-value').textContent = '--°C';
+      }
+    );
+  }
+  getWeatherAndLocation();
+  setInterval(getWeatherAndLocation, 10 * 60 * 1000);
+
+  // ═══════════════════════════════════════════════════════
+  // SPOTIFY TOGGLE (early init)
+  // ═══════════════════════════════════════════════════════
+  let spotifyEnabled = localStorage.getItem('spotify_enabled') === 'true';
+  let spotifyFetchInterval = null;
+
+  // ═══════════════════════════════════════════════════════
+  // TRANSLATIONS
+  // ═══════════════════════════════════════════════════════
+  let currentLang = 'nl';
+
+  const translations = {
+    nl: {
+      navSubtitle:       "Nationale Spoorwegen",
+      title:             "Hoggynesische Spoorwegen",
+      status:            "OPERATIONEEL",
+      alert:             "OPERATIONEEL — Geen actuele storingen op het netwerk",
+      heroTitle:         "Reisinformatie & Diensten",
+      heroSub:           "Hoggynesische Spoorwegen — Versie 7.0.1",
+      heroBadge:         "Hoggynesische Spoorwegen",
+      search:            "Bestemming, station of dienst zoeken...",
+      searchBtn:         "ZOEK",
+      lblLinks:          "SNELLE LINKS",
+      lblBoards:         "VERTREKSTATEN",
+      lblNp:             "WAT LUISTERT MITCHELL?",
+      lblNews:           "ACTUEEL NIEUWS",
+      subNav1:           "Dienstregeling",
+      subNav2:           "Storingen",
+      subNav3:           "Kaartjes",
+      subNav4:           "Rail Tracker",
+      subNav5:           "HS Bijstand",
+      subNav6:           "Internationale Kaartjes",
+      ddHeader:          "OPERATOR KIEZEN",
+      ddTicketsHeader:   "OPERATOR KIEZEN",
+      ddTicketsNs:       "Kaartjes kopen via NS.nl",
+      ddTicketsNmbsName: "NMBS",
+      ddTicketsNmbs:     "Kaartjes kopen via NMBS",
+      ddDescNmbs:        "België & internationale verbindingen",
+      ddDescNsi:         "Nederland naar het buitenland",
+      ddDescEurostar:    "Londen, Parijs, Brussel & meer",
+      ddDescGovolta:     "Goedkoop treinreizen — Amsterdam → Berlijn/Parijs",
+      ddDescOuigo:       "Goedkope hogesnelheidstreinen",
+      ddDescSncf:        "Franse spoorwegen & TGV",
+      npIdleText:        "Verbind Spotify om te zien wat er gespeeld wordt.",
+      npNothing:         "Niets speelt momenteel",
+      spotifyToggleTitle: "Schakel Spotify in/uit",
+      spotifyEnable:     "Inschakelen",
+      spotifyDisable:    "Uitschakelen",
+      spotifyDisabledMsg:"Klik op 'Inschakelen' om Spotify te verbinden.",
+      ns:                "NS",
+      descNs:            "Reisplanner & reisinformatie",
+      descNsi:           "Trein naar het buitenland",
+      descTp:            "Live treinposities Nederland",
+      descNmbs:          "Belgische spoorwegen",
+      descNmbsi:         "Internationaal via België",
+      descGemini:        "Google AI assistent",
+      descGithub:        "Code & repositories",
+      descHsm:           "Psychologische ondersteuning",
+      descHsg:           "Live trein- & grensmonitoring",
+      descTit:           "HS kaartjes & QR-codes",
+      titName:           "Kaartjes",
+      titDesc:           "Kies een operator",
+      qlNsSub:           "Kaartjes kopen via NS.nl",
+      qlNmbsSub:         "Kaartjes kopen via NMBS",
+      nsi:               "NS International",
+      tp:                "Treinposities",
+      nmbs:              "NMBS",
+      nmbsi:             "NMBS International",
+      hsm:               "HS Mentale Bijstand",
+      hsg:               "Rail Tracker",
+      tit:               "HS Ticketing",
+      feature:           "Live Vertrekstaten",
+      featureTrain:      "Trein — Live Vertrekstaten",
+      featureBus:        "Bus — Vertrektijden Assen",
+      footerBrand:       "Hoggynesische Spoorwegen",
+      footerTagline:     "Betrouwbaar reizen door heel Hoggynesië — Protocol HS-X",
+      footerTickets:     "Kaartjes",
+      footerTech:        "Gemaakt met hulp van Gemini & Claude",
+      footer:            "© 2026 <strong>HOGGYNESISCHE SPOORWEGEN</strong> — PROTOCOL HS-X",
+      langBtn:           "FRANÇAIS",
+      sInit:             "Verbinding maken met zoekmachine...",
+      sQuery:            "Zoeken naar: ",
+      newsLoading:       "Nieuws laden...",
+      newsError:         "Kon nieuws niet laden",
+      justNow:           "Zojuist",
+      ddNameNmbs:        "NMBS / B-Europe",
+      tipLabelAdvice:    "REISADVIES",
+      tipBtnGo:          "Doorgaan naar website →",
+      tipBtnClose:       "Sluiten",
+      tipNmbsTitle:      "NMBS / B-Europe — Abonnementen",
+      tipNmbsBody:       "Reizigers met een geldig abonnement bij de NS of de NMBS komen in aanmerking voor gereduceerd tarief op internationale treinen van en naar België. Let op: dit voordeel is niet van toepassing op Eurocity Direct-diensten.",
+      tipEurostarTitle:  "Eurostar — Tariefadvies",
+      tipEurostarBody:   "Eurostar hanteert een dynamisch prijsmodel waarbij tarieven stijgen naarmate de vertrekdatum nadert. Voor de laagste prijs wordt u geadviseerd uw reis zo vroeg mogelijk te reserveren.",
+    },
+    fr: {
+      navSubtitle:       "Chemins de fer nationaux",
+      title:             "Chemin de fer Hoggynésiens",
+      status:            "OPÉRATIONNEL",
+      alert:             "OPÉRATIONNEL — Aucune perturbation en cours sur le réseau",
+      heroTitle:         "Informations & Services de voyage",
+      heroSub:           "Chemin de fer Hoggynésiens — Version 7.0.1",
+      heroBadge:         "Chemin de fer Hoggynésiens",
+      search:            "Chercher une destination, gare ou service...",
+      searchBtn:         "CHERCHER",
+      lblLinks:          "LIENS RAPIDES",
+      lblBoards:         "HORAIRES DE DÉPART",
+      lblNp:             "QUE ÉCOUTE MITCHELL ?",
+      lblNews:           "ACTUALITÉS EN DIRECT",
+      subNav1:           "Horaires",
+      subNav2:           "Perturbations",
+      subNav3:           "Billets",
+      subNav4:           "Rail Tracker",
+      subNav5:           "CFH Assistance",
+      subNav6:           "Billets Internationaux",
+      ddHeader:          "CHOISIR UN OPÉRATEUR",
+      ddTicketsHeader:   "CHOISIR UN OPÉRATEUR",
+      ddTicketsNs:       "Acheter des billets via NS.nl",
+      ddTicketsNmbsName: "SNCB",
+      ddTicketsNmbs:     "Acheter des billets via SNCB",
+      ddDescNmbs:        "Belgique & liaisons internationales",
+      ddDescNsi:         "Pays-Bas vers l'étranger",
+      ddDescEurostar:    "Londres, Paris, Bruxelles & plus",
+      ddDescGovolta:     "Train abordable — Amsterdam → Berlin/Paris",
+      ddDescOuigo:       "Trains grande vitesse à prix réduit",
+      ddDescSncf:        "Chemins de fer français & TGV",
+      npIdleText:        "Connectez Spotify pour voir ce qui est en cours de lecture.",
+      npNothing:         "Rien ne joue en ce moment",
+      spotifyToggleTitle: "Activer/désactiver Spotify",
+      spotifyEnable:     "Activer",
+      spotifyDisable:    "Désactiver",
+      spotifyDisabledMsg:"Cliquez sur 'Activer' pour connecter Spotify.",
+      ns:                "NS",
+      descNs:            "Planificateur de voyage & informations",
+      descNsi:           "Train vers l'étranger",
+      descTp:            "Positions des trains en direct",
+      descNmbs:          "Chemins de fer belges",
+      descNmbsi:         "International via la Belgique",
+      descGemini:        "Assistant IA de Google",
+      descGithub:        "Code & dépôts",
+      descHsm:           "Soutien psychologique",
+      descHsg:           "Suivi train & frontière en direct",
+      descTit:           "CFH Billets & QR-codes",
+      titName:           "Kaartjes",
+      titDesc:           "Kies een operator",
+      qlNsSub:           "Kaartjes kopen via NS.nl",
+      qlNmbsSub:         "Kaartjes kopen via NMBS",
+      nsi:               "NS International",
+      tp:                "Treinposities",
+      nmbs:              "SNCB",
+      nmbsi:             "SNCB International",
+      hsm:               "CFH Soutien Psychologique",
+      hsg:               "Rail Tracker",
+      tit:               "CFH Billetterie",
+      feature:           "Horaires en direct",
+      featureTrain:      "Train — Horaires en direct",
+      featureBus:        "Bus — Horaires de départ Assen",
+      footerBrand:       "Chemin de fer Hoggynésiens",
+      footerTagline:     "Voyager en toute confiance dans Hoggynesie — Protocole CFH-X",
+      footerTickets:     "Billets",
+      footerTech:        "Créé avec l'aide de Gemini & Claude",
+      footer:            "© 2026 <strong>CHEMIN DE FER HOGGYNÉSIENS</strong> — PROTOCOLE CFH-X",
+      langBtn:           "NEDERLANDS",
+      sInit:             "Connexion au moteur de recherche...",
+      sQuery:            "Recherche : ",
+      newsLoading:       "Chargement des actualités...",
+      newsError:         "Impossible de charger les actualités",
+      justNow:           "À l'instant",
+      ddNameNmbs:        "SNCB / B-Europe",
+      tipLabelAdvice:    "CONSEIL VOYAGE",
+      tipBtnGo:          "Accéder au site →",
+      tipBtnClose:       "Fermer",
+      tipNmbsTitle:      "SNCB / B-Europe — Abonnements",
+      tipNmbsBody:       "Les voyageurs détenteurs d'un abonnement NS ou SNCB valide bénéficient d'un tarif réduit sur les trains internationaux à destination et en provenance de la Belgique. À noter : cet avantage ne s'applique pas aux services Eurocity Direct.",
+      tipEurostarTitle:  "Eurostar — Conseil tarifaire",
+      tipEurostarBody:   "Eurostar applique un système de tarification dynamique : les prix augmentent à mesure que la date de départ approche. Pour obtenir le meilleur tarif, il est conseillé de réserver votre voyage le plus tôt possible.",
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════
+  // UPDATE UI (full translation sweep)
+  // ═══════════════════════════════════════════════════════
+  function updateUI() {
+    const t = translations[currentLang];
+
+    const safeSet = (id, text, isHtml = false) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (isHtml) el.innerHTML = text;
+      else el.textContent = text;
+    };
+
+    // Navbar
+    safeSet('nav-subtitle', t.navSubtitle);
+    safeSet('txt-title', t.title);
+    safeSet('txt-status', t.status);
+    safeSet('langBtn', t.langBtn);
+
+    // Alert bar
+    safeSet('txt-alert', t.alert);
+
+    // Hero
+    safeSet('hero-badge', t.heroBadge);
+    safeSet('hero-sub', t.heroSub);
+
+    // Hero title: keep <span> yellow highlight
+    const heroTitleEl = document.getElementById('hero-title');
+    if (heroTitleEl) {
+      const parts = t.heroTitle.split('&');
+      if (parts.length === 2) {
+        heroTitleEl.innerHTML = parts[0] + '&amp; <span>' + parts[1].trim() + '</span>';
+      } else {
+        heroTitleEl.textContent = t.heroTitle;
+      }
+    }
+
+    // Search inputs & buttons
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.placeholder = t.search;
+    const navSearchInput = document.getElementById('nav-searchInput');
+    if (navSearchInput) navSearchInput.placeholder = t.search;
+    safeSet('txt-search-btn', t.searchBtn);
+    safeSet('nav-search-btn', t.searchBtn);
+
+    // Section labels
+    safeSet('lbl-links', t.lblLinks);
+    safeSet('lbl-boards', t.lblBoards);
+    safeSet('lbl-np', t.lblNp);
+    safeSet('lbl-news', t.lblNews);
+
+    // Subnav
+    safeSet('snav-1', '🗓️ ' + t.subNav1);
+    safeSet('snav-2', '⚠️ ' + t.subNav2);
+    safeSet('snav-3', t.subNav3);
+    safeSet('dd-tickets-header', t.ddTicketsHeader);
+    safeSet('dd-tickets-ns',   t.ddTicketsNs);
+    safeSet('dd-tickets-nmbs-name', t.ddTicketsNmbsName);
+    safeSet('dd-tickets-nmbs', t.ddTicketsNmbs);
+    safeSet('snav-4', '🗺️ ' + t.subNav4);
+    safeSet('snav-5', '💙 ' + t.subNav5);
+    safeSet('snav-6-label', t.subNav6);
+    safeSet('dd-header', t.ddHeader);
+    safeSet('dd-desc-nmbs',     t.ddDescNmbs);
+    safeSet('dd-name-nmbs',     t.ddNameNmbs);
+    safeSet('dd-desc-nsi',      t.ddDescNsi);
+    safeSet('dd-desc-eurostar', t.ddDescEurostar);
+    safeSet('dd-desc-govolta',  t.ddDescGovolta);
+    safeSet('dd-desc-ouigo',    t.ddDescOuigo);
+    safeSet('dd-desc-sncf',     t.ddDescSncf);
+
+    // Now Playing
+    safeSet('np-idle-text', t.npIdleText);
+    safeSet('np-disabled-text', t.spotifyDisabledMsg);
+
+    // RSS news title
+    safeSet('txt-news-title', RSSFeeds[currentFeed]?.title || t.lblNews);
+
+    // Quick links
+    setLinkText('btn-ns',    '🚆', t.ns);
+    safeSet('desc-ns',    t.descNs);
+    safeSet('desc-nsi',   t.descNsi);
+    safeSet('desc-tp',    t.descTp);
+    safeSet('desc-nmbs',  t.descNmbs);
+    safeSet('desc-nmbsi', t.descNmbsi);
+    safeSet('desc-gemini',t.descGemini);
+    safeSet('desc-github',t.descGithub);
+    safeSet('desc-hsm',   t.descHsm);
+    safeSet('desc-hsg',   t.descHsg);
+    safeSet('desc-tit',   t.descTit);
+    safeSet('ql-tit-name',t.titName);
+    safeSet('ql-tit-desc',t.titDesc);
+    safeSet('ql-ns-sub',  t.qlNsSub);
+    safeSet('ql-nmbs-sub',t.qlNmbsSub);
+    setLinkText('btn-nsi',   '🌍', t.nsi);
+    setLinkText('btn-tp',    '📡', t.tp);
+    setLinkText('btn-nmbs',  '🇧🇪', t.nmbs);
+    setLinkText('btn-nmbsi', '🛤️', t.nmbsi);
+    setLinkText('btn-hsm',   '💙', t.hsm);
+    setLinkText('btn-hsg',   '🚆', t.hsg);
+    setLinkText('btn-tit',   '🎫', t.tit);
+
+    // Boards
+    safeSet('txt-feature-title',    t.featureTrain);
+    safeSet('txt-bus-title',        t.featureBus);
+    safeSet('tip-btn-go',           t.tipBtnGo);
+    safeSet('tip-btn-close',        t.tipBtnClose);
+
+    // Footer
+    safeSet('footer-brand-name', t.footerBrand);
+    safeSet('footer-tagline', t.footerTagline);
+    safeSet('footer-tickets', t.footerTickets);
+    safeSet('footer-tech', t.footerTech);
+    safeSet('txt-footer', t.footer, true);
+
+    // Search overlay
+    safeSet('txt-search-init', t.sInit);
+
+    document.documentElement.lang = currentLang;
+    updateSpotifyUI();
+  }
+
+  function setLinkText(id, icon, label) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    // New horizontal layout: find link-name span inside, update only the name
+    const nameEl = el.querySelector('.link-name');
+    if (nameEl) { nameEl.textContent = label; return; }
+    // btn-tit is a button wrapping .link-name
+    const btnNameEl = el.querySelector ? el.querySelector('.link-name') : null;
+    if (btnNameEl) { btnNameEl.textContent = label; return; }
+    el.innerHTML = `<div class="link-icon">${icon}</div><div class="link-text"><span class="link-name">${label}</span></div>`;
+  }
+
+  function toggleLanguage() {
+    currentLang = currentLang === 'nl' ? 'fr' : 'nl';
+    updateUI();
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // SEARCH
+  // ═══════════════════════════════════════════════════════
+  async function handleSearch(event) {
+    event.preventDefault();
+    const input = document.getElementById('searchInput') || document.getElementById('nav-searchInput');
+    const q = input ? input.value.trim() : '';
+    if (!q) return;
+    const t = translations[currentLang];
+    document.getElementById('search-query-display').textContent = `${t.sQuery}"${q}"`;
+    document.getElementById('search-overlay').classList.add('active');
+    await new Promise(r => setTimeout(r, 800));
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
+    setTimeout(() => document.getElementById('search-overlay').classList.remove('active'), 400);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // RSS FEED
+  // ═══════════════════════════════════════════════════════
+  const RSSFeeds = {
+    nu:        { url: 'https://www.nu.nl/rss/algemeen',        title: 'NU.nl',        name: 'NU.NL' },
+    standaard: { url: 'https://www.standaard.be/binnenland/rss/', title: 'De Standaard', name: 'De Standaard' },
+    lemonde:   { url: 'https://www.lemonde.fr/rss/une.xml',    title: 'Le Monde',     name: 'Le Monde' }
+  };
+
+  let currentFeed = 'nu';
+  const feedCache = {};
+  const CACHE_DURATION = 5 * 60 * 1000;
+
+  function getCachedFeed(feedKey) {
+    const cached = feedCache[feedKey];
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) return cached.data;
+    return null;
+  }
+
+  function setCachedFeed(feedKey, data) {
+    feedCache[feedKey] = { data, timestamp: Date.now() };
+  }
+
+  function switchFeed(feedKey) {
+    currentFeed = feedKey;
+    document.querySelectorAll('.rss-tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.feed === feedKey);
+    });
+    const titleEl = document.getElementById('txt-news-title');
+    if (titleEl) titleEl.textContent = RSSFeeds[feedKey].title;
+    showLoadingState();
+    const cached = getCachedFeed(feedKey);
+    if (cached) { parseRSSFeed(cached, feedKey); return; }
+    fetchRSSFeed(feedKey);
+  }
+
+  function refreshRSSFeed() {
+    const btn = document.getElementById('rss-refresh-btn');
+    if (!btn || btn.classList.contains('loading')) return;
+    btn.classList.add('loading');
+    btn.disabled = true;
+    fetchRSSFeed(currentFeed).finally(() => {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const refreshBtn = document.getElementById('rss-refresh-btn');
+    if (refreshBtn) refreshBtn.addEventListener('click', refreshRSSFeed);
+  });
+
+  function showLoadingState() {
+    const newsGrid = document.getElementById('news-grid');
+    if (!newsGrid) return;
+    const msg = translations[currentLang]?.newsLoading || 'Nieuws laden...';
+    newsGrid.innerHTML = `
+      <div class="news-loading">
+        <div class="news-spinner"></div>
+        <p id="txt-news-loading">${msg}</p>
+      </div>
+    `;
+  }
+
+  async function fetchRSSFeed(feedKey = currentFeed) {
+    const feedUrl = RSSFeeds[feedKey].url;
+    const newsGrid = document.getElementById('news-grid');
+    const msg = translations[currentLang]?.newsLoading || 'Nieuws laden...';
+    if (newsGrid) {
+      newsGrid.innerHTML = `
+        <div class="news-loading">
+          <div class="news-spinner"></div>
+          <p id="txt-news-loading">${msg}</p>
+        </div>
+      `;
+    }
+
+    const corsProxies = [
+      url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+      url => 'https://corsproxy.io/?url=' + encodeURIComponent(url),
+      url => 'https://cors-anywhere.herokuapp.com/' + url,
+      url => 'https://thingproxy.freeboard.io/fetch/' + url,
+    ];
+
+    for (let i = 0; i < corsProxies.length; i++) {
+      try {
+        const fetchUrl = corsProxies[i](feedUrl);
+        const response = await Promise.race([
+          fetch(fetchUrl, {
+            mode: 'cors',
+            headers: { 'Accept': 'application/rss+xml, application/xml, text/xml' }
+          }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
+        ]);
+        if (!response.ok) continue;
+        let text = await response.text();
+        if (!text || text.length < 100) continue;
+        if (text.includes('<html') || text.includes('<!DOCTYPE')) {
+          const rssStart = text.indexOf('<rss');
+          if (rssStart !== -1) {
+            text = text.substring(rssStart);
+            const rssEnd = text.lastIndexOf('</rss>');
+            if (rssEnd !== -1) text = text.substring(0, rssEnd + 6);
+          }
+        }
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(text, 'text/xml');
+        if (xmlDoc.getElementsByTagName('parsererror').length > 0) continue;
+        const items = xmlDoc.getElementsByTagName('item');
+        if (items.length === 0) continue;
+        setCachedFeed(feedKey, xmlDoc);
+        parseRSSFeed(xmlDoc, feedKey);
+        return;
+      } catch(e) { continue; }
+    }
+
+    // Fallback: show demo
+    showDemoNews(feedKey);
+  }
+
+  function parseRSSFeed(xmlDoc, feedKey = currentFeed, isCached = false) {
+    const newsGrid = document.getElementById('news-grid');
+    if (!newsGrid) return;
+    const items = xmlDoc.getElementsByTagName('item');
+    if (items.length === 0) { showNewsError(); return; }
+    newsGrid.innerHTML = '';
+    let successCount = 0;
+    for (let i = 0; i < Math.min(6, items.length); i++) {
+      try {
+        const item = items[i];
+        const title       = item.getElementsByTagName('title')[0]?.textContent || 'Untitled';
+        const description = item.getElementsByTagName('description')[0]?.textContent || '';
+        const link        = item.getElementsByTagName('link')[0]?.textContent || '#';
+        const pubDate     = item.getElementsByTagName('pubDate')[0]?.textContent || '';
+        const date    = new Date(pubDate);
+        const timeStr = isNaN(date.getTime()) ? 'Recent' : formatTimeAgo(date);
+        const plainDesc = description.replace(/<[^>]*>/g, '').substring(0, 150).trim();
+        const card = document.createElement('a');
+        card.href = link;
+        card.target = '_blank';
+        card.className = 'news-card';
+        card.innerHTML = `
+          <div class="news-title">${escapeHtml(title)}</div>
+          <div class="news-desc">${escapeHtml(plainDesc)}${plainDesc.length >= 150 ? '...' : ''}</div>
+          <div class="news-meta">
+            <span class="news-time">${timeStr}${isCached ? ' (cache)' : ''}</span>
+            <span class="news-source">${RSSFeeds[feedKey].name}</span>
+          </div>
+        `;
+        newsGrid.appendChild(card);
+        successCount++;
+      } catch(err) {}
+    }
+    if (successCount === 0) showNewsError();
+  }
+
+  function showDemoNews(feedKey = currentFeed) {
+    const newsGrid = document.getElementById('news-grid');
+    if (!newsGrid) return;
+    const demoNews = [
+      { title: 'Spoorwegen: Nieuwe snelverbinding geopend',      desc: 'De Hoggynesische Spoorwegen openden vandaag een nieuwe snelverbinding tussen de hoofdstad en het zuiden.',   time: '2h' },
+      { title: 'Treinstations vernieuwd',                        desc: 'Alle treinstations worden gerenoveerd met moderne voorzieningen en verbeterde toegankelijkheid.',             time: '4h' },
+      { title: 'Reizigers tevreden met service',                 desc: 'Enquête toont aan dat reizigers zeer tevreden zijn met de verbeterde klantenservice van de spoorwegen.',     time: '6h' },
+      { title: 'Meer directe verbindingen',                      desc: 'Vanaf volgende maand worden er meer directe treinverbindingen tussen grote steden gerealiseerd.',            time: '8h' },
+      { title: 'Groene treinen ingevoerd',                       desc: 'De HS investeert in groene technologie en voert nieuwe elektrische treinen in voor het hele netwerk.',       time: '1d' },
+      { title: 'Online inchecken nu mogelijk',                   desc: 'Passagiers kunnen nu online hun stoelplek reserveren en hebben altijd zicht op hun boeking via de app.',     time: '1d' }
+    ];
+    newsGrid.innerHTML = '';
+    demoNews.forEach(news => {
+      const card = document.createElement('a');
+      card.href = '#';
+      card.className = 'news-card';
+      card.innerHTML = `
+        <div class="news-title">${escapeHtml(news.title)}</div>
+        <div class="news-desc">${escapeHtml(news.desc)}</div>
+        <div class="news-meta">
+          <span class="news-time">${news.time} (demo)</span>
+          <span class="news-source">${RSSFeeds[feedKey].name}</span>
+        </div>
+      `;
+      newsGrid.appendChild(card);
+    });
+  }
+
+  function showNewsError() {
+    const newsGrid = document.getElementById('news-grid');
+    if (newsGrid) {
+      const msg = translations[currentLang]?.newsError || 'Kon nieuws niet laden';
+      newsGrid.innerHTML = `<div class="news-error">${msg}</div>`;
+    }
+  }
+
+  function formatTimeAgo(date) {
+    const now     = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    const t       = translations[currentLang];
+    if (seconds < 60) return t.justNow || 'Zojuist';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h`;
+    return `${Math.floor(hours / 24)}d`;
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Fetch RSS on load & refresh every 5 min
+  fetchRSSFeed();
+  setInterval(fetchRSSFeed, 5 * 60 * 1000);
+
+  // ═══════════════════════════════════════════════════════
+  // SPOTIFY NOW PLAYING
+  // ═══════════════════════════════════════════════════════
+  const NP_CLIENT_ID = '648a7665fcbf4f5cb63b56173cf8e02f';
+  const NP_SCOPES    = 'user-read-currently-playing';
+  const NP_REDIRECT  = window.location.href.split('?')[0].split('#')[0];
+
+  function npRand(len) {
+    const a = new Uint8Array(len);
+    crypto.getRandomValues(a);
+    return Array.from(a, b => b.toString(16).padStart(2,'0')).join('').slice(0,len);
+  }
+  async function npSha256(s) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  }
+  function npB64url(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf)))
+      .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+
+  async function npExchange(code) {
+    const body = new URLSearchParams({
+      grant_type:     'authorization_code', code,
+      redirect_uri:   NP_REDIRECT,
+      client_id:      NP_CLIENT_ID,
+      code_verifier:  localStorage.getItem('sp_verifier')
+    });
+    const r = await fetch('https://accounts.spotify.com/api/token',
+      { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: body.toString() });
+    const d = await r.json();
+    if (d.access_token) {
+      localStorage.setItem('sp_token',   d.access_token);
+      localStorage.setItem('sp_refresh', d.refresh_token);
+      localStorage.setItem('sp_expires', Date.now() + d.expires_in * 1000);
+      return true;
+    }
+    return false;
+  }
+
+  async function npRefresh() {
+    const body = new URLSearchParams({
+      grant_type:    'refresh_token',
+      refresh_token: localStorage.getItem('sp_refresh'),
+      client_id:     NP_CLIENT_ID
+    });
+    const r = await fetch('https://accounts.spotify.com/api/token',
+      { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: body.toString() });
+    const d = await r.json();
+    if (d.access_token) {
+      localStorage.setItem('sp_token',   d.access_token);
+      localStorage.setItem('sp_expires', Date.now() + d.expires_in * 1000);
+      if (d.refresh_token) localStorage.setItem('sp_refresh', d.refresh_token);
+      return true;
+    }
+    return false;
+  }
+
+  async function npGetToken() {
+    const exp = parseInt(localStorage.getItem('sp_expires') || '0');
+    if (Date.now() > exp - 60000) { if (!await npRefresh()) return null; }
+    return localStorage.getItem('sp_token');
+  }
+
+  async function npDoAuth() {
+    const verifier   = npRand(64);
+    const challenge  = npB64url(await npSha256(verifier));
+    const state      = npRand(16);
+    localStorage.setItem('sp_verifier', verifier);
+    localStorage.setItem('sp_state', state);
+    const p = new URLSearchParams({
+      client_id: NP_CLIENT_ID, response_type: 'code',
+      redirect_uri: NP_REDIRECT, code_challenge_method: 'S256',
+      code_challenge: challenge, state, scope: NP_SCOPES
+    });
+    window.location.href = 'https://accounts.spotify.com/authorize?' + p.toString();
+  }
+
+  let npLastId = null;
+
+  function npShowIdle() {
+    document.getElementById('np-idle-text').textContent = translations[currentLang].npIdleText;
+    document.getElementById('np-track-state').style.display = 'none';
+    document.getElementById('np-idle-state').style.display  = 'flex';
+    document.getElementById('np-dot').className = 'np-dot idle';
+  }
+
+  async function npFetch() {
+    const token = await npGetToken();
+    if (!token) return;
+    try {
+      const r = await fetch('https://api.spotify.com/v1/me/player/currently-playing',
+        { headers: { Authorization: 'Bearer ' + token } });
+      if (r.status === 204 || !r.ok) { npShowNothing(); return; }
+      const d = await r.json();
+      if (!d || !d.item) { npShowNothing(); return; }
+
+      document.getElementById('np-dot').className = 'np-dot ' + (d.is_playing ? 'playing' : 'paused');
+
+      if (d.item.id !== npLastId) {
+        npLastId = d.item.id;
+        document.getElementById('np-title').textContent  = d.item.name;
+        document.getElementById('np-artist').textContent = d.item.artists.map(a => a.name).join(', ');
+        const img = document.getElementById('np-art');
+        const url = d.item.album?.images?.[0]?.url;
+        if (url) { img.src = url; img.style.opacity = 0; img.onload = () => img.style.opacity = 1; }
+      }
+
+      document.getElementById('np-track-state').style.display = 'block';
+      document.getElementById('np-idle-state').style.display  = 'none';
+    } catch(e) { npShowNothing(); }
+  }
+
+  function npShowNothing() {
+    document.getElementById('np-idle-text').textContent = translations[currentLang].npNothing;
+    document.getElementById('np-track-state').style.display = 'none';
+    document.getElementById('np-idle-state').style.display  = 'flex';
+    document.getElementById('np-dot').className = 'np-dot paused';
+    npLastId = null;
+  }
+
+  function toggleSpotify() {
+    spotifyEnabled = !spotifyEnabled;
+    localStorage.setItem('spotify_enabled', spotifyEnabled);
+    updateSpotifyUI();
+    if (spotifyEnabled) {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code'), state = params.get('state');
+      if (code && state && state === localStorage.getItem('sp_state')) {
+        history.replaceState({}, '', window.location.pathname);
+        npExchange(code).then(success => {
+          if (success) { npFetch(); spotifyFetchInterval = setInterval(npFetch, 5000); }
+        });
+      } else if (localStorage.getItem('sp_refresh')) {
+        npFetch();
+        spotifyFetchInterval = setInterval(npFetch, 5000);
+      } else {
+        npDoAuth();
+      }
+    } else {
+      if (spotifyFetchInterval) { clearInterval(spotifyFetchInterval); spotifyFetchInterval = null; }
+      document.getElementById('np-track-state').style.display   = 'none';
+      document.getElementById('np-idle-state').style.display    = 'none';
+      document.getElementById('np-disabled-state').style.display = 'flex';
+      document.getElementById('np-dot').className = 'np-dot idle';
+    }
+  }
+
+  function updateSpotifyUI() {
+    const btn          = document.getElementById('spotify-toggle-btn');
+    if (btn) btn.title = (translations[currentLang] || translations.nl).spotifyToggleTitle || '';
+    const disabledState = document.getElementById('np-disabled-state');
+    const t = translations[currentLang];
+    if (spotifyEnabled) {
+      btn.textContent = t.spotifyDisable;
+      btn.classList.remove('disabled');
+      disabledState.style.display = 'none';
+    } else {
+      btn.textContent = t.spotifyEnable;
+      btn.classList.add('disabled');
+      disabledState.style.display = 'flex';
+      const disabledText = document.getElementById('np-disabled-text');
+      if (disabledText) disabledText.textContent = t.spotifyDisabledMsg;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // STICKY NAVBAR SEARCH
+  // ═══════════════════════════════════════════════════════
+  const heroSection   = document.querySelector('.hero');
+  const navSearchWrap = document.getElementById('nav-search-wrap');
+
+  if (heroSection && navSearchWrap) {
+    window.addEventListener('scroll', () => {
+      const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+      if (window.scrollY > heroBottom - 64) {
+        navSearchWrap.classList.add('visible');
+      } else {
+        navSearchWrap.classList.remove('visible');
+      }
+    }, { passive: true });
+
+    // Sync search values
+    const mainInput = document.getElementById('searchInput');
+    const navInput  = document.getElementById('nav-searchInput');
+    if (mainInput && navInput) {
+      mainInput.addEventListener('input', e => navInput.value = e.target.value);
+      navInput.addEventListener('input',  e => mainInput.value = e.target.value);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // TIP MODAL
+  // ═══════════════════════════════════════════════════════
+  const tipConfig = {
+    nmbs:    { icon: '🇧🇪', url: 'https://www.b-europe.com/', titleKey: 'tipNmbsTitle',    bodyKey: 'tipNmbsBody' },
+    eurostar:{ icon: '🚅',  url: 'https://www.eurostar.com/', titleKey: 'tipEurostarTitle', bodyKey: 'tipEurostarBody' }
+  };
+  let _tipUrl = null;
+
+  function showTipModal(key) {
+    const cfg = tipConfig[key];
+    if (!cfg) return;
+    const t = translations[currentLang];
+    _tipUrl = cfg.url;
+    document.getElementById('tip-icon').textContent      = cfg.icon;
+    document.getElementById('tip-label').textContent     = t.tipLabelAdvice;
+    document.getElementById('tip-title').textContent     = t[cfg.titleKey];
+    document.getElementById('tip-body').textContent      = t[cfg.bodyKey];
+    document.getElementById('tip-btn-go').textContent    = t.tipBtnGo;
+    document.getElementById('tip-btn-close').textContent = t.tipBtnClose;
+    document.getElementById('tip-modal-backdrop').classList.add('active');
+    document.querySelectorAll('.subnav-dropdown-menu.open').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.subnav-dropdown.open').forEach(w => w.classList.remove('open'));
+  }
+  function closeTipModal() {
+    document.getElementById('tip-modal-backdrop').classList.remove('active');
+    _tipUrl = null;
+  }
+  function handleTipBackdropClick(e) {
+    if (e.target === document.getElementById('tip-modal-backdrop')) closeTipModal();
+  }
+  function tipProceed() {
+    if (_tipUrl) window.open(_tipUrl, '_blank', 'noopener');
+    closeTipModal();
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTipModal(); });
+
+  // ═══════════════════════════════════════════════════════
+  // SERVICE WORKER (PWA)
+  // ═══════════════════════════════════════════════════════
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(r => console.log('PWA klaar.', r.scope))
+        .catch(e => console.log('SW mislukt:', e));
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // INIT
+  // ═══════════════════════════════════════════════════════
+  updateUI();
+  updateSpotifyUI();
+
+  // ═══════════════════════════════════════════════════════
+  // RANDOM ACHTERGROND — GitHub API
+  // Zet hieronder jouw GitHub gebruikersnaam en reponaam.
+  // ═══════════════════════════════════════════════════════
+  const HS_GITHUB_REPO   = 'Mister-Yoshi/mister-yoshi.github.io';
+  const HS_BG_FOLDER     = 'achtergronden';
+  const HS_BG_CACHE_KEY  = 'hs_bg_list';
+  const HS_BG_CACHE_TTL  = 60 * 60 * 1000; // 1 uur
+
+  async function loadRandomBackground() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+
+    try {
+      // Gebruik gecachede lijst als die nog vers is
+      let urls = null;
+      try {
+        const raw = localStorage.getItem(HS_BG_CACHE_KEY);
+        if (raw) {
+          const { list, ts } = JSON.parse(raw);
+          if (Date.now() - ts < HS_BG_CACHE_TTL) urls = list;
+        }
+      } catch(_) {}
+
+      if (!urls) {
+        const apiUrl = `https://api.github.com/repos/${HS_GITHUB_REPO}/contents/${HS_BG_FOLDER}`;
+        const res = await fetch(apiUrl);
+        if (!res.ok) throw new Error(`GitHub API: ${res.status}`);
+        const files = await res.json();
+        if (!Array.isArray(files)) throw new Error('Onverwachte API-respons');
+
+        urls = files
+          .filter(f => f.type === 'file' && /\.(jpe?g|png|webp|gif|avif)$/i.test(f.name))
+          .map(f => f.download_url);
+
+        try {
+          localStorage.setItem(HS_BG_CACHE_KEY, JSON.stringify({ list: urls, ts: Date.now() }));
+        } catch(_) {}
+      }
+
+      if (!urls.length) return;
+
+      // Kies willekeurig, maar niet dezelfde als vorig
+      const prev = sessionStorage.getItem('hs_bg_prev') || '';
+      let filtered = urls.filter(u => u !== prev);
+      if (!filtered.length) filtered = urls;
+      const chosen = filtered[Math.floor(Math.random() * filtered.length)];
+      sessionStorage.setItem('hs_bg_prev', chosen);
+
+      // Laad de afbeelding, zet pas als geladen (geen pop-in)
+      const img = new Image();
+      img.onload = () => {
+        hero.style.backgroundImage =
+          `linear-gradient(135deg,rgba(0,10,30,.88) 0%,rgba(0,20,55,.85) 60%,rgba(0,15,35,.88) 100%),url('${chosen}')`;
+        hero.style.backgroundSize     = 'auto, cover';
+        hero.style.backgroundPosition = 'center, center';
+        hero.style.backgroundRepeat   = 'no-repeat, no-repeat';
+        hero.style.backgroundAttachment = window.innerWidth > 600 ? 'fixed' : 'scroll';
+        hero.style.transition = 'background-image 0.4s ease';
+      };
+      img.onerror = () => {}; // stil falen, gradient blijft
+      img.src = chosen;
+
+    } catch(e) {
+      console.warn('[HS] Achtergrond kon niet worden geladen:', e.message);
+    }
+  }
+
+  loadRandomBackground();
+
+  (async function npInit() {
+    if (!spotifyEnabled) return;
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code'), state = params.get('state');
+    if (code && state && state === localStorage.getItem('sp_state')) {
+      history.replaceState({}, '', window.location.pathname);
+      if (await npExchange(code)) { npFetch(); spotifyFetchInterval = setInterval(npFetch, 5000); return; }
+    }
+    if (localStorage.getItem('sp_refresh')) {
+      npFetch();
+      spotifyFetchInterval = setInterval(npFetch, 5000);
+    }
+  })();
+
+  // ═══════════════════════════════════════════════════════
+  // INTERNATIONAL TICKETS DROPDOWN
+  // ═══════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════
+  // SHARED DROPDOWN POSITION HELPER
+  // ═══════════════════════════════════════════════════════
+  function positionDropdown(menu, btn) {
+    const rect    = btn.getBoundingClientRect();
+    const menuW   = menu.offsetWidth || 270;
+    const vw      = window.innerWidth;
+    let left = rect.left;
+    // Clamp so menu doesn't overflow right edge
+    if (left + menuW > vw - 8) left = Math.max(8, vw - menuW - 8);
+    menu.style.top  = (rect.bottom + 2) + 'px';
+    menu.style.left = left + 'px';
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // QUICK-LINK DROPDOWN (Kaartjes)
+  // ═══════════════════════════════════════════════════════
+  function toggleQlDropdown(e, wrapId, menuId) {
+    e.stopPropagation();
+    const wrap = document.getElementById(wrapId);
+    const menu = document.getElementById(menuId);
+    const btn  = wrap.querySelector('.ql-dropdown-btn');
+    const isOpen = menu.classList.contains('open');
+    // Close all ql dropdowns first
+    document.querySelectorAll('.ql-dropdown-menu.open').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.ql-dropdown-wrap.open').forEach(w => w.classList.remove('open'));
+    if (!isOpen) {
+      menu.style.width = btn.getBoundingClientRect().width + 'px';
+      positionDropdown(menu, btn);
+      menu.classList.add('open');
+      wrap.classList.add('open');
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    document.querySelectorAll('.ql-dropdown-menu.open').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.ql-dropdown-wrap.open').forEach(w => w.classList.remove('open'));
+  });
+
+  window.addEventListener('scroll', function() {
+    document.querySelectorAll('.ql-dropdown-menu.open').forEach(menu => {
+      const wrap = document.querySelector('.ql-dropdown-wrap.open');
+      if (wrap) {
+        const btn = wrap.querySelector('.ql-dropdown-btn');
+        if (btn) positionDropdown(menu, btn);
+      }
+    });
+  }, { passive: true });
+
+  function toggleIntlDropdown(e, wrapId, menuId) {
+    e.stopPropagation();
+    wrapId = wrapId || 'intl-dropdown';
+    menuId = menuId || 'intl-dropdown-menu';
+    const btn  = e.currentTarget;
+    const menu = document.getElementById(menuId);
+    const wrap = document.getElementById(wrapId);
+    if (!menu || !wrap) return;
+    const isOpen = menu.classList.contains('open');
+    // Close all subnav dropdowns
+    document.querySelectorAll('.subnav-dropdown-menu.open').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.subnav-dropdown.open').forEach(w => w.classList.remove('open'));
+    if (!isOpen) {
+      positionDropdown(menu, btn);
+      menu.classList.add('open');
+      wrap.classList.add('open');
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    document.querySelectorAll('.subnav-dropdown-menu.open').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.subnav-dropdown.open').forEach(w => w.classList.remove('open'));
+  });
+
+  window.addEventListener('scroll', function() {
+    document.querySelectorAll('.subnav-dropdown.open').forEach(wrap => {
+      const menu = wrap.querySelector('.subnav-dropdown-menu.open');
+      const btn  = wrap.querySelector('.subnav-dropdown-btn');
+      if (menu && btn) positionDropdown(menu, btn);
+    });
+  }, { passive: true });
+
+</script>
+</body>
+</html>
