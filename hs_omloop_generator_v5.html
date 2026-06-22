@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HS Omloop Generator v5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #080C14;
+  --bg2:       #0E1420;
+  --bg3:       #141B2A;
+  --border:    #1E2A40;
+  --border2:   #263346;
+  --yellow:    #FFC917;
+  --yellow2:   #FFD94A;
+  --yellow-bg: rgba(255,201,23,0.08);
+  --yellow-bg2:rgba(255,201,23,0.14);
+  --red:       #C0392B;
+  --red2:      #E74C3C;
+  --red-bg:    rgba(192,57,43,0.12);
+  --steel:     #8A95AD;
+  --steel2:    #C4C8D4;
+  --white:     #EDF0F7;
+  --pulse:     rgba(255,201,23,0.25);
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --font-ui:   'Inter', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, var(--border) 39px, var(--border) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, var(--border) 39px, var(--border) 40px);
+  background-size: 40px 40px;
+  position: relative;
+}
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,201,23,0.05) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 80% 100%, rgba(14,20,32,0.9) 0%, transparent 100%);
+  pointer-events:none; z-index:0;
+}
+
+.app {
+  position: relative; z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
+
+/* ── HEADER ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.header-left { display:flex; align-items:center; gap:12px; }
+.rail-logo {
+  width: 36px; height: 36px;
+  background: var(--yellow);
+  border-radius: 8px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.rail-logo svg { width:22px; height:22px; }
+.brand-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--steel);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+.live-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.clock-time {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--yellow);
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+.clock-date {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--steel);
+  letter-spacing: 0.08em;
+}
+
+/* ── STATUS BAR ── */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--steel);
+  letter-spacing: 0.06em;
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #22C55E;
+  box-shadow: 0 0 6px #22C55E, 0 0 12px rgba(34,197,94,0.4);
+  flex-shrink: 0;
+  animation: pulse-green 2s ease-in-out infinite;
+}
+@keyframes pulse-green {
+  0%,100% { box-shadow: 0 0 6px #22C55E, 0 0 12px rgba(34,197,94,0.4); }
+  50% { box-shadow: 0 0 10px #22C55E, 0 0 20px rgba(34,197,94,0.6); }
+}
+.status-dot.red {
+  background: var(--red2);
+  box-shadow: 0 0 6px var(--red2), 0 0 12px rgba(231,76,60,0.4);
+  animation: pulse-red 1.2s ease-in-out infinite;
+}
+@keyframes pulse-red {
+  0%,100% { box-shadow: 0 0 6px var(--red2), 0 0 12px rgba(231,76,60,0.4); }
+  50% { box-shadow: 0 0 10px var(--red2), 0 0 22px rgba(231,76,60,0.7); }
+}
+.status-text { color: var(--steel2); }
+.status-sep { color: var(--border2); margin: 0 4px; }
+.status-mode { color: var(--yellow); font-weight: 600; }
+.status-mode.so { color: var(--red2); }
+
+/* ── MODE TABS ── */
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  background: var(--bg2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--steel);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+.tab:hover { border-color: var(--border2); background: var(--bg3); }
+.tab.active-ro {
+  background: var(--yellow-bg2);
+  border-color: var(--yellow);
+  color: var(--yellow);
+}
+.tab.active-so {
+  background: var(--red-bg);
+  border-color: var(--red2);
+  color: var(--red2);
+}
+.tab-icon { font-size: 16px; }
+
+/* ── CONTROLS ── */
+.controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  align-items: center;
+}
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.ctrl-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--steel);
+  text-transform: uppercase;
+}
+select {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 7px 10px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A95AD' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+  transition: border-color 0.15s;
+}
+select:hover { border-color: var(--yellow); }
+select:focus { outline: none; border-color: var(--yellow); box-shadow: 0 0 0 3px var(--yellow-bg); }
+
+/* ── MAIN CODE CARD ── */
+.code-card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.code-card.so-card { border-color: rgba(192,57,43,0.5); }
+.code-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--yellow);
+  border-radius: 0 2px 2px 0;
+  transition: background 0.2s;
+}
+.code-card.so-card::before { background: var(--red); }
+
+.card-inner {
+  padding: 20px 22px 20px 28px;
+}
+.card-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--steel);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-eyebrow .badge {
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.badge-ro { background: var(--yellow-bg2); color: var(--yellow); border: 1px solid rgba(255,201,23,0.3); }
+.badge-so { background: var(--red-bg); color: var(--red2); border: 1px solid rgba(192,57,43,0.4); }
+
+.code-display {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--yellow);
+  margin-bottom: 8px;
+  line-height: 1.15;
+  transition: color 0.2s;
+  min-height: 44px;
+  word-break: break-all;
+}
+.code-display.so-code { color: var(--red2); }
+.code-display.empty { color: var(--border2); }
+
+.datetime-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.datetime-main {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--steel);
+  letter-spacing: 0.05em;
+  flex:1;
+}
+.live-time-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--yellow);
+  background: var(--yellow-bg);
+  border: 1px solid rgba(255,201,23,0.2);
+  border-radius: 5px;
+  padding: 2px 8px;
+  letter-spacing: 0.06em;
+  display: none;
+}
+.live-time-tag.so { color: var(--red2); background: var(--red-bg); border-color: rgba(192,57,43,0.25); }
+.live-time-tag.visible { display: block; }
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--steel2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--border); color: var(--white); border-color: var(--border2); }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--yellow);
+  color: var(--bg);
+  border-color: var(--yellow);
+  font-weight: 700;
+}
+.btn-primary:hover { background: var(--yellow2); border-color: var(--yellow2); color: var(--bg); }
+
+.btn-primary.so-btn {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+}
+.btn-primary.so-btn:hover { background: var(--red2); border-color: var(--red2); color: #fff; }
+
+.btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+.toast {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #22C55E;
+  display: none;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.04em;
+}
+.toast.show { display: flex; }
+
+/* ── PREVIEW SECTION ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--steel);
+  text-transform: uppercase;
+}
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.preview-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.plat-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.plat-dot { width: 8px; height: 8px; border-radius: 50%; }
+.plat-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--steel2);
+  letter-spacing: 0.06em;
+}
+.plat-dim {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--steel);
+  margin-left: auto;
+  letter-spacing: 0.04em;
+}
+
+.canvas-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+canvas {
+  border-radius: 8px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+  max-width: 100%;
+  display: block;
+}
+
+.export-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── HISTORY ── */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.hist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 9px 12px;
+  gap: 10px;
+  transition: border-color 0.12s;
+}
+.hist-item:hover { border-color: var(--border2); }
+.hist-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.hist-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+}
+.hist-badge.ro { background: var(--yellow-bg2); color: var(--yellow); border: 1px solid rgba(255,201,23,0.3); }
+.hist-badge.so { background: var(--red-bg); color: var(--red2); border: 1px solid rgba(192,57,43,0.35); }
+.hist-code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--white);
+  letter-spacing: 0.05em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hist-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.hist-date {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--steel);
+  letter-spacing: 0.04em;
+}
+.btn-xs {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--steel);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.1s;
+  gap: 4px;
+}
+.btn-xs:hover { background: var(--bg3); color: var(--white); }
+.btn-xs:active { transform: scale(0.96); }
+.btn-xs svg { width: 12px; height: 12px; }
+
+.no-history {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--steel);
+  letter-spacing: 0.04em;
+  font-style: italic;
+  padding: 14px 0;
+  text-align: center;
+}
+
+.clear-btn { color: var(--steel); }
+.clear-btn:hover { color: var(--red2); border-color: rgba(192,57,43,0.4); }
+
+/* ── RAIL TRACK DIVIDER ── */
+.rail-divider {
+  position: relative;
+  height: 16px;
+  margin: 20px 0;
+  overflow: hidden;
+  opacity: 0.35;
+}
+.rail-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 2px; margin-top: -1px;
+  background: repeating-linear-gradient(90deg, var(--border2) 0, var(--border2) 18px, transparent 18px, transparent 26px);
+}
+.rail-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 16px; margin-top: -8px;
+  background: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 3px, transparent 3px, transparent 22px);
+}
+
+/* ── GENERATE ANIMATION ── */
+@keyframes flash-code {
+  0%   { opacity: 0.3; }
+  50%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+.code-display.generating {
+  animation: flash-code 0.3s ease forwards;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--steel); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="rail-logo">
+        <svg viewBox="0 0 24 24" fill="none">
+          <!-- Train icon -->
+          <rect x="4" y="4" width="16" height="12" rx="3" fill="#080C14"/>
+          <rect x="6" y="6" width="5" height="4" rx="1" fill="#FFC917"/>
+          <rect x="13" y="6" width="5" height="4" rx="1" fill="#FFC917"/>
+          <rect x="4" y="13" width="16" height="3" rx="1" fill="#080C14"/>
+          <circle cx="8" cy="19" r="2" fill="#080C14"/>
+          <circle cx="16" cy="19" r="2" fill="#080C14"/>
+          <line x1="4" y1="17" x2="20" y2="17" stroke="#080C14" stroke-width="2"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">Omloop Generator</div>
+        <div class="brand-sub">Hoggynesische Spoorwegen · v5</div>
+      </div>
+    </div>
+    <div class="live-clock">
+      <div class="clock-time" id="clock-time">00:00:00</div>
+      <div class="clock-date" id="clock-date">—</div>
+    </div>
+  </header>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar" id="status-bar">
+    <div class="status-dot" id="status-dot"></div>
+    <span class="status-text">SYSTEEM ONLINE</span>
+    <span class="status-sep">·</span>
+    <span>MODUS:</span>
+    <span class="status-mode" id="status-mode">RO · REGULIERE OMLOOP</span>
+    <span class="status-sep" style="margin-left:auto">·</span>
+    <span>ERTMS-SIM</span>
+  </div>
+
+  <!-- MODE TABS -->
+  <div class="tabs">
+    <div class="tab active-ro" id="tab-ro" onclick="setMode('RO')">
+      <span class="tab-icon">🚆</span>
+      Reguliere Omloop
+    </div>
+    <div class="tab" id="tab-so" onclick="setMode('SO')">
+      <span class="tab-icon">⚠️</span>
+      Storingomloop
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="ctrl-group">
+      <div class="ctrl-label">Cijfers</div>
+      <select id="num-len">
+        <option value="4">4 cijfers</option>
+        <option value="5">5 cijfers</option>
+        <option value="6" selected>6 cijfers</option>
+        <option value="8">8 cijfers</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-label">Platform</div>
+      <select id="platform">
+        <option value="none">Geen platform</option>
+        <option value="IG">Instagram</option>
+        <option value="TT">TikTok</option>
+        <option value="TU">Tumblr</option>
+        <option value="RD">Reddit</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-label">Thema</div>
+      <select id="theme">
+        <option value="dark">Donker</option>
+        <option value="light">Licht</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- CODE CARD -->
+  <div class="code-card" id="code-card">
+    <div class="card-inner">
+      <div class="card-eyebrow">
+        <span id="card-eyebrow-text">REGULIERE OMLOOP</span>
+        <span class="badge badge-ro" id="type-badge">RO</span>
+      </div>
+      <div class="code-display empty" id="code-el">HS-RO-——</div>
+      <div class="datetime-row">
+        <div class="datetime-main" id="date-el">Nog geen omloop gegenereerd</div>
+        <div class="live-time-tag" id="live-tag">⏱ LIVE</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-primary" id="gen-btn" onclick="generate()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+            <path d="M3 21v-5h5"/>
+          </svg>
+          Genereer
+        </button>
+        <button class="btn" onclick="copyCode()" id="copy-btn" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+          </svg>
+          Kopieer code
+        </button>
+        <span class="toast" id="toast1">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+          Gekopieerd!
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORT PREVIEW -->
+  <div class="section-header">
+    <div class="section-label">Export Preview</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="preview-wrap">
+    <div class="plat-badge-row" id="plat-badge-row">
+      <div class="plat-dot" id="plat-dot" style="background:#888780"></div>
+      <div class="plat-name" id="plat-name-el">Geen platform</div>
+      <div class="plat-dim" id="plat-dim-el">1:1 — 1080×1080</div>
+    </div>
+
+    <div class="canvas-container">
+      <canvas id="cv" width="1080" height="1080" style="width:300px;height:300px"></canvas>
+    </div>
+
+    <div class="export-actions">
+      <button class="btn btn-primary" id="dl-btn" onclick="dlImg()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" x2="12" y1="15" y2="3"/>
+        </svg>
+        Download PNG
+      </button>
+      <button class="btn" onclick="cpImg()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+        </svg>
+        Kopieer afbeelding
+      </button>
+      <button class="btn" onclick="dlAllPlatforms()" title="Download voor alle platformen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v8"/><path d="m8 6 4 4 4-4"/><rect width="20" height="8" x="2" y="14" rx="2"/>
+          <path d="M6 18h.01"/><path d="M10 18h.01"/>
+        </svg>
+        Exporteer alle platforms
+      </button>
+      <span class="toast" id="toast2">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Gekopieerd!
+      </span>
+      <span class="toast" id="toast3">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Alle exports klaar!
+      </span>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="section-header">
+    <div class="section-label">Recente Omlopen</div>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="history-list" id="hlist">
+    <div class="no-history">Nog geen omlopen gegenereerd.</div>
+  </div>
+
+  <button class="btn clear-btn" onclick="clrH()" style="margin-top:10px;font-size:11px">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+    </svg>
+    Wis geschiedenis
+  </button>
+
+</div>
+
+<script>
+// ── LOGO BASE64 ──
+const LOGO_B64 = "iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAPFJREFUWEftmFsOhCAMRXVl7H83swEzMiEhjJTaXorFBOKflNPePjDuIYTNcUX89/i4PL/IZ8E/mYEk9l/0C/+UAq8SH2tLRkpd9Auvn4w24mPKRytjfHlc7RP5tuWBovQyyQFfRgngWykQRX9RGMOTHtzgyXKD8em02py48Zg678SXTtDR8z1mgk8yvBAPz5+6hJHoh+NzVqxIreGINF6nT6LGY8pb/iXGzKt0iGjqXXKB4UkrKb70AMCPuvF4V8hLUp37bIAVnc3nBtyNC99QQFH5/uLLW064Uxe98FD5toWf6+8GNtp6rOb4sxW98Fon9KtoZLIagEwAAAAASUVORK5CYII=";
+
+let logoImg = null;
+const logoReady = new Promise(res => {
+  const img = new Image();
+  img.onload = () => { logoImg = img; res(); };
+  img.onerror = () => res(); // graceful fallback
+  img.src = 'data:image/png;base64,' + LOGO_B64;
+});
+
+// ── STATE ──
+let mode = 'RO';
+let curCode = '';
+let curDate = '';
+let curDateLong = '';
+let generatedAt = null; // timestamp when generated
+let history = [];
+
+// ── PLATFORM CONFIG ──
+const PLATFORMS = {
+  none: { name: 'Geen platform', color: '#888780', format: '1:1 — 1080×1080', W:1080, H:1080 },
+  IG:   { name: 'Instagram',     color: '#E1306C', format: '1:1 — 1080×1080', W:1080, H:1080 },
+  TT:   { name: 'TikTok',        color: '#69C9D0', format: '9:16 — 1080×1920',W:1080, H:1920 },
+  TU:   { name: 'Tumblr',        color: '#35465C', format: '1:1 — 1080×1080', W:1080, H:1080 },
+  RD:   { name: 'Reddit',        color: '#FF4500', format: '4:3 — 1080×810',  W:1080, H:810  },
+};
+
+// ── CLOCK — Live, synced to wall clock ──
+function updateClock() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+
+  const days = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  const months = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+  const dd = String(now.getDate()).padStart(2,'0');
+  const mo = months[now.getMonth()];
+  const yr = now.getFullYear();
+
+  document.getElementById('clock-time').textContent = `${hh}:${mm}:${ss}`;
+  document.getElementById('clock-date').textContent = `${days[now.getDay()].toUpperCase()} ${dd} ${mo.toUpperCase()} ${yr}`;
+}
+
+// Sync to next second boundary
+function startClock() {
+  updateClock();
+  const now = new Date();
+  const msToNextSec = 1000 - now.getMilliseconds();
+  setTimeout(() => {
+    updateClock();
+    setInterval(updateClock, 1000);
+  }, msToNextSec);
+}
+startClock();
+
+// ── DATE HELPERS ──
+function getNlDate() {
+  const n = new Date();
+  const days = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  const months = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+  const dd = String(n.getDate()).padStart(2,'0');
+  const mm = String(n.getMonth()+1).padStart(2,'0');
+  const hh = String(n.getHours()).padStart(2,'0');
+  const mn = String(n.getMinutes()).padStart(2,'0');
+  const ss = String(n.getSeconds()).padStart(2,'0');
+  return {
+    short: `${dd}-${mm}-${n.getFullYear()} ${hh}:${mn}:${ss}`,
+    long:  `${days[n.getDay()]} ${dd} ${months[n.getMonth()]} ${n.getFullYear()} — ${hh}:${mn}:${ss}`,
+    iso:   n
+  };
+}
+
+// ── MODE SWITCH ──
+function setMode(m) {
+  mode = m;
+  const isRO = m === 'RO';
+
+  document.getElementById('tab-ro').className = 'tab' + (isRO ? ' active-ro' : '');
+  document.getElementById('tab-so').className = 'tab' + (!isRO ? ' active-so' : '');
+
+  const genBtn = document.getElementById('gen-btn');
+  genBtn.className = 'btn btn-primary' + (!isRO ? ' so-btn' : '');
+
+  const codeEl = document.getElementById('code-el');
+  const codeCard = document.getElementById('code-card');
+  const eyebrow = document.getElementById('card-eyebrow-text');
+  const badge = document.getElementById('type-badge');
+  const statusMode = document.getElementById('status-mode');
+  const statusDot = document.getElementById('status-dot');
+  const liveTag = document.getElementById('live-tag');
+
+  if (isRO) {
+    codeEl.className = 'code-display empty';
+    codeCard.className = 'code-card';
+    eyebrow.textContent = 'REGULIERE OMLOOP';
+    badge.className = 'badge badge-ro';
+    badge.textContent = 'RO';
+    statusMode.className = 'status-mode';
+    statusMode.textContent = 'RO · REGULIERE OMLOOP';
+    statusDot.className = 'status-dot';
+    liveTag.className = 'live-time-tag' + (curCode ? ' visible' : '');
+    liveTag.textContent = '⏱ LIVE';
+  } else {
+    codeEl.className = 'code-display so-code empty';
+    codeCard.className = 'code-card so-card';
+    eyebrow.textContent = 'STORINGOMLOOP';
+    badge.className = 'badge badge-so';
+    badge.textContent = 'SO';
+    statusMode.className = 'status-mode so';
+    statusMode.textContent = 'SO · STORINGOMLOOP';
+    statusDot.className = 'status-dot red';
+    liveTag.className = 'live-time-tag so' + (curCode ? ' visible' : '');
+    liveTag.textContent = '⚠️ STORING';
+  }
+
+  codeEl.textContent = 'HS-' + m + '-——';
+  document.getElementById('date-el').textContent = 'Nog geen omloop gegenereerd';
+  curCode = '';
+  curDate = '';
+  curDateLong = '';
+  generatedAt = null;
+  liveTag.classList.remove('visible');
+
+  document.getElementById('copy-btn').disabled = true;
+  drawCanvas();
+}
+
+// ── GENERATE ──
+function generate() {
+  const len = parseInt(document.getElementById('num-len').value);
+  const min = Math.pow(10, len-1), max = Math.pow(10, len)-1;
+  const num = String(Math.floor(Math.random() * (max - min + 1)) + min).padStart(len, '0');
+  curCode = `HS-${mode}-${num}`;
+  generatedAt = new Date();
+
+  const dates = getNlDate();
+  curDate = dates.short;
+  curDateLong = dates.long;
+
+  const codeEl = document.getElementById('code-el');
+  codeEl.textContent = curCode;
+  codeEl.className = 'code-display generating' + (mode === 'SO' ? ' so-code' : '');
+  setTimeout(() => {
+    codeEl.className = 'code-display' + (mode === 'SO' ? ' so-code' : '');
+  }, 400);
+
+  document.getElementById('date-el').textContent = curDateLong;
+
+  const liveTag = document.getElementById('live-tag');
+  liveTag.classList.add('visible');
+
+  document.getElementById('copy-btn').disabled = false;
+
+  history.unshift({ code: curCode, type: mode, datum: curDate, iso: generatedAt });
+  if (history.length > 8) history.pop();
+  renderHistory();
+  drawCanvas();
+}
+
+// ── CANVAS DRAWING ──
+async function drawCanvas() {
+  await logoReady;
+  const platKey = document.getElementById('platform').value;
+  const plat = PLATFORMS[platKey];
+  document.getElementById('plat-dot').style.background = plat.color;
+  document.getElementById('plat-name-el').textContent = plat.name;
+  document.getElementById('plat-dim-el').textContent = plat.format;
+  _drawCanvas(false, document.getElementById('cv'), platKey);
+}
+
+function _drawCanvas(forDownload, cv, platKey) {
+  const plat = PLATFORMS[platKey];
+  const isDark = document.getElementById('theme').value === 'dark';
+  const isRO = mode === 'RO';
+  const W = plat.W, H = plat.H;
+  const isTT = (H === 1920);
+  const isRD = (H === 810);
+  const AR = H / W;
+
+  cv.width = W; cv.height = H;
+  if (!forDownload) {
+    const displayW = Math.min(300, window.innerWidth - 80);
+    cv.style.width = displayW + 'px';
+    cv.style.height = Math.round(displayW * AR) + 'px';
+  }
+
+  const ctx = cv.getContext('2d');
+
+  // ── COLORS ──
+  const bg      = isDark ? '#080C14' : '#F0F2F7';
+  const bg2     = isDark ? '#0E1420' : '#FFFFFF';
+  const border  = isDark ? '#1E2A40' : '#D0D6E8';
+  const border2 = isDark ? '#263346' : '#B0BAD0';
+  const yellow  = '#FFC917';
+  const redAcc  = isDark ? '#E74C3C' : '#C0392B';
+  const steel   = isDark ? '#8A95AD' : '#6B7897';
+  const steel2  = isDark ? '#C4C8D4' : '#3A4560';
+  const white   = isDark ? '#EDF0F7' : '#0D1526';
+  const codeCol = isRO
+    ? (isDark ? '#FFC917' : '#0D1526')
+    : (isDark ? '#E74C3C' : '#C0392B');
+
+  // ── BACKGROUND ──
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid pattern
+  ctx.strokeStyle = isDark ? 'rgba(30,42,64,0.7)' : 'rgba(200,210,225,0.5)';
+  ctx.lineWidth = 1;
+  const gridSize = isTT ? 60 : 54;
+  for (let x = 0; x <= W; x += gridSize) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let y = 0; y <= H; y += gridSize) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Vignette
+  const vig = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.8);
+  vig.addColorStop(0, 'transparent');
+  vig.addColorStop(1, isDark ? 'rgba(8,12,20,0.6)' : 'rgba(220,225,235,0.4)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, W, H);
+
+  const M = isTT ? 64 : isRD ? 50 : 56;
+  const R = 36;
+
+  // ── CARD BACKGROUND ──
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y); ctx.arcTo(x+w, y, x+w, y+r, r);
+    ctx.lineTo(x+w, y+h-r); ctx.arcTo(x+w, y+h, x+w-r, y+h, r);
+    ctx.lineTo(x+r, y+h); ctx.arcTo(x, y+h, x, y+h-r, r);
+    ctx.lineTo(x, y+r); ctx.arcTo(x, y, x+r, y, r);
+    ctx.closePath();
+  }
+
+  // Card shadow
+  ctx.save();
+  ctx.shadowColor = isDark ? 'rgba(0,0,0,0.6)' : 'rgba(100,120,160,0.25)';
+  ctx.shadowBlur = 60;
+  ctx.shadowOffsetY = 10;
+  roundRect(M, M, W-M*2, H-M*2, R);
+  ctx.fillStyle = bg2;
+  ctx.fill();
+  ctx.restore();
+
+  // Card border
+  roundRect(M, M, W-M*2, H-M*2, R);
+  ctx.strokeStyle = isRO ? border2 : (isDark ? 'rgba(192,57,43,0.5)' : 'rgba(192,57,43,0.4)');
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Left accent bar
+  const barX = M, barY = M + 36, barH = H - M*2 - 72;
+  roundRect(barX, barY, 6, barH, 3);
+  ctx.fillStyle = isRO ? yellow : redAcc;
+  ctx.fill();
+
+  // ── CONTENT ──
+  const iX = M + 36;
+  const cW = W - M*2 - 36 - 20;
+  const scaleF = isTT ? 1.15 : isRD ? 0.88 : 1.0;
+
+  const topY = M + (isTT ? 90 : isRD ? 64 : 76);
+
+  // Top label: HS
+  ctx.fillStyle = steel;
+  ctx.font = `400 ${Math.round(22*scaleF)}px 'JetBrains Mono', monospace`;
+  ctx.textAlign = 'left';
+  ctx.fillText('HOGGYNESISCHE SPOORWEGEN', iX, topY);
+
+  // Platform colored line
+  ctx.fillStyle = plat.color;
+  ctx.font = `600 ${Math.round(18*scaleF)}px 'JetBrains Mono', monospace`;
+  ctx.fillText(plat.name.toUpperCase(), iX, topY + Math.round(34*scaleF));
+
+  // Divider line
+  ctx.fillStyle = border2;
+  ctx.fillRect(iX, topY + Math.round(50*scaleF), W-M*2-56, 2);
+
+  const midY = H === 1920 ? H * 0.42 : H === 810 ? H * 0.46 : H * 0.44;
+
+  // Type label / alert box
+  if (!isRO) {
+    // Alert box
+    const alertBoxH = Math.round(58*scaleF);
+    const alertBoxY = midY - Math.round(200*scaleF);
+    roundRect(iX, alertBoxY, W-M*2-56, alertBoxH, 10);
+    ctx.fillStyle = isDark ? 'rgba(192,57,43,0.18)' : 'rgba(192,57,43,0.09)';
+    ctx.fill();
+    ctx.strokeStyle = isDark ? 'rgba(231,76,60,0.5)' : 'rgba(192,57,43,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = redAcc;
+    ctx.font = `700 ${Math.round(24*scaleF)}px 'JetBrains Mono', monospace`;
+    ctx.textAlign = 'left';
+    ctx.fillText('⚠  STORINGOMLOOP', iX + 18, alertBoxY + Math.round(38*scaleF));
+    ctx.textAlign = 'center';
+
+    // Logo top-right
+    if (logoImg) {
+      const lSize = Math.round(70*scaleF);
+      ctx.drawImage(logoImg, W - M - lSize - 10, M + 14, lSize, lSize);
+    }
+  } else {
+    // RO label
+    ctx.fillStyle = steel;
+    ctx.font = `400 ${Math.round(22*scaleF)}px 'JetBrains Mono', monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText('REGULIERE OMLOOP', W/2, midY - Math.round(160*scaleF));
+
+    // Logo top-right
+    if (logoImg) {
+      const lSize = Math.round(64*scaleF);
+      ctx.drawImage(logoImg, W - M - lSize - 10, M + 14, lSize, lSize);
+    }
+  }
+
+  // ── CODE ──
+  const codeFontSize = Math.round((isTT ? 90 : isRD ? 72 : 82) * scaleF);
+  ctx.fillStyle = codeCol;
+  ctx.font = `700 ${codeFontSize}px 'JetBrains Mono', monospace`;
+  ctx.textAlign = 'center';
+
+  // Code glow
+  ctx.save();
+  ctx.shadowColor = isRO
+    ? (isDark ? 'rgba(255,201,23,0.25)' : 'transparent')
+    : (isDark ? 'rgba(231,76,60,0.25)' : 'transparent');
+  ctx.shadowBlur = 30;
+  ctx.fillText(curCode || ('HS-'+mode+'-——'), W/2, midY);
+  ctx.restore();
+
+  // Divider
+  ctx.fillStyle = border2;
+  ctx.fillRect(iX, midY + Math.round(36*scaleF), W-M*2-56, 2);
+
+  // ── DATE/TIME ──
+  ctx.fillStyle = steel2;
+  ctx.font = `400 ${Math.round(22*scaleF)}px 'JetBrains Mono', monospace`;
+  ctx.textAlign = 'center';
+  ctx.fillText(curDate || '—', W/2, midY + Math.round(78*scaleF));
+
+  // ── FOOTER ──
+  const footY = H - M - Math.round(86*scaleF);
+  ctx.fillStyle = border2;
+  ctx.fillRect(iX, footY - Math.round(24*scaleF), W-M*2-56, 2);
+
+  ctx.fillStyle = plat.color;
+  ctx.font = `600 ${Math.round(22*scaleF)}px 'JetBrains Mono', monospace`;
+  ctx.textAlign = 'left';
+  ctx.fillText(plat.name, iX, footY + Math.round(10*scaleF));
+
+  ctx.fillStyle = steel;
+  ctx.font = `400 ${Math.round(18*scaleF)}px 'JetBrains Mono', monospace`;
+  ctx.textAlign = 'right';
+  ctx.fillText(plat.format, W - M - 14, footY + Math.round(10*scaleF));
+
+  ctx.fillStyle = yellow;
+  ctx.font = `500 ${Math.round(22*scaleF)}px 'JetBrains Mono', monospace`;
+  ctx.textAlign = 'center';
+  ctx.fillText('Hoggynesische Spoorwegen', W/2, footY + Math.round(50*scaleF));
+}
+
+// ── EXPORT FUNCTIONS ──
+function makeOffscreenCanvas(platKey) {
+  const plat = PLATFORMS[platKey];
+  const cv = document.createElement('canvas');
+  cv.width = plat.W; cv.height = plat.H;
+  _drawCanvas(true, cv, platKey);
+  return cv;
+}
+
+function dlImg() {
+  const platKey = document.getElementById('platform').value;
+  const cv = makeOffscreenCanvas(platKey);
+  const a = document.createElement('a');
+  const safe = (curCode || 'HS-omloop').replace(/[^a-zA-Z0-9\-]/g, '_');
+  a.download = `${safe}_${platKey}.png`;
+  a.href = cv.toDataURL('image/png');
+  a.click();
+}
+
+async function cpImg() {
+  try {
+    const platKey = document.getElementById('platform').value;
+    const cv = makeOffscreenCanvas(platKey);
+    cv.toBlob(async blob => {
+      try {
+        await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+        showToast('toast2');
+      } catch(e) {
+        alert('Kopiëren niet ondersteund — gebruik Download PNG.');
+      }
+    }, 'image/png');
+  } catch(e) {
+    alert('Kopiëren mislukt. Gebruik Download PNG.');
+  }
+}
+
+function dlAllPlatforms() {
+  if (!curCode) {
+    alert('Genereer eerst een omloopcode voor je exporteert.');
+    return;
+  }
+  const keys = Object.keys(PLATFORMS);
+  const safe = curCode.replace(/[^a-zA-Z0-9\-]/g, '_');
+  let delay = 0;
+  keys.forEach(key => {
+    setTimeout(() => {
+      const cv = makeOffscreenCanvas(key);
+      const a = document.createElement('a');
+      a.download = `${safe}_${key}.png`;
+      a.href = cv.toDataURL('image/png');
+      a.click();
+    }, delay);
+    delay += 300;
+  });
+  setTimeout(() => showToast('toast3'), delay + 200);
+}
+
+// ── COPY CODE ──
+function copyCode() {
+  if (!curCode) return;
+  navigator.clipboard.writeText(curCode).then(() => showToast('toast1'));
+}
+
+function showToast(id) {
+  const t = document.getElementById(id);
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── HISTORY ──
+function renderHistory() {
+  const l = document.getElementById('hlist');
+  if (!history.length) {
+    l.innerHTML = '<div class="no-history">Nog geen omlopen gegenereerd.</div>';
+    return;
+  }
+  l.innerHTML = history.map(h => `
+    <div class="hist-item">
+      <div class="hist-left">
+        <span class="hist-badge ${h.type === 'RO' ? 'ro' : 'so'}">${h.type}</span>
+        <span class="hist-code">${h.code}</span>
+      </div>
+      <div class="hist-right">
+        <span class="hist-date">${h.datum}</span>
+        <button class="btn-xs" onclick="cpHistCode('${h.code}')" title="Kopieer code">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+function cpHistCode(code) {
+  navigator.clipboard.writeText(code);
+}
+
+function clrH() { history = []; renderHistory(); }
+
+// ── EVENT LISTENERS ──
+document.getElementById('platform').addEventListener('change', () => {
+  if (curCode) drawCanvas(); else drawCanvas();
+});
+document.getElementById('num-len').addEventListener('change', () => {
+  if (curCode) generate();
+});
+document.getElementById('theme').addEventListener('change', drawCanvas);
+
+// ── INIT ──
+(async function init() {
+  await logoReady;
+  drawCanvas();
+})();
+</script>
+</body>
+</html>
