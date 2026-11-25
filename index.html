@@ -338,6 +338,7 @@ var INTL=[
 {n:"SNCF Connect",ic:"🇫🇷",u:"https://www.sncf-connect.com/",c:"#4d7cff",nl:"Franse spoorwegen & TGV",fr:"Chemins de fer français et TGV"}];
 var DIENST=[
 {n:"HS Bijstand",nf:"Assistance CFH",ic:"💙",u:"HS_MentaleBijstand.html",c:"#4d7cff",nl:"Psychologische ondersteuning",fr:"Soutien psychologique"},
+{n:"HS Ticketing",nf:"Billetterie CFH",ic:"🎫",u:"hs_qr_ticketing_styled.html",c:"#ff4136",nl:"HS-kaartjes en QR-codes",fr:"Billets CFH et codes QR"},
 {n:"HS DMI",nf:"CFH DMI",ic:"🎛️",u:"HS_DMI.html",c:"#ff4136",nl:"Simulator van het cabinescherm (ETCS en HTC)",fr:"Simulateur d’écran de cabine (ETCS et HTC)"},
 {n:"Gemini",ic:"✨",u:"https://gemini.google.com",c:"#a5a8ab",nl:"Google AI-assistent",fr:"Assistant IA de Google"},
 {n:"GitHub",ic:"💻",u:"https://github.com",c:"#4d7cff",nl:"Code en repository’s",fr:"Code et dépôts"},
@@ -426,7 +427,7 @@ var wi=function(c){return c===0?"☀️":c<3?"🌤️":c===3?"☁️":c<50?"🌫
 function weather(){if(!navigator.geolocation)return;navigator.geolocation.getCurrentPosition(function(p){var a=p.coords.latitude,b=p.coords.longitude,city="—";
  fetch("https://nominatim.openstreetmap.org/reverse?lat="+a+"&lon="+b+"&format=json").then(function(r){return r.json()}).then(function(g){city=g.address.city||g.address.town||g.address.village||"—"}).catch(function(){}).then(function(){return fetch("https://api.open-meteo.com/v1/forecast?latitude="+a+"&longitude="+b+"&current=temperature_2m,weathercode")}).then(function(r){return r.json()}).then(function(w){$("wx").textContent="📍 "+city+" · "+wi(w.current.weathercode)+" "+Math.round(w.current.temperature_2m)+"°C"}).catch(function(){})},function(){$("wx").textContent="📍 "+both("GPS uit","GPS désactivé")})}
 /* zoeken */
-var all=[].concat(HOME,KAART,INTL,DIENST).filter(function(x){return x.u||x.tip}),sg=$("sg"),si=-1;
+var seen={},all=[].concat(HOME,KAART,INTL,DIENST).filter(function(x){var k=x.u||x.tip;if(!k||seen[k])return false;seen[k]=1;return true}),sg=$("sg"),si=-1;
 function sugg(){var v=$("q").value.trim().toLowerCase(),h="";si=-1;if(!v){sg.style.display="none";return}
  all.filter(function(x){return(x.n+" "+(x.nf||"")+" "+x.nl+" "+x.fr).toLowerCase().indexOf(v)>-1}).slice(0,4).forEach(function(x){h+='<a href="'+(x.u||"#")+'"'+(x.tip?' data-tip="'+x.tip+'"':'')+'><span>'+x.ic+" "+x.n+'</span><small>'+both(x.nl,x.fr)+'</small></a>'});
  h+='<a href="https://www.google.com/search?q='+encodeURIComponent($("q").value)+'&hl='+$("hl").value+'"><span>🔎 Google</span><small>'+esc($("q").value)+'</small></a>';sg.innerHTML=h;sg.style.display="block"}
