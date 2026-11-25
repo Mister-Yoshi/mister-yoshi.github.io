@@ -29,7 +29,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
   - meldingen van NS en het aantal verstoringen, met een link naar ns.nl/storingen
   - **"Dienst voorbij"**: na de laatste trein verschijnt een rustig scherm met de eerste trein van de ochtend
 - **Storingen en werkzaamheden van NS**: actuele storingen (rood) en werkzaamheden (oranje), met oorzaak, verwachte duur, extra reistijd en vervangend vervoer. Meldingen rond Assen staan bovenaan
-- **Live busborden** voor *Busstation Marsdijk* en *Noorderstaete* in Assen (via drgl.nl)
+- **Live busborden** in dezelfde stijl als de vertrekstaat, standaard voor *Busstation Marsdijk* en *Noorderstaete* in Assen. Met **Wijzig halte** zoek en kies je zelf een andere bushalte (data via [Transitous](https://transitous.org/sources/), open data o.a. van OVapi/NDOV)
 - Bewust **zonder animaties**: vaste maten en vaste rijen, zodat er niets verspringt. Ververst elke minuut
 - Zijn er geen gegevens, dan staat er "Geen live data". De pagina toont nooit verzonnen vertrektijden
 
@@ -81,6 +81,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 ```
 
 - De Worker haalt de vertrektijden van Assen (`ASN`) op en vraagt per trein het materieel op
+- Voor de bus zoekt de Worker haltes (`?bushalte=…`) en vertrektijden (`?bus=…`) op bij Transitous
 - Voor de tussenhaltes vraagt de Worker de rit op (`?journey=<treinnummer>`)
 - Voor de storingen haalt de Worker de actieve meldingen op (`?disruptions=1`)
 - Voor de reisplanner levert de Worker de stationslijst (`?stations=1`) en reisadviezen (`?from=…&to=…`)
