@@ -131,7 +131,73 @@ html.bg *,html.bg *::before,html.bg *::after{animation-play-state:paused!importa
 .nt{font-size:17px;font-variant-numeric:tabular-nums}.nt s{display:block;text-decoration:none;color:var(--red);font-size:12px}
 .nd small{display:block;color:var(--mu);font-size:12px;margin-top:2px}.nd small.x{color:var(--red)}
 .nk{font-weight:800;color:#000;background:#ffc917;border-radius:6px;padding:2px 8px}
+
+/* ===== v2-ontwerp: in de stijl van de HS-startpagina ===== */
+:root:root:root{color-scheme:dark;--bg:#060b18;--card:rgba(14,26,72,.72);--card2:rgba(9,16,44,.9);--tx:#eef1f7;--mu:#a6b2cf;--ln:rgba(160,182,235,.16);--red:#ff4136;--blue:#4d7cff;--grey:#a5a8ab;--yel:#ffc917;--ok:#1fd38a;--okbg:rgba(31,211,138,.18);--hd:#0c1744}
+body{font:16px/1.45 Outfit,"Helvetica Neue",Arial,sans-serif;background:radial-gradient(900px 500px at 15% -10%,rgba(28,52,140,.45),transparent 70%),radial-gradient(600px 400px at 110% 10%,rgba(255,65,54,.08),transparent),var(--bg);min-height:100vh}
+header{background:rgba(9,16,44,.92);backdrop-filter:blur(8px);box-shadow:none;border-bottom:1px solid var(--ln);padding:12px 16px}
+.br b{font-weight:800;font-size:21px;letter-spacing:0}.br small{opacity:.7}
+.hm{color:var(--mu)}
+.lg{border-color:var(--ln);border-radius:10px}.lg button{padding:7px 12px}.lg button.on{background:var(--tx);color:var(--hd)}
+main{gap:12px;padding:16px 14px 40px;max-width:560px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:18px;box-shadow:none;padding:18px}
+h2{font:700 13px/1 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.14em;color:var(--mu);margin:0 0 14px}
+/* statuskaart */
+main>.card:first-child{position:relative;overflow:hidden;padding-left:24px;background:linear-gradient(135deg,#13225e,#0c1744)}
+main>.card:first-child::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--grey)}
+main>.card:first-child:has(.st.on)::before{background:var(--ok)}main>.card:first-child:has(.st.pz)::before{background:#f5a623}
+.stripe{position:absolute;top:16px;right:16px;width:58px;height:16px;margin:0;border-radius:0;clip-path:polygon(22% 0,100% 0,78% 100%,0 100%)}
+.st{font-size:17px;font-weight:700}.st #stt{letter-spacing:.01em}
+.dot{width:12px;height:12px}.st.on .dot{box-shadow:0 0 0 4px var(--okbg)}
+.tm{font:600 52px/1.05 "IBM Plex Mono",ui-monospace,monospace;color:var(--yel);letter-spacing:.01em;margin:10px 0 6px}
+#stm{font-size:14px}
+.rail{background:rgba(0,0,0,.3);border-color:var(--ln);height:10px}
+/* formulier */
+label{font-size:13px;font-weight:600;color:var(--mu);margin:12px 0 6px}
+input,select{background:rgba(0,0,0,.32);border:1px solid var(--ln);border-radius:12px;color:var(--tx);font:inherit;font-size:16px;padding:13px 14px}
+input:focus,select:focus{border-color:var(--yel);box-shadow:0 0 0 3px rgba(255,201,23,.2)}
+select option{background:#0c1744}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+@media(max-width:380px){.r2{grid-template-columns:1fr}}
+.gb{background:rgba(0,0,0,.32);border-color:var(--ln);border-radius:12px}
+/* knoppen */
+.btn{font:700 17px/1.2 Outfit,"Helvetica Neue",Arial,sans-serif;border-radius:14px;box-shadow:none;padding:16px}
+.btn.alt{background:var(--blue);box-shadow:none}
+.btn.alt2{background:var(--blue);color:#fff;border:0;margin-top:14px}
+:root[data-theme="dark"] .btn.alt2{color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.alt2{color:#fff;border:0}}
+.btn.out{border:1.5px solid color-mix(in srgb,var(--red) 70%,transparent);color:#ff7a70}
+.pzb{color:#f5c26b!important;border-color:rgba(245,166,35,.6)!important}
+/* teller */
+.cnt{justify-content:space-between;background:rgba(0,0,0,.25);border:1px solid var(--ln);border-radius:16px;padding:10px 14px;margin:0}
+.cnt b{font:600 56px/1 "IBM Plex Mono",ui-monospace,monospace}
+.rd{width:52px;height:52px;border:1px solid var(--ln);background:rgba(255,255,255,.06);color:var(--tx);font-size:26px}
+.rd:hover:not(:disabled){background:var(--blue);border-color:var(--blue)}
+/* treinen hier */
+.nb{margin:0}.gi{margin-top:8px}
+.nbl button{background:rgba(0,0,0,.25);border-color:var(--ln);border-radius:12px;padding:11px 12px}
+.nbl button:hover:not(:disabled){border-color:var(--blue)}
+.nbl li{display:block;border:0;padding:0}
+.nt{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:600}
+.nk{font-family:"IBM Plex Mono",ui-monospace,monospace}
+/* handmatig */
+.man{margin-top:12px;border:1px solid var(--ln);border-radius:14px;padding:0 14px}
+.man summary{cursor:pointer;list-style:none;padding:13px 0;font-weight:600;color:var(--mu);display:flex;justify-content:space-between}
+.man summary::-webkit-details-marker{display:none}.man summary::after{content:"+";font-size:20px;line-height:1}.man[open] summary::after{content:"−"}
+.man[open]{padding-bottom:14px}.man label{margin-top:0}
+/* logboek */
+.lgh{font:700 13px/1 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.14em;color:var(--mu);margin:22px 0 4px;text-transform:uppercase}
+#lg li{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:center;border-top:1px solid var(--ln);padding:10px 0}
+#lg li:first-child{border-top:0}
+#lg li i{font-style:normal;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font:600 13px "IBM Plex Mono",ui-monospace,monospace;background:rgba(77,124,255,.2);color:#9db7ff}
+#lg li.p i{background:rgba(245,166,35,.18);color:#f5c26b}
+#lg li b{display:block;font-weight:600}#lg li small{display:block;color:var(--mu);font-size:13px}
+#lg li .mu{grid-column:1/-1}
+#uit{background:transparent;border-style:dashed}
+#sm{margin-bottom:6px}
+:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
@@ -149,10 +215,9 @@ html.bg *,html.bg *::before,html.bg *::after{animation-play-state:paused!importa
 
 <section class="card" id="fm">
 <div class="mu" id="sm" style="font-weight:700;color:var(--ok)"></div><h2 id="h1"></h2>
-<label id="l1" for="nr"></label><input id="nr" inputmode="numeric" autocomplete="off">
-<label id="l2" for="nm"></label><input id="nm" autocomplete="name">
+<div class="r2"><div><label id="l1" for="nr"></label><input id="nr" inputmode="numeric" autocomplete="off"></div><div><label id="l2" for="nm"></label><input id="nm" autocomplete="name"></div></div>
 <label id="l3" for="fn"></label><select id="fn"></select>
-<label id="l4" for="s0"></label><div class="gr"><input id="s0" autocomplete="off"><button type="button" class="gb" id="g0" aria-label="GPS">📍</button></div><div class="gi" id="gi0"></div><label id="l6" for="t0"></label><input id="t0" type="time"><label id="l7" for="c0"></label><input id="c0" type="number" min="0" inputmode="numeric" placeholder="0">
+<label id="l4" for="s0"></label><div class="gr"><input id="s0" autocomplete="off"><button type="button" class="gb" id="g0" aria-label="GPS">📍</button></div><div class="gi" id="gi0"></div><div class="r2"><div><label id="l6" for="t0"></label><input id="t0" type="time"></div><div><label id="l7" for="c0"></label><input id="c0" type="number" min="0" inputmode="numeric" placeholder="0"></div></div>
 <div class="err" id="er"></div>
 <button class="btn" id="bin"></button>
 </section>
@@ -161,9 +226,10 @@ html.bg *,html.bg *::before,html.bg *::after{animation-play-state:paused!importa
 <h2 id="h2"></h2>
 <div class="cnt"><button class="rd" id="mn" aria-label="-">−</button><b id="n">0</b><button class="rd" id="pl" aria-label="+">+</button></div>
 <div class="nb"><button type="button" class="btn alt2" id="bnb"></button><div id="nbi" class="gi"></div><ul id="nbl" class="nbl"></ul></div>
-<label id="l5" for="s1"></label><input id="s1" autocomplete="off">
-<button class="btn alt" id="bov"></button><button class="btn out" id="bpz"></button>
-<ul id="lg"></ul>
+<details class="man"><summary id="mans"></summary><label id="l5" for="s1"></label><input id="s1" autocomplete="off">
+<button class="btn alt" id="bov"></button></details>
+<button class="btn out pzb" id="bpz"></button>
+<h3 class="lgh" id="lgh"></h3><ul id="lg"></ul>
 </section>
 
 <section class="card hid" id="uit">
@@ -174,9 +240,9 @@ html.bg *,html.bg *::before,html.bg *::after{animation-play-state:paused!importa
 <script>
 const T={
 nl:{brand:"HS",sub:"Hoggynesische Spoorwegen",off:"Niet in dienst",on:"In dienst",since:"Ingestapt {s} om {t}",h1:"Dienst starten",l1:"Personeelsnummer",l2:"Naam",l3:"Functie",l4:"Station ingestapt",l6:"Tijd ingestapt",l7:"Al gemaakte overstappen (optioneel)",bin:"In dienst melden",go:"In dienst!",bye:"Dienst afgesloten",
-fn:["Machinist","Conducteur","Stationsmedewerker","Overig"],err:"Vul alle velden in.",h2:"Overstappen",l5:"Nieuwe trein (optioneel, bijv. IC 2314)",bov:"Overgestapt op andere trein",bpz:"Pauze starten (grote overstap)",bpe:"Pauze beëindigen",pz:"Pauze",bout:"Uit dienst melden",none:"Nog geen overstappen",ovl:"Overstap",tot:"Totaal",hello:"{n} ({f}) · nr. {nr}",conf:"Tik nogmaals om uit dienst te melden",done:"Dienst afgesloten. Overstappen: {c} · werktijd {d}",ft:"Overstappen in deze dienst",bnb:"📍 Treinen op mijn locatie",gps:"Locatie bepalen…",gno:"Locatie niet beschikbaar. Zet GPS aan en geef toestemming.",near:"Dichtstbij: {s} ({d})",ld:"Vertrektijden ophalen…",nod:"Geen vertrekkende treinen gevonden.",ner:"Geen live data van NS.",pick:"Tik op een trein om over te stappen",tr:"spoor",xx:"vervalt",at:"in {s}",home:"Hoofdmenu"},
+fn:["Machinist","Conducteur","Stationsmedewerker","Overig"],err:"Vul alle velden in.",h2:"Overstappen",l5:"Nieuwe trein (optioneel, bijv. IC 2314)",bov:"Overgestapt op andere trein",bpz:"Pauze starten (grote overstap)",bpe:"Pauze beëindigen",pz:"Pauze",bout:"Uit dienst melden",none:"Nog geen overstappen",ovl:"Overstap",tot:"Totaal",hello:"{n} ({f}) · nr. {nr}",conf:"Tik nogmaals om uit dienst te melden",done:"Dienst afgesloten. Overstappen: {c} · werktijd {d}",ft:"Overstappen in deze dienst",mans:"Handmatig een trein invoeren",lgh:"Logboek",bnb:"📍 Treinen op mijn locatie",gps:"Locatie bepalen…",gno:"Locatie niet beschikbaar. Zet GPS aan en geef toestemming.",near:"Dichtstbij: {s} ({d})",ld:"Vertrektijden ophalen…",nod:"Geen vertrekkende treinen gevonden.",ner:"Geen live data van NS.",pick:"Tik op een trein om over te stappen",tr:"spoor",xx:"vervalt",at:"in {s}",home:"Hoofdmenu"},
 fr:{brand:"CFH",sub:"Chemin de Fer Hoggynesiéns",off:"Pas en service",on:"En service",since:"Montée en gare de {s} à {t}",h1:"Prise de service",l1:"Numéro de personnel",l2:"Nom",l3:"Fonction",l4:"Gare de montée",l6:"Heure de montée",l7:"Changements déjà effectués (facultatif)",bin:"Prendre son service",go:"En service !",bye:"Service terminé",
-fn:["Conducteur de train","Chef de train","Employé de gare","Autre"],err:"Veuillez remplir tous les champs.",h2:"Changements de train",l5:"Nouveau train (facultatif, p. ex. IC 2314)",bov:"Changement de train effectué",bpz:"Démarrer la pause (longue correspondance)",bpe:"Terminer la pause",pz:"Pause",bout:"Fin de service",none:"Aucun changement de train",ovl:"Changement",tot:"Total",hello:"{n} ({f}) · n° {nr}",conf:"Touchez à nouveau pour terminer",done:"Service terminé. Changements de train : {c} · temps de travail {d}",ft:"Correspondances pendant ce service",bnb:"📍 Trains à ma position",gps:"Localisation en cours…",gno:"Position indisponible. Activez le GPS et autorisez l’accès.",near:"Gare la plus proche : {s} ({d})",ld:"Chargement des départs…",nod:"Aucun départ trouvé.",ner:"Pas de données en direct de NS.",pick:"Touchez un train pour changer",tr:"voie",xx:"supprimé",at:"à {s}",home:"Menu principal"}
+fn:["Conducteur de train","Chef de train","Employé de gare","Autre"],err:"Veuillez remplir tous les champs.",h2:"Changements de train",l5:"Nouveau train (facultatif, p. ex. IC 2314)",bov:"Changement de train effectué",bpz:"Démarrer la pause (longue correspondance)",bpe:"Terminer la pause",pz:"Pause",bout:"Fin de service",none:"Aucun changement de train",ovl:"Changement",tot:"Total",hello:"{n} ({f}) · n° {nr}",conf:"Touchez à nouveau pour terminer",done:"Service terminé. Changements de train : {c} · temps de travail {d}",ft:"Correspondances pendant ce service",mans:"Saisir un train manuellement",lgh:"Journal",bnb:"📍 Trains à ma position",gps:"Localisation en cours…",gno:"Position indisponible. Activez le GPS et autorisez l’accès.",near:"Gare la plus proche : {s} ({d})",ld:"Chargement des départs…",nod:"Aucun départ trouvé.",ner:"Pas de données en direct de NS.",pick:"Touchez un train pour changer",tr:"voie",xx:"supprimé",at:"à {s}",home:"Menu principal"}
 };
 let cf=0,lang="nl",S={on:false,t:0,nr:"",nm:"",fn:0,s0:"",log:[]};
 const $=id=>document.getElementById(id);
@@ -190,7 +256,7 @@ const t=T[lang];document.documentElement.lang=lang;document.title=t.brand+" – 
 $("brand").textContent=t.brand;$("sub").textContent=t.sub;
 $("bn").classList.toggle("on",lang==="nl");$("bf").classList.toggle("on",lang==="fr");
 ["h1","l1","l2","l3","l4","l6","l7","h2","l5"].forEach(k=>$(k).textContent=t[k]);
-$("bin").textContent=t.bin;$("bnb").textContent=t.bnb;$("bnb").disabled=!!S.p;$("hmb").setAttribute("aria-label",t.home);$("bov").textContent=t.bov;$("bpz").textContent=S.p?t.bpe:t.bpz;$("bov").disabled=$("pl").disabled=$("mn").disabled=!!S.p;$("bout").textContent=t.bout;
+$("bin").textContent=t.bin;$("bnb").textContent=t.bnb;$("mans").textContent=t.mans;$("lgh").textContent=t.lgh;$("bnb").disabled=!!S.p;$("hmb").setAttribute("aria-label",t.home);$("bov").textContent=t.bov;$("bpz").textContent=S.p?t.bpe:t.bpz;$("bov").disabled=$("pl").disabled=$("mn").disabled=!!S.p;$("bout").textContent=t.bout;
 const sel=$("fn"),cur=S.on?S.fn:sel.selectedIndex>=0?sel.selectedIndex:0;
 sel.innerHTML=t.fn.map((x,i)=>"<option value='"+i+"'>"+x+"</option>").join("");sel.value=cur;
 $("st").classList.toggle("on",S.on);$("st").classList.toggle("pz",!!S.p);$("rail").className="rail"+(S.on?(S.p?" pz":" go"):"");$("stt").textContent=S.on?(S.p?t.pz:t.on):t.off;
@@ -198,7 +264,7 @@ $("fm").classList.toggle("hid",S.on);$("ov").classList.toggle("hid",!S.on);$("ui
 $("stm").textContent=S.on?f(t.since,{t:hm(S.t),s:S.s0})+" · "+f(t.hello,{n:S.nm,f:t.fn[S.fn],nr:S.nr}):"";
 if(S.on){$("t0").value="";$("c0").value=""}else if(!$("t0").value){const d=new Date();$("t0").value=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
 {const v=String(S.log.filter(e=>!e.pz).length),el=$("n");if(el.textContent!==v){el.textContent=v;el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump")}}
-$("lg").innerHTML=S.log.length?(()=>{let c=0;return S.log.map(e=>e.pz?"<li><span>"+t.pz+"</span><span>"+hm(e.t)+" · "+Math.max(1,Math.round(e.pz/60000))+" min</span></li>":"<li><span>"+t.ovl+" "+(++c)+"</span><span>"+hm(e.t)+(e.s?" · "+e.s.replace(/</g,"&lt;"):"")+(e.at?" · "+f(t.at,{s:e.at.replace(/</g,"&lt;")}):"")+"</span></li>").reverse().slice(0,40).join("")})():"<li><span class='mu'>"+t.none+"</span></li>";
+$("lg").innerHTML=S.log.length?(()=>{let c=0;return S.log.map(e=>e.pz?"<li class='p'><i>⏸</i><span><b>"+t.pz+"</b><small>"+hm(e.t)+" · "+Math.max(1,Math.round(e.pz/60000))+" min</small></span></li>":"<li><i>"+(++c)+"</i><span><b>"+(e.s?e.s.replace(/</g,"&lt;"):t.ovl+" "+c)+"</b><small>"+hm(e.t)+(e.at?" · "+f(t.at,{s:e.at.replace(/</g,"&lt;")}):"")+"</small></span></li>").reverse().slice(0,40).join("")})():"<li><span class='mu'>"+t.none+"</span></li>";
 tick()}
 function fx(rev,t,s){if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;const e=$("fx"),m=$("tm");e.classList.remove("show","rev");void e.offsetWidth;$("fxt").textContent=t;$("fxs").textContent=s;if(rev)e.classList.add("rev");e.classList.add("show");m.classList.remove("pop");void m.offsetWidth;m.classList.add("pop");clearTimeout(fx.h);fx.h=setTimeout(()=>e.classList.remove("show"),3400)}
 function tick(){if(document.hidden)return;const n=Date.now(),pt=(S.pt||0)+(S.p?n-S.p:0);$("tm").textContent=S.on?dur(n-S.t-pt):"00:00:00";$("pb").textContent=S.on&&S.p?T[lang].pz+" "+dur(n-S.p):""}
