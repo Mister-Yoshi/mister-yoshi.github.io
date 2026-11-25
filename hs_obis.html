@@ -336,6 +336,8 @@ label.ck{white-space:nowrap}
 .sted{gap:10px}.say{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px}
 .ctl>p.hint{padding:0 4px}
 @media(max-width:560px){.ctt,.ctsp{display:none}.cbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.cbar>*{font-size:13px!important;padding:10px 6px!important;white-space:nowrap;text-align:center;overflow:hidden;text-overflow:ellipsis}.tp{grid-template-columns:48px 1fr 1fr 48px}}
+
+.sted.locked>*:not(.cgh){opacity:.4;filter:grayscale(.6)}.sted.locked .cgh .hint{display:none}.lockn{display:none;font-size:13px;color:#f3b0bb}.sted.locked .lockn{display:inline}
 </style>
 </head>
 <body>
@@ -408,7 +410,7 @@ label.ck{white-space:nowrap}
   </div>
 
   <div class="cg sted">
-    <div class="cgh"><b>Haltes</b><span class="hint">Enter = nieuwe halte eronder (+10 min, 2 min stilstand) · eerste halte: alleen vertrek · lege vertrektijd = 2 min na aankomst · lege vertraging = zelfde als vorige halte</span></div>
+    <div class="cgh"><b>Haltes</b><span class="lockn">🔒 Haltes komen van NS zolang NS live aan staat</span><span class="hint">Enter = nieuwe halte eronder (+10 min, 2 min stilstand) · eerste halte: alleen vertrek · lege vertrektijd = 2 min na aankomst · lege vertraging = zelfde als vorige halte</span></div>
     <div class="se-h"><span></span><span>Halte</span><span>Aankomst</span><span>Vertrek</span><span>Spoor</span><span>Deur</span><span>Vertr. (min)</span><span>Aansluitende treinen (komma's)</span><span></span></div>
     <div id="se"></div>
     <div class="row"><button class="main" id="se-add" type="button">+ Halte toevoegen</button><button id="se-clr" type="button">Alles wissen</button></div>
@@ -483,8 +485,8 @@ function render(){
   $('mid').innerHTML=al+(conn?connHtml(s,dl):h+(both?`<div class="ocon"><h4>${B('Overstappen','Correspondances')}</h4>${connHtml(s,dl)}</div>`:(nx?`<div class="then"><small>${B('Daarna','Ensuite')}</small>${nx}</div>`:'')));
   $('line').innerHTML=S.map((x,k)=>`<div class="st ${k<i||(k===i&&stopped&&false)?'done':k===i?'now':''}">${x.n}<i>${k===0?add('00:00',x.dm+x.dl):add(x.t,x.dl)}</i>${k===i&&!stopped&&i>0?`<u class="trn" style="--p:${window._pct||0}"></u>`:''}</div>`).join('');
   const nowEl=document.querySelector('.st.now'),rt=document.querySelector('.route');if(nowEl&&rt.offsetParent){const a=nowEl.getBoundingClientRect(),b=rt.getBoundingClientRect();rt.scrollLeft+=a.left+a.width/2-(b.left+b.width/2)}
-  const nl=stopped?(last?`Dames en heren, wij zijn aangekomen in ${s.n}. Wij wensen u een prettige dag.`:i===0?`Dames en heren, welkom aan boord. Deze trein vertrekt uit ${s.n} om ${dpt}.`:`Dames en heren, wij zijn nu in ${s.n}. Uitstappen aan de ${s.d==='L'?'linkerkant':'rechterkant'}.${s.tr?' Overstap mogelijk op '+s.tr+'.':''} Wij vertrekken om ${dpt}.`):`Dames en heren, volgende halte: ${s.n}, aankomst ${t}.${dl?` Wij hebben ${dl} minuten vertraging.`:''}`;
-  const fr=stopped?(last?`Mesdames et messieurs, nous sommes arrivés à ${s.n}. Nous vous souhaitons une agréable journée.`:i===0?`Mesdames et messieurs, bienvenue à bord. Ce train part de ${s.n} à ${dpt}.`:`Mesdames et messieurs, nous sommes à ${s.n}. Sortie à ${s.d==='L'?'gauche':'droite'}.${s.tr?' Correspondances : '+s.tr+'.':''} Départ à ${dpt}.`):`Mesdames et messieurs, prochain arrêt : ${s.n}, arrivée à ${t}.${dl?` Nous avons ${dl} minutes de retard.`:''}`;
+  const nl=stopped?(last?`Dames en heren, wij zijn aangekomen in ${s.n}. Wij wensen u een prettige dag.`:i===0?`Dames en heren, welkom aan boord. Deze trein vertrekt uit ${s.n} om ${dpt}.`:`Dames en heren, wij zijn nu in ${s.n}. ${typeof LIVE!=='undefined'&&LIVE?'':'Uitstappen aan de '+(s.d==='L'?'linkerkant':'rechterkant')+'.'}${s.tr?' Overstap mogelijk op '+s.tr+'.':''} Wij vertrekken om ${dpt}.`):`Dames en heren, volgende halte: ${s.n}, aankomst ${t}.${dl?` Wij hebben ${dl} minuten vertraging.`:''}`;
+  const fr=stopped?(last?`Mesdames et messieurs, nous sommes arrivés à ${s.n}. Nous vous souhaitons une agréable journée.`:i===0?`Mesdames et messieurs, bienvenue à bord. Ce train part de ${s.n} à ${dpt}.`:`Mesdames et messieurs, nous sommes à ${s.n}. ${typeof LIVE!=='undefined'&&LIVE?'':'Sortie à '+(s.d==='L'?'gauche':'droite')+'.'}${s.tr?' Correspondances : '+s.tr+'.':''} Départ à ${dpt}.`):`Mesdames et messieurs, prochain arrêt : ${s.n}, arrivée à ${t}.${dl?` Nous avons ${dl} minutes de retard.`:''}`;
   const A=[stor?`Let op: ${rn||'storing'}. `+nl:nl,stor?`Attention : ${rf||'perturbation'}. `+fr:fr];
   $('ann').innerHTML=`${LG().nl?`<p>🇳🇱 ${A[0]}</p>`:''}${LG().fr?`<p>🇫🇷 ${A[1]}</p>`:''}`;
   window._a=A;
@@ -593,7 +595,7 @@ function liveConnLoad(){if(!LIVE)return;const x=LIVE.stops.find(z=>z.n===S[i].n)
 function liveOff(){clearInterval(liveT);clearInterval(liveC);LIVE=null;LIVEC=null;$('screen').classList.remove('live');liveLock(false);nsSt('Live uit. Je kunt de rit nu zelf aanpassen of afspelen.')}
 $('nsgo').onclick=()=>liveLoad($('nsnr').value);$('nsnr').addEventListener('keydown',e=>{if(e.key==='Enter')liveLoad($('nsnr').value)});
 $('nsoff').onclick=liveOff;$('nsfol').onchange=()=>{clearInterval(liveT);if(LIVE&&$('nsfol').checked)liveT=setInterval(()=>liveLoad(LIVE.nr),6e4)};
-const LOCK=['adv','back','auto','rst','manual','spd'];function liveLock(on){LOCK.forEach(id=>{$(id).disabled=on;$(id).title=on?'Niet beschikbaar tijdens NS live. Gebruik Stop live om zelf te bedienen.':''});$('nsoff').disabled=!on}
+const LOCK=['adv','back','auto','rst','manual','spd'];function liveLock(on){LOCK.forEach(id=>{$(id).disabled=on;$(id).title=on?'Niet beschikbaar tijdens NS live. Gebruik Stop live om zelf te bedienen.':''});$('nsoff').disabled=!on;const ed=document.querySelector('.ctl .sted');if(ed){ed.inert=on;ed.classList.toggle('locked',on)}}
 liveLock(false);
 ['adv','back'].forEach(id=>$(id).addEventListener('click',e=>{if(LIVE){e.stopImmediatePropagation();e.preventDefault()}},true));
 try{const q=new URLSearchParams(location.search).get('trein');if(q){$('nsnr').value=q;liveLoad(q)}}catch(e){}
