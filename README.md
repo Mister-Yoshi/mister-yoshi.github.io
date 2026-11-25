@@ -12,7 +12,7 @@ De website van de **Hoggynesische Spoorwegen**: een startpagina voor de browser 
 
 Een app-achtige pagina in de HS-huisstijl: rood, blauw en grijs, met het treintje dat over de rails onder de kop rijdt. Alles op de pagina is tweetalig (Nederlands en Frans). Met de knoppen **NL / FR** kies je Nederlands, Frans of allebei.
 
-Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met de toetsen **1–6**. Met **/** spring je naar de zoekbalk.
+Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met de toetsen **1–7**. Met **/** spring je naar de zoekbalk.
 
 ### 🏠 Start
 - Begroeting die past bij het tijdstip, met datum en klok
@@ -33,6 +33,13 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 - **Live busborden** in dezelfde stijl als de vertrekstaat, standaard voor *Busstation Marsdijk* en *Noorderstaete* in Assen. Tik op een busrit voor de tussenhaltes en het ritnummer. Met **Wijzig halte** zoek en kies je zelf een andere bushalte (data via [Transitous](https://transitous.org/sources/), open data o.a. van OVapi/NDOV)
 - Bewust **zonder animaties**: vaste maten en vaste rijen, zodat er niets verspringt. Ververst elke minuut
 - Zijn er geen gegevens, dan staat er "Geen live data". De pagina toont nooit verzonnen vertrektijden
+
+### 🗺️ Kaart
+- **Live kaart met alle treinen die NS volgt**, elke 10 seconden bijgewerkt (posities via de Virtual Train API van NS)
+- Kleuren per soort: geel IC, blauw SPR, grijs overig, met een pijltje voor de rijrichting. Filter op IC, SPR of Overig
+- Tik op een trein voor het treinnummer en de snelheid, de **tussenhaltes** of de trein openen in de **OBIS**
+- Slepen, scrollen of knijpen om te zoomen, knoppen voor Assen en je eigen locatie. Stations verschijnen bij inzoomen
+- Kaarttegels © OpenStreetMap-bijdragers © CARTO
 
 ### 🧭 Reisplanner
 - **Reis plannen met de NS-API**: van station naar station, op vertrek- of aankomsttijd
@@ -89,6 +96,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 - Voor de OBIS levert de Worker de rit met soort trein en eindstation (`?journey=`) en vertrektijden per station via UIC-code (`?uic=`)
 - Voor HS In dienst levert de Worker vertrektijden van elk station (`?station=CODE`) en stations met coördinaten
 - Voor de bus zoekt de Worker haltes (`?bushalte=…`) en vertrektijden (`?bus=…`) op bij Transitous
+- Voor de kaart haalt de Worker de live treinposities op (`?vehicles=1`)
 - Voor de tussenhaltes vraagt de Worker de rit op (`?journey=<treinnummer>`)
 - Voor de storingen haalt de Worker de actieve meldingen op (`?disruptions=1`)
 - Voor de reisplanner levert de Worker de stationslijst (`?stations=1`) en reisadviezen (`?from=…&to=…`)
