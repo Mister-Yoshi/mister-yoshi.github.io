@@ -40,14 +40,14 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 - Net als Vertrek zonder animaties
 
 ### 🎫 Kaartjes
-- Kaartjes kopen bij **NS**, **NMBS** en **HS Ticketing**
+- Kaartjes kopen bij **NS** en **NMBS**
 
 ### 🌍 Internationaal
 - **NMBS / B-Europe**, **NS International**, **Eurostar**, **GoVolta**, **Ouigo** en **SNCF Connect**
 - Bij NMBS en Eurostar krijg je eerst een korte **tip** voordat je naar de website gaat
 
 ### 🧰 Diensten
-- **HS Bijstand**, **HS DMI** (cabinescherm-simulator), Gemini, GitHub en de **statusbalk**
+- **HS Bijstand**, **HS Ticketing**, **HS DMI** (cabinescherm-simulator), Gemini, GitHub en de **statusbalk**
 
 ### ⚙️ Overig
 - **Statusbalk met beheer**: kies *operationeel*, *storing*, *werkzaamheden* of *staking*, eventueel met een eigen tekst in het Nederlands en het Frans. De keuze wordt in de browser opgeslagen
