@@ -305,6 +305,37 @@ details summary{cursor:pointer;font-size:13px;color:var(--dim);font-weight:600;m
 .hmb{align-self:center;color:inherit;text-decoration:none;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:7px 12px;font-size:14px}
 .screen.live .dfw{display:none}
 .ctl button:disabled,.ctl input:disabled,.ctl select:disabled{opacity:.4;cursor:not-allowed}
+
+/* ===== bediening v2 ===== */
+body{min-height:100vh;background:radial-gradient(90% 50% at 50% 0%,#14305c 0%,#081428 70%) #081428}
+.ctl{background:transparent;border:0;padding:0;gap:14px}
+.cbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ctt{font-size:18px}.ctsp{flex:1}
+.ctl button{border-radius:12px;padding:10px 16px;font-weight:600}
+.ctl button.ghost{background:rgba(255,255,255,.07);border:1px solid var(--line)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.cg{background:rgba(16,41,77,.55);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:grid;gap:12px;align-content:start}
+.cgh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}.cgh>b{font-size:15px;letter-spacing:.02em}
+.cgh .hint{font-size:12.5px}
+.cgb{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.cgb label{flex:1 1 120px;min-width:0}.cgb label.grow{flex:1 1 100%}
+.cgb input,.cgb select{width:100%;box-sizing:border-box;border-radius:10px;padding:9px 11px;background:rgba(0,0,0,.25)}
+.cgb input:focus,.cgb select:focus,.se-r input:focus{outline:2px solid #e0556b;outline-offset:1px}
+label.ck{display:flex!important;flex:0 0 auto;align-items:center;gap:7px;font-weight:600}
+label.ck input{width:18px;height:18px;padding:0;accent-color:#e0556b}
+.cgh label.sw{margin-left:auto}
+.lgs{display:flex;align-items:center;gap:12px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.2)}.lgs>span{font-size:13px;color:var(--dim);font-weight:600}
+.tp{display:grid;grid-template-columns:48px 1.25fr 1fr 48px;gap:8px}.tp button{padding:12px 6px;font-size:15px;white-space:nowrap}
+.cgrid>.cg:last-child{grid-column:1/-1}.cgrid>.cg:last-child .cgb label.grow{flex:1 1 100%}
+label.ck{white-space:nowrap}
+.ctl button.main,#auto{background:#8e1f33;color:#fff}
+#auto{background:#1f4e8c}
+.nsl{border-color:rgba(224,85,107,.5);background:linear-gradient(135deg,rgba(142,31,51,.28),rgba(16,41,77,.55))}
+.nsl .cgb label{flex:0 1 180px}.nsst{font-size:13px;opacity:.85;flex:1 1 260px}
+.hmb{border-radius:12px;padding:9px 14px;background:rgba(255,255,255,.05)}
+.sted{gap:10px}.say{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px}
+.ctl>p.hint{padding:0 4px}
+@media(max-width:560px){.ctt,.ctsp{display:none}.cbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.cbar>*{font-size:13px!important;padding:10px 6px!important;white-space:nowrap;text-align:center;overflow:hidden;text-overflow:ellipsis}.tp{grid-template-columns:48px 1fr 1fr 48px}}
 </style>
 </head>
 <body>
@@ -321,59 +352,87 @@ details summary{cursor:pointer;font-size:13px;color:var(--dim);font-weight:600;m
 </section>
 
 <section class="ctl">
-  <div class="row nsl"><a class="hmb" href="index.html#diensten">← Hoofdmenu</a>
-    <b class="nslt">NS live</b>
-    <label>Treinnummer<input id="nsnr" inputmode="numeric" maxlength="6" placeholder="bijv. 1634" style="width:130px"></label>
-    <button class="main" id="nsgo">Laden</button>
-    <label style="grid-auto-flow:column;align-items:center;gap:6px"><input id="nsfol" type="checkbox" checked> Live volgen (elke minuut)</label>
-    <button id="nsoff">Stop live</button>
-    <span class="nsst" id="nsst">Voer een NS-treinnummer in om de echte rit te tonen.</span>
+  <div class="cbar"><a class="hmb" href="index.html#diensten">← Hoofdmenu</a><b class="ctt">HS OBIS · bediening</b><span class="ctsp"></span><button id="say" class="ghost">🔊 Omroepen</button><button id="fs" class="ghost" title="Volledig scherm">⛶ Scherm</button></div>
+
+  <div class="cg nsl">
+    <div class="cgh"><b>NS live</b><span class="nsst" id="nsst">Voer een NS-treinnummer in om de echte rit te tonen.</span></div>
+    <div class="cgb">
+      <label>Treinnummer<input id="nsnr" inputmode="numeric" maxlength="6" placeholder="bijv. 1634"></label>
+      <button class="main" id="nsgo">Laden</button>
+      <label class="ck"><input id="nsfol" type="checkbox" checked> Elke minuut verversen</label>
+      <button id="nsoff">Stop live</button>
+    </div>
   </div>
-  <div class="row">
-    <button class="main" id="adv">Next ▸</button>
-    <button id="back">◂ Back</button>
-    <button id="say">🔊 Speak</button>
-    <label>Display<select id="sty"><option value="obis">OBIS</option><option value="ris">RIS (SLT)</option></select></label>
-    <label id="rtl" style="display:none">RIS footer text (right)<input id="rtxt" maxlength="40" value="HS40298872833" style="width:220px"></label>
-    <label id="rdl" style="grid-auto-flow:column;align-items:center;gap:6px;display:none"><input id="rdark" type="checkbox"> RIS dark mode</label>
-    <label>Train type<select id="ttype"><option>IC</option><option>SPR</option><option>TGV</option><option>RER</option><option>RE</option><option>RS</option></select></label>
-    <label>Line no.<input id="lnum" maxlength="6" value="4" style="width:90px"></label>
-    <label title="Delay at the start. A stop can set its own delay, which then carries on to the next stops.">Delay from start (min)<input id="delay" type="number" min="0" max="120" value="0" style="width:90px"></label>
-    <label>Clock<input id="manual" type="time" value="09:00"></label>
-    <label style="grid-auto-flow:column;align-items:center;gap:6px"><input id="lnl" type="checkbox" checked> NL</label>
-    <label style="grid-auto-flow:column;align-items:center;gap:6px"><input id="lfr" type="checkbox" checked> FR</label>
-    <label>View<select id="view"><option value="auto">Auto</option><option value="journey">Journey</option><option value="conn">Connections</option></select></label>
-    <button id="auto">▶ Autoplay</button>
-    <label>Speed<select id="spd"><option value="2000">1 min = 2 s</option><option value="1000" selected>1 min = 1 s</option><option value="400">1 min = 0.4 s</option></select></label>
-    <button id="rst">↺ Reset</button>
-    <button id="fs">⛶ Fullscreen</button>
+
+  <div class="cgrid">
+    <div class="cg">
+      <div class="cgh"><b>Afspelen</b></div>
+      <div class="cgb tp">
+        <button id="back" title="Vorige">◂</button>
+        <button class="main" id="adv">Volgende ▸</button>
+        <button id="auto">▶ Afspelen</button>
+        <button id="rst" title="Terug naar begin">↺</button>
+      </div>
+      <div class="cgb">
+        <label>Klok<input id="manual" type="time" value="09:00"></label>
+        <label>Snelheid<select id="spd"><option value="2000">1 min = 2 s</option><option value="1000" selected>1 min = 1 s</option><option value="400">1 min = 0,4 s</option></select></label>
+      </div>
+    </div>
+
+    <div class="cg">
+      <div class="cgh"><b>Weergave</b></div>
+      <div class="cgb">
+        <label>Scherm<select id="sty"><option value="obis">OBIS</option><option value="ris">RIS (SLT)</option></select></label>
+        <label>Inhoud<select id="view"><option value="auto">Automatisch</option><option value="journey">Rit</option><option value="conn">Aansluitingen</option></select></label>
+        <div class="lgs"><span>Taal</span><label class="ck"><input id="lnl" type="checkbox" checked> NL</label><label class="ck"><input id="lfr" type="checkbox" checked> FR</label></div>
+      </div>
+      <div class="cgb">
+        <label id="rdl" class="ck" style="display:none"><input id="rdark" type="checkbox"> RIS donker</label>
+        <label id="rtl" style="display:none">Tekst rechtsonder (RIS)<input id="rtxt" maxlength="40" value="HS40298872833"></label>
+      </div>
+    </div>
+
+    <div class="cg">
+      <div class="cgh"><b>Trein</b></div>
+      <div class="cgb">
+        <label>Soort<select id="ttype"><option>IC</option><option>SPR</option><option>TGV</option><option>RER</option><option>RE</option><option>RS</option></select></label>
+        <label>Lijn of nummer<input id="lnum" maxlength="6" value="4"></label>
+        <label title="Vertraging bij het begin. Een halte kan een eigen vertraging hebben, die dan doorloopt naar de volgende haltes.">Vertraging (min)<input id="delay" type="number" min="0" max="120" value="0"></label>
+      </div>
+    </div>
+
+    <div class="cg">
+      <div class="cgh"><b>Storing</b><label class="ck sw"><input id="storing" type="checkbox"> Aan</label></div>
+      <div class="cgb"><label class="grow">Reden (NL ; FR)<input id="smsg" value="seinstoring bij Rutledge ; dérangement de signalisation à Rutledge"></label></div>
+    </div>
   </div>
-  <div class="row">
-    <label style="grid-auto-flow:column;align-items:center;gap:8px"><input id="storing" type="checkbox"> Disruption (Storing)</label>
-    <label style="flex:1;min-width:240px">Reason (NL ; FR)<input id="smsg" value="seinstoring bij Rutledge ; dérangement de signalisation à Rutledge"></label>
-  </div>
-  <div class="sted">
-  <div class="se-top"><b>Stops</b><span class="hint">Enter = new stop below (+10 min, stops 2 min) · start station: departure only · empty departure = 2 min after arrival · empty delay = same as previous stop</span></div>
-  <div class="se-h"><span></span><span>Stop</span><span>Arrival</span><span>Departure</span><span>Platform</span><span>Door</span><span>Delay (min)</span><span>Connecting trains (comma separated)</span><span></span></div>
-  <div id="se"></div>
-  <div class="row"><button class="main" id="se-add" type="button">+ Add stop</button><button id="se-clr" type="button">Clear all</button></div>
-  <details><summary>Text mode: paste a list (name ; arrival ; departure ; platform ; transfers ; door L/R ; delay). The older 5-field format still works.</summary>
-  <textarea id="stops" spellcheck="false">Adlersteen Centraal;;09:02;4;RER A, IC Hoggemeer;R;
+
+  <div class="cg sted">
+    <div class="cgh"><b>Haltes</b><span class="hint">Enter = nieuwe halte eronder (+10 min, 2 min stilstand) · eerste halte: alleen vertrek · lege vertrektijd = 2 min na aankomst · lege vertraging = zelfde als vorige halte</span></div>
+    <div class="se-h"><span></span><span>Halte</span><span>Aankomst</span><span>Vertrek</span><span>Spoor</span><span>Deur</span><span>Vertr. (min)</span><span>Aansluitende treinen (komma's)</span><span></span></div>
+    <div id="se"></div>
+    <div class="row"><button class="main" id="se-add" type="button">+ Halte toevoegen</button><button id="se-clr" type="button">Alles wissen</button></div>
+    <details><summary>Tekstmodus: plak een lijst (halte ; aankomst ; vertrek ; spoor ; aansluitingen ; deur L/R ; vertraging)</summary>
+    <textarea id="stops" spellcheck="false">Adlersteen Centraal;;09:02;4;RER A, IC Hoggemeer;R;
 Sintrijkkemmedalle;09:14;09:16;2;RER B;L;
 Hoggemeer;09:27;09:29;1;;R;
 Rutledge;09:41;09:44;6;IC Adlersteen, RER C;L;
 Noordhaven;09:58;;3;RER A;R;</textarea>
-  </details>
+    </details>
   </div>
-  <p class="hint">The display shows “next stop” while moving and “now at” while stopped. Press Next to step through the journey. Door side L/R is shown on arrival. In fullscreen, click the screen or press ← → to step. Connections are simulated from the arrival time and delay. Autoplay runs the clock: the train arrives at the scheduled time plus delay, stands until the stop's departure time (default 2 minutes after arrival), then leaves.</p>
-  <div class="say" id="ann"></div>
+
+  <div class="cg">
+    <div class="cgh"><b>Omroep</b><span class="hint">De tekst die bij 🔊 Omroepen wordt uitgesproken</span></div>
+    <div class="say" id="ann"></div>
+  </div>
+  <p class="hint">Rijdend toont het scherm “Volgende halte”, stilstaand “U bent in”. Met Volgende loop je door de rit, of gebruik Afspelen. In volledig scherm: tik op het scherm of gebruik ← →. Zonder NS live zijn aansluitingen gesimuleerd. Met NS live komen halte, tijden en aansluitingen van NS.</p>
 </section>
 </main>
 <script>
 const $=id=>document.getElementById(id);
 let S=[],i=0,stopped=false;
 const TR_NOT=/\b(bus|tram|metro|streekbus|taxi|ferry|veer|boot)\b/i,nrm=v=>v.split(',').map(x=>x.trim()).filter(Boolean),trn=v=>nrm(v).filter(x=>!TR_NOT.test(x)).join(', ');
-function edWarn(){document.querySelectorAll('#se .tr').forEach(e=>{const bad=nrm(e.value).some(x=>TR_NOT.test(x));e.classList.toggle('warn',bad);e.title=bad?'Only connecting trains (e.g. RER B) count here: bus, tram, metro and other regional transport are ignored':'Connecting trains, comma separated'})}
+function edWarn(){document.querySelectorAll('#se .tr').forEach(e=>{const bad=nrm(e.value).some(x=>TR_NOT.test(x));e.classList.toggle('warn',bad);e.title=bad?'Alleen treinen tellen (bijv. RER B): bus, tram, metro en ander streekvervoer worden genegeerd':'Aansluitende treinen, gescheiden door komma'})}
 function ps(l){const p=l.split(';').map(x=>x.trim());return p.length>=6?{n:p[0],t:p[1]||'',dp:p[2]||'',pl:p[3]||'',tr:p[4]||'',d:(p[5]||'R').toUpperCase(),dv:p[6]||''}:{n:p[0],t:p[1]||'',dp:'',pl:p[2]||'',tr:p[3]||'',d:(p[4]||'R').toUpperCase(),dv:''}}
 function parse(){S=$('stops').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>ps(l)).filter(x=>x.n);S.forEach(x=>x.tr=trn(x.tr));{const ok=v=>/^\d{1,2}:\d{2}$/.test(v);let pv=0,cur=Math.max(0,+$('delay').value||0);S.forEach((x,k)=>{let m,dd;if(k===0){if(!ok(x.dp)&&ok(x.t))x.dp=x.t;dd=ok(x.dp)?mm(x.dp):2;m=dd-2;x.t=add('00:00',m)}else{m=ok(x.t)?mm(x.t):pv;while(m<pv)m+=1440;dd=ok(x.dp)?mm(x.dp):m+2;while(dd<m)dd+=1440}x.m=m;x.dm=dd;pv=dd;if(x.dv!==''&&!isNaN(+x.dv))cur=Math.max(0,Math.round(+x.dv));x.dl=cur})}if(i>=S.length)i=Math.max(0,S.length-1);if(S.length&&i===0)stopped=true}
 function add(t,m){const r=/^(\d{1,2}):(\d{2})$/.exec(t);if(!r)return t;let x=(((+r[1]*60+ +r[2]+m)%1440)+1440)%1440;return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')}
@@ -463,11 +522,11 @@ $('back').onclick=()=>{if(stopped)stopped=false;else if(i>0){i--;stopped=true}sy
 $('say').onclick=()=>{try{speechSynthesis.cancel();[['nl-NL',window._a[0],LG().nl],['fr-FR',window._a[1],LG().fr]].filter(x=>x[2]).forEach(([l,t])=>{const u=new SpeechSynthesisUtterance(t);u.lang=l;speechSynthesis.speak(u)})}catch(e){}};
 let timer=null;
 function sync(){if(!S.length)return;const s=S[i];$('manual').value=stopped?add(s.t,s.dl):add('00:00',i>0?S[i-1].dm+S[i-1].dl:s.m+s.dl-8)}
-function stopAuto(){clearInterval(timer);timer=null;$('auto').textContent='▶ Autoplay'}
+function stopAuto(){clearInterval(timer);timer=null;$('auto').textContent='▶ Afspelen'}
 function tick(){parse();if(!S.length){stopAuto();return}const s=S[i],arr=s.m+s.dl,dep=s.dm+s.dl;let c=cl(arr)+1;
   if(!stopped&&c>=arr){stopped=true;c=arr}else if(stopped&&c>=dep){if(i>=S.length-1){stopAuto();return}i++;stopped=false}
   $('manual').value=add('00:00',c);render()}
-function startAuto(){stopAuto();timer=setInterval(tick,+$('spd').value);$('auto').textContent='⏸ Pause'}
+function startAuto(){stopAuto();timer=setInterval(tick,+$('spd').value);$('auto').textContent='⏸ Pauze'}
 $('auto').onclick=()=>timer?stopAuto():startAuto();
 $('spd').onchange=()=>{if(timer)startAuto()};
 $('rst').onclick=()=>{stopAuto();i=0;stopped=false;parse();sync();render()};
@@ -479,7 +538,7 @@ document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(e.target
 let edLock=false,clrT=null;
 function edRows(){const z=v=>v.replace(/^(\d):/,'0$1:');return $('stops').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const r=ps(l);return{n:r.n,t:z(r.t),dp:z(r.dp),pl:r.pl,tr:r.tr,d:r.d==='L'?'L':'R',dv:r.dv}})}
 function edRead(){return Array.from($('se').children).map(d=>({n:d.querySelector('.nm').value,t:d.querySelector('.tm').value,dp:d.querySelector('.dt').value,pl:d.querySelector('.pl').value,d:d.querySelector('.dr').value,dv:d.querySelector('.dl').value,tr:d.querySelector('.tr').value}))}
-function edBuild(rows){const el=$('se');el.innerHTML='';rows=rows.map((r,k)=>{r=Object.assign({},r);if(k===0){if(!r.dp)r.dp=r.t;r.t=''}else{if(!r.t&&r.dp)r.t=add(r.dp,-2);if(k===rows.length-1)r.dp=''}return r});rows.forEach((r,k)=>{const d=document.createElement('div');d.className='se-r';d.innerHTML='<span class="ix"></span><input class="nm" aria-label="Stop name" placeholder="Stop name" autocomplete="off"><label class="f c-ar"><small>Arrival</small><input class="tm" type="time"></label><label class="f c-dp"><small>Departure</small><input class="dt" type="time" title="Empty = 2 min after arrival"></label><label class="f c-pl"><small>Platform</small><input class="pl" placeholder="Pl."></label><label class="f c-dr"><small>Door</small><select class="dr" title="Door side"><option value="R">R ▸</option><option value="L">◂ L</option></select></label><label class="f c-dl"><small>Delay (min)</small><input class="dl" type="number" min="0" max="240" placeholder="=" title="Empty = same delay as the previous stop"></label><input class="tr" aria-label="Transfers" placeholder="Connecting trains, e.g. RER B"><span class="act"><button type="button" data-a="up" title="Move up">↑</button><button type="button" data-a="dn" title="Move down">↓</button><button type="button" data-a="rm" title="Remove stop">✕</button></span>';d.querySelector('.ix').textContent=k+1;d.querySelector('.nm').value=r.n;d.querySelector('.tm').value=r.t;d.querySelector('.dt').value=r.dp;d.querySelector('.pl').value=r.pl;d.querySelector('.dr').value=r.d;d.querySelector('.dl').value=r.dv;d.querySelector('.tr').value=r.tr;if(k===0){const a=d.querySelector('.tm');a.disabled=true;a.title='Start station: departure only'}if(k>0&&k===rows.length-1){const a=d.querySelector('.dt');a.disabled=true;a.title='End station: arrival only'}el.appendChild(d)});edWarn()}
+function edBuild(rows){const el=$('se');el.innerHTML='';rows=rows.map((r,k)=>{r=Object.assign({},r);if(k===0){if(!r.dp)r.dp=r.t;r.t=''}else{if(!r.t&&r.dp)r.t=add(r.dp,-2);if(k===rows.length-1)r.dp=''}return r});rows.forEach((r,k)=>{const d=document.createElement('div');d.className='se-r';d.innerHTML='<span class="ix"></span><input class="nm" aria-label="Halte" placeholder="Naam halte" autocomplete="off"><label class="f c-ar"><small>Aankomst</small><input class="tm" type="time"></label><label class="f c-dp"><small>Vertrek</small><input class="dt" type="time" title="Leeg = 2 min na aankomst"></label><label class="f c-pl"><small>Spoor</small><input class="pl" placeholder="Sp."></label><label class="f c-dr"><small>Deur</small><select class="dr" title="Uitstapkant"><option value="R">R ▸</option><option value="L">◂ L</option></select></label><label class="f c-dl"><small>Vertraging</small><input class="dl" type="number" min="0" max="240" placeholder="=" title="Leeg = zelfde vertraging als vorige halte"></label><input class="tr" aria-label="Aansluitingen" placeholder="Aansluitende treinen, bijv. RER B"><span class="act"><button type="button" data-a="up" title="Omhoog">↑</button><button type="button" data-a="dn" title="Omlaag">↓</button><button type="button" data-a="rm" title="Halte verwijderen">✕</button></span>';d.querySelector('.ix').textContent=k+1;d.querySelector('.nm').value=r.n;d.querySelector('.tm').value=r.t;d.querySelector('.dt').value=r.dp;d.querySelector('.pl').value=r.pl;d.querySelector('.dr').value=r.d;d.querySelector('.dl').value=r.dv;d.querySelector('.tr').value=r.tr;if(k===0){const a=d.querySelector('.tm');a.disabled=true;a.title='Beginstation: alleen vertrek'}if(k>0&&k===rows.length-1){const a=d.querySelector('.dt');a.disabled=true;a.title='Eindstation: alleen aankomst'}el.appendChild(d)});edWarn()}
 function edPush(){const c=v=>String(v).replace(/[;\n]/g,',').trim();edLock=true;$('stops').value=edRead().map(r=>[r.n,r.t,r.dp,r.pl,r.tr,r.d,r.dv].map(c).join(';')).join('\n');$('stops').dispatchEvent(new Event('input'));edLock=false;edWarn()}
 function edAdd(k){const rows=edRead(),prev=rows[k],base=prev&&(prev.t||prev.dp),a=base?add(base,10):'';rows.splice(k+1,0,{n:'',t:a,dp:add(a,2),pl:'',tr:'',d:prev?prev.d:'R',dv:''});edBuild(rows);edPush();const r=$('se').children[k+1];if(r)r.querySelector('.nm').focus()}
 $('se').addEventListener('input',edPush);
@@ -488,7 +547,7 @@ $('se').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)re
   if(a==='rm')rows.splice(k,1);else if(a==='up'&&k>0)[rows[k-1],rows[k]]=[rows[k],rows[k-1]];else if(a==='dn'&&k<rows.length-1)[rows[k+1],rows[k]]=[rows[k],rows[k+1]];else return;
   edBuild(rows);edPush()});
 $('se-add').onclick=()=>edAdd(edRead().length-1);
-$('se-clr').onclick=()=>{const b=$('se-clr');if(!clrT){b.textContent='Sure? Click again';clrT=setTimeout(()=>{clrT=null;b.textContent='Clear all'},3000);return}clearTimeout(clrT);clrT=null;b.textContent='Clear all';edBuild([]);edPush()};
+$('se-clr').onclick=()=>{const b=$('se-clr');if(!clrT){b.textContent='Zeker? Klik nogmaals';clrT=setTimeout(()=>{clrT=null;b.textContent='Alles wissen'},3000);return}clearTimeout(clrT);clrT=null;b.textContent='Alles wissen';edBuild([]);edPush()};
 $('stops').addEventListener('input',()=>{if(!edLock)edBuild(edRows())});
 edBuild(edRows());
 render();
