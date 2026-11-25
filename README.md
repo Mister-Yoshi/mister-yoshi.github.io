@@ -22,6 +22,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 - Snelle links, onder andere Treinposities, NS, NMBS, SNCF Connect en DB
 
 ### 🚉 Vertrek
+- Drie onderdelen als knoppen bovenaan: **Trein**, **Bus** en **Storingen** (met het aantal storingen). Je laatste keuze wordt onthouden, en een storing rond Assen staat als balk boven de vertrekstaat
 - **Live vertrekstaat van station Assen**, met echte NS-data:
   - tijd, vertraging, bestemming, spoor (met een opvallend bordje bij een spoorwijziging) en soort trein (IC of SPR)
   - **tik op een trein** voor alle tussenhaltes met tijden, vertraging en sporen
