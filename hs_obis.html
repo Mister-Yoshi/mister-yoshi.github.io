@@ -361,6 +361,8 @@ label.ck{white-space:nowrap}
 .arv .af{display:flex;align-items:center;border-top:calc(var(--u)*.8) solid #20a79c;padding:0 calc(var(--u)*4);font-size:calc(var(--u)*3.6);color:#7fd3cb;background:#0b1e3b}
 .arv .ast{display:flex;align-items:center;background:#b3261e;color:#fff;padding:0 calc(var(--u)*4);font-size:calc(var(--u)*5);line-height:1.15;border-top:calc(var(--u)*.8) solid #20a79c}
 .screen.isarv:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;box-shadow:none;max-width:none}
+
+.cg.lockc>*:not(.cgh),.cg.lockc .cgh label{opacity:.4;filter:grayscale(.6)}.cg.lockc .cgh>b::after{content:' 🔒';font-size:.85em}
 </style>
 </head>
 <body>
@@ -643,7 +645,8 @@ function liveConnLoad(){if(!LIVE)return;const x=LIVE.stops.find(z=>z.n===S[i].n)
 function liveOff(){clearInterval(liveT);clearInterval(liveC);LIVE=null;LIVEC=null;$('screen').classList.remove('live');liveLock(false);{const ao=$('sty').querySelector('option[value=arv]');if($('sty').value==='arv')$('sty').value='obis';ao.hidden=true;ao.disabled=true;$('sty').disabled=false;render()}nsSt('Live uit. Je kunt de rit nu zelf aanpassen of afspelen.')}
 $('nsgo').onclick=()=>liveLoad($('nsnr').value);$('nsnr').addEventListener('keydown',e=>{if(e.key==='Enter')liveLoad($('nsnr').value)});
 $('nsoff').onclick=liveOff;$('nsfol').onchange=()=>{clearInterval(liveT);if(LIVE&&$('nsfol').checked)liveT=setInterval(()=>liveLoad(LIVE.nr),6e4)};
-const LOCK=['adv','back','auto','rst','manual','spd'];function liveLock(on){LOCK.forEach(id=>{$(id).disabled=on;$(id).title=on?'Niet beschikbaar tijdens NS live. Gebruik Stop live om zelf te bedienen.':''});$('nsoff').disabled=!on;const ed=document.querySelector('.ctl .sted');if(ed){ed.inert=on;ed.classList.toggle('locked',on)}}
+const LOCK=['adv','back','auto','rst','manual','spd','ttype','lnum','delay','storing','smsg'];function liveLock(on){LOCK.forEach(id=>{$(id).disabled=on;$(id).title=on?'Niet beschikbaar tijdens NS live. Gebruik Stop live om zelf te bedienen.':''});$('nsoff').disabled=!on;const ed=document.querySelector('.ctl .sted');if(ed){ed.inert=on;ed.classList.toggle('locked',on)}
+ ['ttype','storing','adv'].forEach(id=>{const g=$(id).closest('.cg');if(g)g.classList.toggle('lockc',on)});if(on&&$('storing').checked){$('storing').checked=false;$('storing').dispatchEvent(new Event('input'));$('storing').dispatchEvent(new Event('change'))}}
 liveLock(false);
 ['adv','back'].forEach(id=>$(id).addEventListener('click',e=>{if(LIVE){e.stopImmediatePropagation();e.preventDefault()}},true));
 try{const q=new URLSearchParams(location.search).get('trein');if(q){$('nsnr').value=q;liveLoad(q)}}catch(e){}
