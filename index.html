@@ -4,12 +4,12 @@
 <meta name="theme-color" content="#001233">
 <title>Hoggynesische Spoorwegen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{--red:#ff4136;--blue:#4d7cff;--grey:#a5a8ab;--yel:#ffc917;--bg:#060b18;--ink:#eef3fc;--dim:#9aaec8;--line:rgba(255,255,255,.09);--sc:#1fd38a;--mx:0;--my:0}
 *{box-sizing:border-box}html,body{margin:0}
 body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:Outfit,system-ui,sans-serif;overflow-x:hidden;background-image:radial-gradient(900px 500px at 15% 8%,rgba(77,124,255,.16),transparent 70%),radial-gradient(700px 480px at 90% 30%,rgba(255,65,54,.11),transparent 70%)}
-.mono{font-family:Archivo,system-ui,sans-serif}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace}
 .bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
 .bg i{position:absolute;top:-15%;height:130%;width:11vw;transform:skewX(-18deg) translate(calc(var(--mx)*1px),calc(var(--my)*1px));opacity:.1}
 .bg i:nth-child(1){left:58%;background:var(--red)}.bg i:nth-child(2){left:71%;background:var(--blue)}.bg i:nth-child(3){left:84%;background:var(--grey)}
@@ -88,7 +88,7 @@ form button{font:inherit;font-weight:700;font-size:14px;letter-spacing:.08em;tex
 /* Vertrek: alles stil */
 #p-vertrek{animation:none}.bc,.bc:hover{transform:none;transition:none}.bc::before{animation:none;background-position:0 0}
 .lab{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
-.ty{font-size:11px;font-weight:600;border:1px solid var(--yel);color:var(--yel);border-radius:6px;padding:2px 8px;font-family:Archivo,system-ui,sans-serif}
+.ty{font-size:11px;font-weight:600;border:1px solid var(--yel);color:var(--yel);border-radius:6px;padding:2px 8px;font-family:"IBM Plex Mono",monospace}
 .sx{font-size:13px;font-weight:600}.sx.ok{color:#1fd38a}.sx.bad{color:var(--red)}.sx.st{color:#b980ff}
 
 /* Reisplanner (stil, geen animatie) */
@@ -104,7 +104,7 @@ body:not(.only-nl):not(.only-fr) #p-plan form .nl+.fr::before,body:not(.only-nl)
 .pin:focus{outline:2px solid var(--blue);outline-offset:1px}
 .psg{display:none;position:absolute;left:0;right:0;top:100%;margin-top:6px;z-index:20;background:#0b1226;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.6)}
 .psg.on{display:block}.psg div{padding:11px 14px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;font-size:15px}
-.psg div small{color:var(--dim);font-family:Archivo,system-ui,sans-serif}.psg div.a,.psg div:hover{background:rgba(77,124,255,.22)}
+.psg div small{color:var(--dim);font-family:"IBM Plex Mono",monospace}.psg div.a,.psg div:hover{background:rgba(77,124,255,.22)}
 .pbt{font:inherit;font-size:15px;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;white-space:nowrap}
 .pbt .fr,.pgo .fr{font-size:1em}.psw{font-size:20px;padding:10px 14px}
 .pbt[aria-pressed=true]{background:rgba(77,124,255,.28);border-color:var(--blue)}
@@ -116,15 +116,15 @@ body:not(.only-nl):not(.only-fr) #p-plan form .nl+.fr::before,body:not(.only-nl)
 .trp>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:6px 18px;align-items:center;padding:16px 20px}
 .trp>summary::-webkit-details-marker{display:none}
 .trp[open]>summary{border-bottom:1px solid var(--line);background:rgba(77,124,255,.08)}
-.tm2{font:600 24px Archivo,system-ui,sans-serif;white-space:nowrap}.tm2 s{text-decoration:none;color:var(--red);font-size:14px;margin-left:4px}.tm2 i{font-style:normal;color:var(--dim);margin:0 8px}
+.tm2{font:600 24px "IBM Plex Mono",monospace;white-space:nowrap}.tm2 s{text-decoration:none;color:var(--red);font-size:14px;margin-left:4px}.tm2 i{font-style:normal;color:var(--dim);margin:0 8px}
 .ti2{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--dim);font-size:14px;align-items:center}.ti2 b{color:var(--ink);font-weight:600}
-.pch{display:flex;gap:4px;flex-wrap:wrap}.pch span{font:600 11px Archivo,system-ui,sans-serif;border:1px solid var(--yel);color:var(--yel);border-radius:6px;padding:2px 7px}
+.pch{display:flex;gap:4px;flex-wrap:wrap}.pch span{font:600 11px "IBM Plex Mono",monospace;border:1px solid var(--yel);color:var(--yel);border-radius:6px;padding:2px 7px}
 .pst2{justify-self:start;font-size:12.5px;font-weight:700;border-radius:999px;padding:4px 10px;white-space:nowrap}.pst2.x{background:rgba(185,128,255,.2);color:#cfa8ff}.pst2.w{background:rgba(245,148,31,.18);color:#f5941f}
 .crd{font-size:12.5px;color:var(--dim)}
 .lgs{padding:8px 20px 16px}
 .lg{display:grid;grid-template-columns:62px 1fr auto;gap:2px 14px;padding:10px 0}
-.lg .t{font:600 17px Archivo,system-ui,sans-serif}.lg .t s{display:block;text-decoration:none;color:var(--red);font-size:12px}
-.lg .n{font-weight:700;font-size:16px}.lg .k{font-family:Archivo,system-ui,sans-serif;font-size:13px;color:#000;background:var(--yel);border-radius:6px;padding:2px 7px;align-self:center}.lg .k.ch{background:#fff;outline:2px solid var(--red)}
+.lg .t{font:600 17px "IBM Plex Mono",monospace}.lg .t s{display:block;text-decoration:none;color:var(--red);font-size:12px}
+.lg .n{font-weight:700;font-size:16px}.lg .k{font-family:"IBM Plex Mono",monospace;font-size:13px;color:#000;background:var(--yel);border-radius:6px;padding:2px 7px;align-self:center}.lg .k.ch{background:#fff;outline:2px solid var(--red)}
 .lr{grid-column:2/4;display:flex;gap:10px;align-items:center;color:var(--dim);font-size:13.5px;padding:6px 0 6px 14px;border-left:3px solid var(--blue);margin:4px 0}
 .lr .ty{flex:none}.lr.x{border-color:var(--red);text-decoration:line-through}.lr.w{border-left-style:dashed;border-color:var(--grey)}
 .lm{grid-column:2/4;color:#f5941f;font-size:13px}
@@ -137,16 +137,16 @@ body:not(.only-nl):not(.only-fr) #p-plan form .nl+.fr::before,body:not(.only-nl)
 .vs .vh{display:flex;justify-content:space-between;align-items:center;gap:10px;height:52px;padding:0 20px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line)}
 .vs .vh a{color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;letter-spacing:.06em;white-space:nowrap}.vs .vh a.warn{color:#f5941f;border-color:#f5941f}
 .vs table{width:100%;border-collapse:collapse;table-layout:fixed}
-.vs th{height:36px;padding:0 10px;text-align:left;font:600 11px Archivo,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);background:rgba(255,255,255,.03)}
+.vs th{height:36px;padding:0 10px;text-align:left;font:600 11px "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);background:rgba(255,255,255,.03)}
 .vs td{height:62px;padding:0 10px;border-top:1px solid var(--line);vertical-align:middle;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .vs th:first-child,.vs td:first-child{padding-left:20px}.vs th:last-child,.vs td:last-child{padding-right:20px}
-.vs .c1{width:100px}.vs .c2{width:110px}.vs .c4{width:92px;text-align:center}.vs .c5{width:150px}.vs .mt{display:block;height:17px;margin-top:3px;font:500 12px Archivo,system-ui,sans-serif;color:var(--ink);overflow:hidden;text-overflow:ellipsis}
+.vs .c1{width:100px}.vs .c2{width:110px}.vs .c4{width:92px;text-align:center}.vs .c5{width:150px}.vs .mt{display:block;height:17px;margin-top:3px;font:500 12px "IBM Plex Mono",monospace;color:var(--ink);overflow:hidden;text-overflow:ellipsis}
 .vs .nl,.vs .fr{display:inline;font-size:inherit;opacity:1}.vs .nl+.fr::before{content:" / "}.vs th{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.vs .t{font:600 20px Archivo,system-ui,sans-serif}
-.vs .dl{font:600 14px Archivo,system-ui,sans-serif;color:var(--red)}.vs .dl.ok{color:#1fd38a}.vs .dl.x{color:#b980ff}
+.vs .t{font:600 20px "IBM Plex Mono",monospace}
+.vs .dl{font:600 14px "IBM Plex Mono",monospace;color:var(--red)}.vs .dl.ok{color:#1fd38a}.vs .dl.x{color:#b980ff}
 .vs .d{display:block;font-size:18px;font-weight:700;overflow:hidden;text-overflow:ellipsis}.vs .n{display:block;height:17px;font-size:12.5px;color:var(--dim);overflow:hidden;text-overflow:ellipsis}.vs .n.w{color:#f5941f}
 .vs tr.cx .t,.vs tr.cx .d{text-decoration:line-through;opacity:.55}
-.vs .sp{display:inline-block;min-width:38px;font:700 18px Archivo,system-ui,sans-serif;color:#000;background:var(--yel);border-radius:7px;padding:2px 6px;text-align:center}.vs .sp.ch{background:#fff;outline:2px solid var(--red)}
+.vs .sp{display:inline-block;min-width:38px;font:700 18px "IBM Plex Mono",monospace;color:#000;background:var(--yel);border-radius:7px;padding:2px 6px;text-align:center}.vs .sp.ch{background:#fff;outline:2px solid var(--red)}
 .vs .ft{height:40px;line-height:40px;padding:0 20px;font-size:11.5px;color:var(--dim);border-top:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vs .dv{height:532px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;padding:0 20px;border-top:1px solid var(--line)}
 .vs .dvi{font-size:44px;line-height:1}.vs .dvt{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.03em}.vs .dv p{margin:0;color:var(--dim);font-size:15px}
@@ -168,8 +168,7 @@ footer{margin-top:50px;text-align:center;color:var(--dim);font-size:12px;letter-
 
 /* ===================== v4 · stationsstijl ===================== */
 :root{--perron:#13225e;--perron2:#0c1744;--krijt:#eef1f7;--bg:#070c1a;--ink:#eef1f7;--dim:#a6b2cf;--line:rgba(160,182,235,.15)}
-body{font-family:Archivo,system-ui,sans-serif;font-variant-numeric:tabular-nums;background-image:radial-gradient(1100px 600px at 20% -10%,rgba(28,52,140,.35),transparent 70%)}
-.mono{font-family:Archivo,system-ui,sans-serif;font-variant-numeric:tabular-nums;font-stretch:90%}
+body{background-image:radial-gradient(1100px 600px at 20% -10%,rgba(28,52,140,.35),transparent 70%)}
 .panel{animation:none}
 .bg i{opacity:.07}
 /* zijbalk */
@@ -184,25 +183,22 @@ body{font-family:Archivo,system-ui,sans-serif;font-variant-numeric:tabular-nums;
 #nv button[aria-current=page] .ky{opacity:.6}
 #nv button[aria-current=page]::before{left:-10px;top:14%;bottom:14%;width:5px;border-radius:0;background:var(--red)}
 /* kopbalk */
-.alert{text-transform:none;letter-spacing:0;font-size:14.5px;border-radius:10px;padding:11px 16px}
 .alert .dot{animation:none;box-shadow:none}
 .pill,.lang button,.gear{border-radius:10px}
 .lang button[aria-pressed=true]{background:var(--krijt);color:var(--perron2);box-shadow:none}
 /* koppen: smalle stationsletter + HS-blokjes */
 .ph{margin:10px 0 24px}
-.ph h2{position:relative;padding-left:1.18em;font-stretch:72%;font-weight:800;letter-spacing:-.005em;font-size:clamp(42px,6.2vw,80px);line-height:.95}
+.ph h2{position:relative;padding-left:1.18em}
 .ph h2::before{content:"";position:absolute;left:0;top:.14em;width:.92em;height:.62em;background:linear-gradient(90deg,var(--red) 0 33.3%,var(--blue) 33.3% 66.6%,var(--grey) 66.6%);clip-path:polygon(22% 0,100% 0,78% 100%,0 100%)}
-.ph h2 .fr{font-size:.5em;font-stretch:80%;margin-top:6px}
-.ph h2 em,h1 em{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:inherit}
+.ph h2 .fr{font-size:.5em;margin-top:6px}
 .ph p{font-size:16px}
 /* kaarten */
 .card{border-radius:14px;background:rgba(14,26,72,.72);backdrop-filter:blur(6px)}
 .bento{gap:14px}
 .hero{background:var(--perron);border-color:transparent}
 .hero::after{opacity:.28;right:-30px;width:170px}
-.badge{border:0;background:none;padding:0;letter-spacing:0;text-transform:none;font-size:15px;font-weight:600;color:#c7d2f0}
-h1{font-stretch:74%;font-weight:800;letter-spacing:-.005em;font-size:clamp(44px,5.8vw,84px);line-height:.94;margin:14px 0 24px}
-h1 .fr{font-stretch:85%}
+h1{margin:14px 0 24px}
+
 #f{background:var(--krijt);border:0;border-radius:10px;box-shadow:none;padding:6px 6px 6px 18px}
 #f:focus-within{border:0;box-shadow:0 0 0 3px var(--yel)}
 #f svg{stroke:#56628a}
@@ -218,42 +214,35 @@ h1 .fr{font-stretch:85%}
 .aclk .hh{stroke:#111;stroke-width:10}.aclk .hm{stroke:#111;stroke-width:7}
 .aclk .hs line{stroke:var(--red);stroke-width:2.6}.aclk .hs circle{fill:var(--red)}.aclk .hub{fill:#111}
 .clk .t{font-size:24px;font-weight:600;letter-spacing:.02em}
-.clk small{text-transform:none;letter-spacing:0;font-size:13px}
-.clk small .fr{display:inline}.clk small .nl+.fr::before{content:" / "}
 /* status */
 .stt{gap:18px}
 .stt .big{width:12px;height:auto;align-self:stretch;border-radius:3px;box-shadow:none;animation:none}
-.stt b{font-size:22px;font-stretch:85%}
+.stt b{font-size:22px;}
 .stt button{border-radius:8px;padding:7px 14px;font-size:13px}
 /* volgende trein + internationaal */
 .cta{border-radius:14px;transition:none;padding:26px 28px}
 .cta:hover{transform:none;filter:brightness(1.1)}
 .cta.a{background:#0a1232;border:1px solid rgba(255,201,23,.4);box-shadow:none}
-.cta.a .nt{color:var(--yel);font-stretch:85%}
+.cta.a .nt{color:var(--yel);}
 .cta.b2{background:#2447c8;box-shadow:none}
-.cta strong{font-stretch:82%;font-size:28px}
-.cta .nxl{letter-spacing:0;text-transform:none;font-size:13px;font-weight:600}
+.cta strong{font-size:28px}
 .cta .pic svg{width:52px;height:52px;fill:none;stroke:#fff;stroke-width:1.5}
 /* snelle links */
-.sec{text-transform:none;letter-spacing:0;font-size:24px;font-weight:800;font-stretch:78%;color:var(--ink);margin:36px 0 14px}
+.sec{margin:36px 0 14px}
 .sec::before{width:26px;height:14px;border-radius:0;box-shadow:none;background:linear-gradient(90deg,var(--red) 0 33.3%,var(--blue) 33.3% 66.6%,var(--grey) 66.6%);clip-path:polygon(22% 0,100% 0,78% 100%,0 100%)}
 .grid{gap:10px}
 .tile{border-radius:12px;background:rgba(14,26,72,.62);transition:none;padding:14px 16px}
 .tile:hover,.tile:focus-visible{transform:none;background:rgba(30,50,128,.8);box-shadow:none}
 .tile:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
 .tile .ic{width:48px;height:48px;border-radius:10px;font-size:24px}
-.tile .nm{font-size:19px;font-stretch:88%}
+.tile .nm{font-size:19px;}
 .tile .lv{animation:none}
 /* vertrek + reisplanner in dezelfde stijl */
-.bh{font-stretch:80%;font-weight:800}
+.bh{font-weight:800}
 .vs{border-radius:14px}
-.vs .vh,.vs th{text-transform:none;letter-spacing:.02em;font-family:Archivo,system-ui,sans-serif}
-.vs th{font-size:12.5px}
-.vs .t{font-family:Archivo,system-ui,sans-serif;font-stretch:88%;font-size:22px}
 .bc{border-radius:14px}
 .trp,.pin,.pbt,.pgo{border-radius:10px}
 .pgo{background:var(--red)}
-.lab{letter-spacing:.02em;text-transform:none;font-size:13px}
 dialog{border-radius:14px}
 :focus-visible{outline:3px solid var(--yel);outline-offset:2px}
 .hero>*{position:relative;z-index:1}
