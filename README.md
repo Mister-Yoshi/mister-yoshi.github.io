@@ -66,6 +66,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 | Bestand | Wat het is |
 | --- | --- |
 | [`hs_in_dienst.html`](hs_in_dienst.html) | **HS In dienst**: in en uit dienst melden, overstappen tellen, pauzes. Met GPS vind je het dichtstbijzijnde station en kies je de trein waarop je overstapt uit de live NS-vertrektijden |
+| [`hs_obis.html`](hs_obis.html) | **HS OBIS & RIS**: reizigersscherm in de trein (volgende halte, aankomst, spoor, aansluitingen, NL/FR). Met **NS live** vul je een treinnummer in en toont het scherm de echte rit: huidige halte, volgende haltes, eindstation en echte aansluitende treinen. Werkt ook als `hs_obis.html?trein=1634` |
 | [`HS_DMI.html`](HS_DMI.html) | **HS DMI**: simulator van een ETCS-cabinescherm, met snelheidsbewaking, remingrijpen, overgangen tussen ETCS en HTC (cabinesein), stroomafnemer en wisseling van tractiesysteem, geluiden, treintypes ICNG, TGV Réseau, TGV Duplex (tot 320 km/h) en ICMm (alleen HTC), Nederlands, Frans en Engels, en een cabinemodus voor het aanraakscherm |
 | [`hs_qr_ticketing_styled.html`](hs_qr_ticketing_styled.html) | **HS QR Ticketing**: maakt en scant QR-treinkaartjes |
 | [`HS_MentaleBijstand.html`](HS_MentaleBijstand.html) | **HS / CFH Mentale Bijstand**: pagina over mentaal welzijn |
@@ -84,6 +85,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 ```
 
 - De Worker haalt de vertrektijden van Assen (`ASN`) op en vraagt per trein het materieel op
+- Voor de OBIS levert de Worker de rit met soort trein en eindstation (`?journey=`) en vertrektijden per station via UIC-code (`?uic=`)
 - Voor HS In dienst levert de Worker vertrektijden van elk station (`?station=CODE`) en stations met coördinaten
 - Voor de bus zoekt de Worker haltes (`?bushalte=…`) en vertrektijden (`?bus=…`) op bij Transitous
 - Voor de tussenhaltes vraagt de Worker de rit op (`?journey=<treinnummer>`)
