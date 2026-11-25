@@ -195,11 +195,17 @@ body:not(.only-nl):not(.only-fr) .ph h2 .fr{font-size:.5em;margin-top:8px}
 body.only-fr .ph h2 .fr{font-size:1em;margin-top:0}
 .stt b span{font-size:inherit!important;color:var(--ink)!important}
 .stt b .fr{opacity:.75}body.only-fr .stt b .fr{opacity:1}
-.tile .nm .nl+.fr{font-size:.75em;opacity:.7}.tile .nm .nl+.fr::before{content:"/ "}
-body.only-fr .tile .nm .fr{font-size:1em;opacity:1}body.only-fr .tile .nm .fr::before{content:none}
+.tile>span:nth-child(2){min-width:0;flex:1}.tile .ar{flex:none}
+.tile .nm{flex-wrap:wrap;row-gap:0;line-height:1.15}
+.tile .nm .nl+.fr{order:3;flex-basis:100%;font-size:.7em;font-weight:600;opacity:.7;margin-top:1px}
+body.only-fr .tile .nm .fr{font-size:1em;font-weight:700;opacity:1;flex-basis:auto;order:0;margin-top:0}
 .vs th{height:44px;white-space:normal;line-height:1.15}body:not(.only-fr) .vs th .nl,body:not(.only-nl) .vs th .fr{display:block}.vs th .nl+.fr::before{content:none}.vs th .nl+.fr{font-size:.85em;opacity:.65}
 body.only-fr .vs th .fr{font-size:1em;opacity:1}
 .vs .dv{height:540px}
+body:not(.only-nl):not(.only-fr) .cta .nxl{letter-spacing:.1em;font-size:10.5px;line-height:1.35}
+body:not(.only-nl):not(.only-fr) .cta .nxl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body:not(.only-nl):not(.only-fr) .alert{letter-spacing:.04em;line-height:1.3}
+@media(max-width:760px){body:not(.only-nl):not(.only-fr) .alert{font-size:10.5px;padding:8px 14px}body:not(.only-nl):not(.only-fr) #f button{font-size:0;width:56px;padding:0}body:not(.only-nl):not(.only-fr) #f button::after{content:"→";font-size:22px}body:not(.only-nl):not(.only-fr) .cta .nxl span{white-space:normal}body:not(.only-nl):not(.only-fr) .badge{font-size:10.5px;letter-spacing:.08em}}
 .ph p{font-size:16px}
 /* kaarten */
 .card{border-radius:14px;background:rgba(14,26,72,.72);backdrop-filter:blur(6px)}
@@ -272,7 +278,7 @@ dialog{border-radius:14px}
    <div class="sw"><form id="f" action="https://www.google.com/search" method="get" role="search"><input type="hidden" name="hl" id="hl" value="nl"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" name="q" type="search" autocomplete="off" autofocus><button><span class="nl">Zoek</span><span class="fr">Rechercher</span></button></form><div id="sg"></div></div></div>
   <div class="card clk"><svg class="aclk" viewBox="-100 -100 200 200" aria-hidden="true"><circle r="96" class="fc"/><g id="ctk"></g><line id="hh" class="hh" y1="18" y2="-50"/><line id="hm" class="hm" y1="22" y2="-80"/><g id="hs" class="hs"><line y1="30" y2="-60"/><circle cy="-62" r="8"/></g><circle r="4" class="hub"/></svg><div class="t mono" id="t">--:--:--</div><small class="mono"><span class="nl">Hoggynesische tijd</span><span class="fr">Heure hoggynésienne</span></small></div>
   <div class="card stt"><div class="big"></div><div><b id="sl"></b><span id="sd"></span><br><button id="sb"></button></div></div>
-  <button class="card cta a" data-go="vertrek" id="nx"><b class="mono nt">--:--</b><span><small class="nxl mono"><span class="nl">Volgende trein · Assen</span><span class="fr">Prochain train · Assen</span></small><strong><span class="nl">Laden…</span><span class="fr">Chargement…</span></strong></span></button>
+  <button class="card cta a" data-go="vertrek" id="nx"><b class="mono nt">--:--</b><span><small class="nxl mono"><span class="nl">Volgende trein&nbsp;·&nbsp;Assen</span><span class="fr">Prochain train&nbsp;·&nbsp;Assen</span></small><strong><span class="nl">Laden…</span><span class="fr">Chargement…</span></strong></span></button>
   <button class="card cta b2" data-go="intl"><b class="pic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg></b><span><strong><span class="nl">Internationaal reizen</span><span class="fr">Voyager à l'étranger</span></strong><span><span class="nl">Eurostar, Ouigo, SNCF &amp; meer</span><span class="fr">Eurostar, Ouigo, SNCF et bien plus</span></span></span></button>
  </div>
  <div class="sec mono"><span class="nl">Snelle links</span><span class="fr">Liens rapides</span></div><div class="grid" id="g-home"></div></section>
@@ -358,7 +364,7 @@ function over(list){if(!tdata)return null;var f=list.length?list[0]:tdata.first|
 function firstTxt(f){if(!f)return T("De eerste trein is nog niet bekend.","Le premier train n'est pas encore connu.");var tr=esc(f.actualTrack||f.plannedTrack||"–"),st=stk(f);
  return T("Eerste trein: "+hm(f.plannedDateTime)+" naar "+esc(f.direction)+", spoor "+tr+".","Premier train : "+hm(f.plannedDateTime)+" vers "+esc(f.direction)+", voie "+tr+".")}
 function trainDraw(){var u=tdata&&tdata.payload.departures.filter(function(x){return new Date(x.actualDateTime).getTime()>Date.now()-3e4}),n=u&&u[0],ov=u&&over(u);
- var lb='<small class="nxl mono">'+T("Volgende trein · Assen","Prochain train · Assen")+'</small>';
+ var lb='<small class="nxl mono">'+T("Volgende trein\u00a0·\u00a0Assen","Prochain train\u00a0·\u00a0Assen")+'</small>';
  setH("nx",ov?'<b class="mono nt">'+(ov.f?hm(ov.f.plannedDateTime):"--:--")+'</b><span>'+lb+'<strong>'+T("Dienst voorbij","Service terminé")+'</strong><span>'+(ov.f?T("Eerste trein → "+esc(ov.f.direction)+" · spoor "+esc(ov.f.actualTrack||ov.f.plannedTrack||"–"),"Premier train → "+esc(ov.f.direction)+" · voie "+esc(ov.f.actualTrack||ov.f.plannedTrack||"–")):T("Geen treinen meer vannacht.","Plus aucun train cette nuit."))+'</span></span>':!u?'<b class="mono nt">--:--</b><span>'+lb+'<strong>'+T("Geen live data","Pas de données en direct")+'</strong><span>'+T("De NS-gegevens konden niet worden geladen.","Impossible de charger les données NS.")+'</span></span>':!n?'<b class="mono nt">--:--</b><span>'+lb+'<strong>'+T("Geen treinen","Aucun train")+'</strong><span>'+T("Op dit moment vertrekt er niets.","Aucun départ pour le moment.")+'</span></span>':
   (function(i){var m=Math.round((new Date(n.actualDateTime)-Date.now())/6e4),tr=esc(i.tr||"–"),ex=n.cancelled?"vervalt":i.dl?"+"+i.dl+" min":"",exf=n.cancelled?"supprimé":i.dl?"+"+i.dl+" min":"";
    return '<b class="mono nt">'+hm(n.plannedDateTime)+'</b><span>'+lb+'<strong>→ '+esc(n.direction)+'</strong><span>'+T("Spoor "+tr+" · "+(m<=0?"nu":"over "+m+" min")+(ex?" · "+ex:""),"Voie "+tr+" · "+(m<=0?"maintenant":"dans "+m+" min")+(exf?" · "+exf:""))+'</span></span>'})(info(n)));
@@ -409,7 +415,7 @@ function tick(){var n=new Date(),h=n.getHours(),p=function(x){return(x<10?"0":""
  $("g1").textContent=h<6?"Goedenacht.":h<12?"Goedemorgen.":h<18?"Goedemiddag.":"Goedenavond.";$("g1f").textContent=h<5||h>=18?"Bonsoir.":"Bonjour."}
 function apply(){var fr=L.fr&&!L.nl;document.body.className=L.nl&&L.fr?"":L.nl?"only-nl":"only-fr";document.documentElement.lang=fr?"fr":"nl";
  $("bnl").setAttribute("aria-pressed",L.nl);$("bfr").setAttribute("aria-pressed",L.fr);
- $("q").placeholder=both("Zoeken met Google of in je links…","Rechercher avec Google ou vos liens…");$("hl").value=fr?"fr":"nl";
+ $("q").placeholder=L.nl&&L.fr?"Zoeken / Rechercher…":both("Zoeken met Google of in je links…","Rechercher avec Google ou vos liens…");$("hl").value=fr?"fr":"nl";
  document.querySelectorAll("[data-nmbs]").forEach(function(a){a.href=a.dataset.nmbs==="buy"?"https://www.belgiantrain.be/"+(fr?"fr":"nl")+"/buy/tickets/search":"https://www.belgiantrain.be/"+(fr?"fr":"nl")});
  $("sv").textContent=both("Opslaan","Enregistrer");$("rs").textContent=both("Herstel","Réinitialiser");$("cl").textContent=both("Sluiten","Fermer");$("sb").textContent=both("Beheer","Gérer");tick();ls("hsstart4",L)}
 function tog(k){var o=k==="nl"?"fr":"nl";if(L[k]&&!L[o])return;L[k]=!L[k];apply()}
