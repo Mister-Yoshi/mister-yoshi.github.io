@@ -54,7 +54,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 - **HS Bijstand**, **HS Ticketing**, **HS DMI** (cabinescherm-simulator), Gemini, GitHub en de **statusbalk**
 
 ### ⚙️ Overig
-- **Statusbalk in twee helften**: links de HS-status, rechts de actuele NS-storingen (groen: geen storingen, oranje: storingen, rood: landelijke verstoring). Tik op de NS-helft voor alle storingen
+- **Statusbalk in twee helften**: links de HS-storingen (CFH in het Frans), rechts de actuele NS-storingen (groen: geen storingen, oranje: storingen, rood: landelijke verstoring). Tik op de NS-helft voor alle storingen
 - **Statusbalk met beheer**: kies *operationeel*, *storing*, *werkzaamheden* of *staking*, eventueel met een eigen tekst in het Nederlands en het Frans. De keuze wordt in de browser opgeslagen
 - **Weer en locatie** via GPS (Open-Meteo en OpenStreetMap), elke 10 minuten bijgewerkt
 - **Achtergrond**: een willekeurige foto uit de map [`achtergronden/`](achtergronden/)

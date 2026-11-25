@@ -412,7 +412,7 @@ dialog{border-radius:14px}
   <div class="grid" id="g-diensten" hidden></div><div class="lko" id="lko" hidden><button class="pbt" id="lkx"><span class="nl">Vergrendel</span><span class="fr">Verrouiller</span></button></div></section>
  <footer class="mono">© 2026 Hoggynesische Spoorwegen · Chemin de fer Hoggynésiens · Protocol HS-X · <span class="nl" style="display:inline">Gemaakt met Gemini &amp; Claude</span></footer>
 </div></div>
-<dialog id="dm"><h3><span class="nl">Statusbalk beheren</span><span class="fr">Gérer la barre de statut</span></h3><div class="tg" id="tg"></div>
+<dialog id="dm"><h3><span class="nl">HS-storingen beheren</span><span class="fr">Gérer les perturbations CFH</span></h3><div class="tg" id="tg"></div>
  <label class="mono">NL<input id="mn"></label><label class="mono">FR<input id="mf"></label><div class="ac"><button class="pr" id="sv">Opslaan</button><button id="rs">Herstel</button><button id="cl">Sluiten</button></div></dialog>
 <dialog id="jd" aria-labelledby="jdt"><div class="jdh"><div><b id="jdt"></b><span id="jds"></span></div><button id="jdx" aria-label="Sluiten">✕</button></div><div id="jdb"></div></dialog>
 <dialog id="tp"><h3 id="tt"></h3><p id="tb"></p><div class="ac"><button class="pr" id="tg2"></button><button id="tc"></button></div></dialog>
@@ -455,7 +455,7 @@ var DIENST=[
 {n:"HS DMI",nf:"CFH DMI",ic:"🎛️",u:"HS_DMI.html",c:"#ff4136",nl:"Simulator van het cabinescherm (ETCS en HTC)",fr:"Simulateur d’écran de cabine (ETCS et HTC)"},
 {n:"Gemini",ic:"✨",u:"https://gemini.google.com",c:"#a5a8ab",nl:"Google AI-assistent",fr:"Assistant IA de Google"},
 {n:"GitHub",ic:"💻",u:"https://github.com",c:"#4d7cff",nl:"Code en repository’s",fr:"Code et dépôts"},
-{n:"Statusbalk",nf:"Barre de statut",ic:"⚙️",act:"status",c:"#ff4136",nl:"Melding en status beheren",fr:"Gérer le message et le statut"}];
+{n:"HS Storingen",nf:"Perturbations CFH",ic:"⚙️",act:"status",c:"#ff4136",nl:"Storingen en meldingen van HS beheren",fr:"Gérer les perturbations et avis de la CFH"}];
 var TIPS={nmbs:{u:"https://www.b-europe.com/",ic:"🇧🇪",t:["NMBS / B-Europe — Abonnementen","SNCB / B-Europe — Abonnements"],b:["Reizigers met een geldig abonnement bij de NS of de NMBS komen in aanmerking voor gereduceerd tarief op internationale treinen van en naar België. Let op: dit voordeel is niet van toepassing op Eurocity Direct-diensten.","Les voyageurs détenteurs d'un abonnement NS ou SNCB valide bénéficient d'un tarif réduit sur les trains internationaux à destination et en provenance de la Belgique. À noter : cet avantage ne s'applique pas aux services Eurocity Direct."]},
 eurostar:{u:"https://www.eurostar.com/",ic:"🚅",t:["Eurostar — Tariefadvies","Eurostar — Conseil tarifaire"],b:["Eurostar hanteert een dynamisch prijsmodel waarbij tarieven stijgen naarmate de vertrekdatum nadert. Voor de laagste prijs wordt u geadviseerd uw reis zo vroeg mogelijk te reserveren.","Eurostar applique un système de tarification dynamique : les prix augmentent à mesure que la date de départ approche. Pour obtenir le meilleur tarif, il est conseillé de réserver votre voyage le plus tôt possible."]}};
 var BOARDS={
@@ -516,7 +516,7 @@ function go(id){if(!document.getElementById("p-"+id))id="home";if(id==="diensten
 addEventListener("hashchange",function(){go(location.hash.slice(1))});
 /* status */
 function applyStatus(){var c=ST[cfg.type],n=cfg.nl||c.nl,f=cfg.fr||cfg.nl||c.fr;document.documentElement.style.setProperty("--sc",c.c);
- $("at").innerHTML=T(esc(n),esc(f));$("sl").innerHTML=T(c.l,c.lf);$("sd").innerHTML=T("Netwerkstatus","État du réseau")}
+ $("at").innerHTML=T("HS · "+esc(n),"CFH · "+esc(f));$("sl").innerHTML=T(c.l,c.lf);$("sd").innerHTML=T("HS-storingen","Perturbations CFH")}
 var sel=cfg.type;
 $("tg").innerHTML=Object.keys(ST).map(function(k){return '<button data-k="'+k+'" style="--c:'+ST[k].c+'">'+ST[k].l+' / '+ST[k].lf+'</button>'}).join("");
 function marks(){document.querySelectorAll("#tg button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.k===sel)})}
