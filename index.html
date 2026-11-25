@@ -369,7 +369,7 @@ dialog{border-radius:14px}
  <section class="panel" id="p-vertrek"><div class="ph"><h2><span class="nl">Vertrek <em>live</em></span><span class="fr">Départs <em>en direct</em></span></h2><p><span class="nl">Actuele treinen en bussen vanaf Assen.</span><span class="fr">Trains et bus en temps réel depuis Assen.</span></p></div><div id="bd"></div></section>
  <section class="panel" id="p-plan"><div class="ph"><h2><span class="nl">Reis<em>planner</em></span><span class="fr">Planifier un <em>trajet</em></span></h2><p><span class="nl">Plan een treinreis met actuele NS-gegevens.</span><span class="fr">Planifiez un trajet en train avec les données NS en temps réel.</span></p></div>
   <form class="card pln" id="pfm" autocomplete="off">
-   <div class="ptg pmd" role="group" aria-label="Soort reis"><button type="button" class="pbt" id="pmn" aria-pressed="true">🚆 <span class="nl">Trein (NS)</span><span class="fr">Train (NS)</span></button><button type="button" class="pbt" id="pmo" aria-pressed="false">🚌 <span class="nl">Bus en OV</span><span class="fr">Bus et TC</span></button></div>
+   <div class="ptg pmd" role="group" aria-label="Soort reis"><button type="button" class="pbt" id="pmn" aria-pressed="true">🚆 <span class="nl">Trein (NS)</span><span class="fr">Train (NS)</span></button><button type="button" class="pbt" id="pmo" aria-pressed="false">🚌 <span class="nl">Bus, tram en metro</span><span class="fr">Bus, tram et métro</span></button></div>
    <div class="pst"><label class="pl"><span class="lab mono"><span class="nl">Van</span><span class="fr">Gare de départ</span></span><input id="pfi" class="pin" placeholder="Station" spellcheck="false"><div class="psg" id="pfs"></div></label>
     <button type="button" class="pbt psw" id="psw" aria-label="Omwisselen">⇅</button>
     <label class="pl"><span class="lab mono"><span class="nl">Naar</span><span class="fr">Gare d’arrivée</span></span><input id="pti" class="pin" placeholder="Station" spellcheck="false"><div class="psg" id="pts"></div></label></div>
@@ -559,9 +559,9 @@ function pMode(a){pArr=a;$("pdp").setAttribute("aria-pressed",!a);$("par").setAt
 var pM="ns";
 function pLoad(){var sv={};try{sv=JSON.parse(localStorage.getItem(pM==="ov"?"hs_plan_ov":"hs_plan")||"{}")}catch(e){}
  $("pfi").value=sv.f?sv.f[0]:(pM==="ov"?"":"Assen");$("pfi").dataset.c=sv.f?sv.f[1]:(pM==="ov"?"":"ASN");$("pti").value=sv.t?sv.t[0]:"";$("pti").dataset.c=sv.t?sv.t[1]:"";
- $("pfi").placeholder=$("pti").placeholder=pM==="ov"?both("Halte of station","Arrêt ou gare"):"Station"}
+ $("pfi").placeholder=$("pti").placeholder=pM==="ov"?both("Halte","Arrêt"):"Station"}
 function pSetM(m){if(pM===m)return;pM=m;$("pmn").setAttribute("aria-pressed",m==="ns");$("pmo").setAttribute("aria-pressed",m==="ov");pLoad();
- $("pr").innerHTML='<div class="card pms">'+(m==="ov"?T("Plan een reis met bus, tram, metro en trein. Gegevens via Transitous (open data).","Planifiez un trajet en bus, tram, métro et train. Données via Transitous (open data)."):T("Kies een vertrek- en aankomststation en tik op Plan reis.","Choisissez une gare de départ et d’arrivée, puis appuyez sur Planifier."))+'</div>'}
+ $("pr").innerHTML='<div class="card pms">'+(m==="ov"?T("Plan een reis met bus, tram en metro. Voor de trein gebruik je Trein (NS). Gegevens via Transitous (open data).","Planifiez un trajet en bus, tram et métro. Pour le train, utilisez Train (NS). Données via Transitous (open data)."):T("Kies een vertrek- en aankomststation en tik op Plan reis.","Choisissez une gare de départ et d’arrivée, puis appuyez sur Planifier."))+'</div>'}
 function planInit(){if(pBoot)return;pBoot=1;$("pmn").onclick=function(){pSetM("ns")};$("pmo").onclick=function(){pSetM("ov")};
  var sv={};try{sv=JSON.parse(localStorage.getItem("hs_plan")||"{}")}catch(e){}
  $("pfi").value=sv.f?sv.f[0]:"Assen";$("pfi").dataset.c=sv.f?sv.f[1]:"ASN";if(sv.t){$("pti").value=sv.t[0];$("pti").dataset.c=sv.t[1]}

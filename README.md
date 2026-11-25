@@ -38,7 +38,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 - Stations zoeken tijdens het typen (ook Belgische en Duitse stations), met knop ⇅ om om te wisselen. De laatste keuze wordt onthouden
 - Per reis: vertrek- en aankomsttijd met vertraging, reisduur, aantal overstappen, soorten treinen en drukte
 - Open een reis voor alle delen: tijden, sporen (met spoorwijziging), richting, overstaptijd, meldingen en vervallen treinen
-- Keuze **Trein (NS)** of **Bus en OV**: de OV-planner (via Transitous) plant met bus, tram, metro en trein, met per rit een knop **Tussenhaltes**
+- Keuze **Trein (NS)** of **Bus, tram en metro**: de tweede planner (via Transitous) plant alleen met bus, tram, metro en veer (treinen via de NS-planner), met per rit een knop **Tussenhaltes**
 - Knoppen **Eerder** en **Later**
 - Net als Vertrek zonder animaties
 
