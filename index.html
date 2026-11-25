@@ -131,6 +131,29 @@ body:not(.only-nl):not(.only-fr) #p-plan form .nl+.fr::before,body:not(.only-nl)
 .xf{color:var(--dim);font-size:12.5px;padding:6px 0 6px 76px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
 .pmr{display:flex;gap:10px;justify-content:space-between}
 @media(max-width:700px){.pst{grid-template-columns:1fr}.psw{justify-self:center;transform:none}.pgo{margin-left:0;width:100%}.trp>summary{grid-template-columns:1fr auto;padding:14px 16px}.trp>summary .ti2{grid-column:1/-1}.tm2{font-size:20px}.lgs{padding:6px 14px 14px}.xf{padding-left:14px}}
+
+/* storingen */
+.bgrp.sto{margin-top:28px}
+.stw{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.stc{display:flex;flex-direction:column;gap:8px;min-width:0}
+.sth{display:flex;align-items:center;gap:10px;font-size:17px;padding:2px 4px}.sth .nl+.fr{font-size:.8em;opacity:.7}
+.stn{font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;background:rgba(255,255,255,.08)}
+.si{border:1px solid var(--line);border-left:5px solid #f5941f;border-radius:12px;background:rgba(14,26,72,.62);overflow:hidden}
+.si.x,.si.c{border-left-color:var(--red)}.si.near{background:rgba(40,52,120,.75)}
+.si>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:3px;padding:12px 14px}
+.si>summary::-webkit-details-marker{display:none}
+.sti{font-weight:700;font-size:15.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.asn{font-style:normal;font-size:11px;font-weight:700;color:#000;background:var(--yel);border-radius:6px;padding:1px 7px}
+.sts{font-size:13.5px;color:var(--ink)}.si.x .sts,.si.c .sts{color:#ff8a82}
+.stm{font-size:12.5px;color:var(--dim)}
+.sdd{padding:0 14px 12px;font-size:13.5px;color:var(--dim)}.sdd p{margin:6px 0}.sdd b{color:var(--ink);font-weight:600;margin-right:4px}.sdd ul{margin:6px 0;padding-left:18px}.sdd a{color:var(--ink)}
+.si[open]>summary{border-bottom:1px dashed var(--line)}
+.ste{color:var(--dim);margin:4px;font-size:14px}
+.stx{align-self:flex-start}
+.stf{color:var(--dim);font-size:11.5px;margin:10px 4px 0}
+.flg{width:30px;height:20px;border-radius:3px;box-shadow:0 0 0 1px rgba(255,255,255,.18);vertical-align:middle}
+#sg .flg{width:20px;height:14px}
+@media(max-width:760px){.stw{grid-template-columns:1fr}}
 /* Vertrekstaat: vaste maten, geen beweging */
 #p-vertrek *,#p-vertrek *::before,#p-vertrek *::after{animation:none!important;transition:none!important}
 .vs{border:1px solid rgba(255,201,23,.35);border-radius:20px;background:#0b1226;overflow:hidden;font-variant-numeric:tabular-nums}
@@ -363,8 +386,10 @@ var TIPS={nmbs:{u:"https://www.b-europe.com/",ic:"🇧🇪",t:["NMBS / B-Europe 
 eurostar:{u:"https://www.eurostar.com/",ic:"🚅",t:["Eurostar — Tariefadvies","Eurostar — Conseil tarifaire"],b:["Eurostar hanteert een dynamisch prijsmodel waarbij tarieven stijgen naarmate de vertrekdatum nadert. Voor de laagste prijs wordt u geadviseerd uw reis zo vroeg mogelijk te reserveren.","Eurostar applique un système de tarification dynamique : les prix augmentent à mesure que la date de départ approche. Pour obtenir le meilleur tarif, il est conseillé de réserver votre voyage le plus tôt possible."]}};
 var BOARDS={
 bus:{nl:"Bus",fr:"Bus",items:[{label:"Busstation Marsdijk · Assen",url:"https://drgl.nl/stop/NL:S:15002851"},{label:"Noorderstaete · Assen",url:"https://drgl.nl/stop/NL:S:15001310"}]}};
+var FLAG={"🇳🇱":'<rect width="30" height="20" fill="#21468b"/><rect width="30" height="13.33" fill="#fff"/><rect width="30" height="6.67" fill="#ae1c28"/>',"🇧🇪":'<rect width="30" height="20" fill="#ef3340"/><rect width="20" height="20" fill="#fdda24"/><rect width="10" height="20" fill="#000"/>',"🇫🇷":'<rect width="30" height="20" fill="#ef4135"/><rect width="20" height="20" fill="#fff"/><rect width="10" height="20" fill="#0055a4"/>',"🇩🇪":'<rect width="30" height="20" fill="#ffce00"/><rect width="30" height="13.33" fill="#dd0000"/><rect width="30" height="6.67" fill="#000"/>'};
+function icn(c){return FLAG[c]?'<svg class="flg" viewBox="0 0 30 20" aria-hidden="true">'+FLAG[c]+'</svg>':c}
 function tile(x){var t=x.tip?' data-tip="'+x.tip+'"':x.act?' data-act="'+x.act+'"':'';
- return '<a class="tile" style="--c:'+x.c+'" href="'+(x.u||"#")+'"'+(x.u&&/^http/.test(x.u)?' target="_blank" rel="noopener"':'')+t+(x.k?' data-nmbs="'+(x.u.indexOf("buy")>0?"buy":"home")+'"':'')+'><span class="ic">'+x.ic+'</span><span><span class="nm">'+(x.nf?T(x.n,x.nf):x.n)+(x.live?'<i class="lv"></i>':'')+'</span><span class="ds">'+T(x.nl,x.fr)+'</span></span><span class="ar">'+(x.u&&!/^http/.test(x.u)?'›':x.u?'↗':'›')+'</span></a>'}
+ return '<a class="tile" style="--c:'+x.c+'" href="'+(x.u||"#")+'"'+(x.u&&/^http/.test(x.u)?' target="_blank" rel="noopener"':'')+t+(x.k?' data-nmbs="'+(x.u.indexOf("buy")>0?"buy":"home")+'"':'')+'><span class="ic">'+icn(x.ic)+'</span><span><span class="nm">'+(x.nf?T(x.n,x.nf):x.n)+(x.live?'<i class="lv"></i>':'')+'</span><span class="ds">'+T(x.nl,x.fr)+'</span></span><span class="ar">'+(x.u&&!/^http/.test(x.u)?'›':x.u?'↗':'›')+'</span></a>'}
 $("g-home").innerHTML=HOME.map(tile).join("");$("g-kaartjes").innerHTML=KAART.map(tile).join("");$("g-intl").innerHTML=INTL.map(tile).join("");
 document.addEventListener("click",function(e){var a=e.target.closest("[data-tip],[data-act],[data-go]");if(!a)return;
  if(a.dataset.go){go(a.dataset.go)}else if(a.dataset.act){e.preventDefault();openStatus()}else{e.preventDefault();tip(a.dataset.tip)}});
@@ -412,7 +437,7 @@ function lockUI(){$("lk").hidden=unl;$("g-diensten").hidden=!unl;$("lko").hidden
 function go(id){if(!document.getElementById("p-"+id))id="home";if(id==="diensten"){lockUI();if(!unl)setTimeout(function(){try{$("lkc").focus()}catch(e){}},50)}
  document.querySelectorAll(".panel").forEach(function(p){p.classList.toggle("on",p.id==="p-"+id)});
  document.querySelectorAll("#nv button").forEach(function(b){if(b.dataset.t===id)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
- if(id==="vertrek"&&!booted){booted=1;$("bd").innerHTML='<div class="bgrp trn"><div class="bh">🚆 '+T("Trein","Train")+'</div><div class="vs" id="vstaat"><div class="em">…</div></div></div>'+Object.keys(BOARDS).map(function(k){var g=BOARDS[k];return '<div class="bgrp '+k+'"><div class="bh">'+(k==="bus"?"🚌 ":"🚆 ")+T(g.nl,g.fr)+'<span class="lvb mono">LIVE</span></div><div class="bgrid">'+g.items.map(function(x){return '<div class="bc"><b class="mono"><span>'+x.label+'</span><a href="'+x.url+'" target="_blank" rel="noopener" aria-label="Open">↗</a></b><iframe src="'+x.url+'" loading="lazy" title="'+x.label+'"></iframe></div>'}).join("")+'</div></div>'}).join("")}
+ if(id==="vertrek"&&!booted){booted=1;stoUp();setInterval(stoUp,12e4);$("bd").innerHTML='<div class="bgrp trn"><div class="bh">🚆 '+T("Trein","Train")+'</div><div class="vs" id="vstaat"><div class="em">…</div></div></div><div class="bgrp sto" id="stog"><div class="bh">⚠️ '+T("Storingen en werkzaamheden","Perturbations et travaux")+'</div><div id="sto"><div class="card pms">'+T("Storingen ophalen…","Chargement des perturbations…")+'</div></div></div>'+Object.keys(BOARDS).map(function(k){var g=BOARDS[k];return '<div class="bgrp '+k+'"><div class="bh">'+(k==="bus"?"🚌 ":"🚆 ")+T(g.nl,g.fr)+'<span class="lvb mono">LIVE</span></div><div class="bgrid">'+g.items.map(function(x){return '<div class="bc"><b class="mono"><span>'+x.label+'</span><a href="'+x.url+'" target="_blank" rel="noopener" aria-label="Open">↗</a></b><iframe src="'+x.url+'" loading="lazy" title="'+x.label+'"></iframe></div>'}).join("")+'</div></div>'}).join("")}
  if(id==="vertrek")trainDraw();if(id==="plan")planInit();try{history.replaceState(null,"","#"+id)}catch(e){}scrollTo({top:0,behavior:rm?"auto":"smooth"})}
 addEventListener("hashchange",function(){go(location.hash.slice(1))});
 /* status */
@@ -450,7 +475,7 @@ function weather(){if(!navigator.geolocation)return;navigator.geolocation.getCur
 /* zoeken */
 var seen={},all=[].concat(HOME,KAART,INTL).filter(function(x){var k=x.u||x.tip;if(!k||seen[k])return false;seen[k]=1;return true}),sg=$("sg"),si=-1;
 function sugg(){var v=$("q").value.trim().toLowerCase(),h="";si=-1;if(!v){sg.style.display="none";return}
- all.filter(function(x){return(x.n+" "+(x.nf||"")+" "+x.nl+" "+x.fr).toLowerCase().indexOf(v)>-1}).slice(0,4).forEach(function(x){h+='<a href="'+(x.u||"#")+'"'+(x.tip?' data-tip="'+x.tip+'"':'')+'><span>'+x.ic+" "+x.n+'</span><small>'+both(x.nl,x.fr)+'</small></a>'});
+ all.filter(function(x){return(x.n+" "+(x.nf||"")+" "+x.nl+" "+x.fr).toLowerCase().indexOf(v)>-1}).slice(0,4).forEach(function(x){h+='<a href="'+(x.u||"#")+'"'+(x.tip?' data-tip="'+x.tip+'"':'')+'><span>'+icn(x.ic)+" "+x.n+'</span><small>'+both(x.nl,x.fr)+'</small></a>'});
  h+='<a href="https://www.google.com/search?q='+encodeURIComponent($("q").value)+'&hl='+$("hl").value+'"><span>🔎 Google</span><small>'+esc($("q").value)+'</small></a>';sg.innerHTML=h;sg.style.display="block"}
 $("q").addEventListener("input",sugg);
 $("q").addEventListener("keydown",function(e){var a=sg.children;if(sg.style.display!=="block")return;
@@ -523,5 +548,19 @@ $("lk").onsubmit=function(e){e.preventDefault();var c=$("lkc").value.trim();if(!
   else{$("lke").innerHTML=T("Onjuiste code. Probeer het opnieuw.","Code incorrect. Réessayez.");$("lkc").value="";$("lkc").focus()}})
  .catch(function(){b.disabled=false;$("lke").innerHTML=T("Kan de code nu niet controleren. Is de Worker bijgewerkt?","Impossible de vérifier le code. Le Worker est-il à jour ?")})};
 $("lkx").onclick=function(){unl=false;TOK="";try{sessionStorage.removeItem("hs_tok")}catch(e){}$("g-diensten").innerHTML="";lockUI()};
+/* ---------- NS-storingen en werkzaamheden ---------- */
+var sdata=null,sAll=false;
+function stoUp(){fetch(TRAIN_API+"?disruptions=1").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){sdata=j.disruptions||[];stoDraw()}).catch(function(){if(!sdata){sdata=null;stoDraw(1)}})}
+function dt(x){if(!x)return"";var d=new Date(x);return isNaN(d)?"":d.toLocaleDateString(L.nl?"nl-NL":"fr-FR",{day:"numeric",month:"short"})+" "+hm(x)}
+function stoItem(d){var w=d.type==="MAINTENANCE",near=d.st.indexOf("ASN")>-1,when=d.period||(d.start||d.end?(dt(d.start)+(d.end?" – "+dt(d.end):"")):"");
+ var meta=[d.cause,d.dur||(!w?"":"")].filter(Boolean).join(" · ");
+ var det=[d.extra?'<p><b>'+T("Extra reistijd","Temps de trajet supplémentaire")+'</b> '+esc(d.extra)+'</p>':"",d.alt?'<p><b>'+T("Vervangend vervoer","Transport de remplacement")+'</b> '+esc(d.alt)+'</p>':"",when?'<p><b>'+T("Wanneer","Quand")+'</b> '+esc(when)+'</p>':"",d.desc?'<p>'+esc(d.desc)+'</p>':"",(d.advice||[]).length?'<ul>'+d.advice.map(function(a){return '<li>'+esc(a)+'</li>'}).join("")+'</ul>':""].join("");
+ return '<details class="si '+(w?"w":d.type==="CALAMITY"?"c":"x")+(near?" near":"")+'"><summary><span class="sti">'+esc(d.title||T("Melding","Avis"))+(near?'<i class="asn">Assen</i>':'')+'</span>'+(d.sit?'<span class="sts">'+esc(d.sit)+'</span>':'')+(meta?'<span class="stm">'+esc(meta)+'</span>':'')+'</summary><div class="sdd">'+(det||'<p>'+T("Geen extra informatie.","Pas d’informations supplémentaires.")+'</p>')+(d.url?'<p><a href="'+esc(d.url)+'" target="_blank" rel="noopener">ns.nl ↗</a></p>':'')+'</div></details>'}
+function stoDraw(err){if(!$("sto"))return;if(!sdata){setH("sto",'<div class="card pms">'+T("Storingsinformatie is nu niet beschikbaar. Is de Worker bijgewerkt?","Les informations sur les perturbations ne sont pas disponibles. Le Worker est-il à jour ?")+'</div>');return}
+ var srt=function(a,b){return(b.type==="CALAMITY")-(a.type==="CALAMITY")||(b.st.indexOf("ASN")>-1)-(a.st.indexOf("ASN")>-1)||(b.impact||0)-(a.impact||0)};
+ var A=sdata.filter(function(d){return d.type!=="MAINTENANCE"}).sort(srt),W=sdata.filter(function(d){return d.type==="MAINTENANCE"}).sort(srt),MAX=8;
+ var col=function(t,l,emp,more){return '<div class="stc"><div class="sth"><b>'+t+'</b><span class="stn">'+l.length+'</span></div>'+(l.length?l.slice(0,more?l.length:MAX).map(stoItem).join(""):'<p class="ste">'+emp+'</p>')+(!more&&l.length>MAX?'<button class="pbt stx" id="stx">'+T("Toon alle "+l.length,"Afficher les "+l.length)+'</button>':'')+'</div>'};
+ setH("sto",'<div class="stw">'+col(T("Storingen","Perturbations"),A,T("Geen actuele storingen.","Aucune perturbation en cours."),true)+col(T("Werkzaamheden","Travaux"),W,T("Geen werkzaamheden op dit moment.","Aucuns travaux en ce moment."),sAll)+'</div><p class="stf">'+T("Bron: NS · meldingen rond Assen staan bovenaan · ververst elke 2 minuten","Source : NS · les avis autour d’Assen sont en tête · actualisé toutes les 2 minutes")+'</p>');
+ var b=$("stx");if(b)b.onclick=function(){sAll=true;stoDraw()}}
 setInterval(tick,1000);trainUp();setInterval(trainUp,6e4);setInterval(function(){if(!$("p-vertrek").classList.contains("on"))trainDraw()},3e4);applyStatus();apply();weather();setInterval(weather,6e5);go(location.hash.slice(1)||"home");
 </script></body></html>

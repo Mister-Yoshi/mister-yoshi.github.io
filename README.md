@@ -27,6 +27,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
   - **materieel** per trein, zoals `VIRM-6` of `ICM-3 + ICM-4`, met een waarschuwing als de trein korter is dan normaal
   - meldingen van NS en het aantal verstoringen, met een link naar ns.nl/storingen
   - **"Dienst voorbij"**: na de laatste trein verschijnt een rustig scherm met de eerste trein van de ochtend
+- **Storingen en werkzaamheden van NS**: actuele storingen (rood) en werkzaamheden (oranje), met oorzaak, verwachte duur, extra reistijd en vervangend vervoer. Meldingen rond Assen staan bovenaan
 - **Live busborden** voor *Busstation Marsdijk* en *Noorderstaete* in Assen (via drgl.nl)
 - Bewust **zonder animaties**: vaste maten en vaste rijen, zodat er niets verspringt. Ververst elke minuut
 - Zijn er geen gegevens, dan staat er "Geen live data". De pagina toont nooit verzonnen vertrektijden
@@ -79,6 +80,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 ```
 
 - De Worker haalt de vertrektijden van Assen (`ASN`) op en vraagt per trein het materieel op
+- Voor de storingen haalt de Worker de actieve meldingen op (`?disruptions=1`)
 - Voor de reisplanner levert de Worker de stationslijst (`?stations=1`) en reisadviezen (`?from=…&to=…`)
 - Als er geen treinen meer rijden, zoekt de Worker de eerste trein van de ochtend op
 - De Worker accepteert alleen verzoeken van `https://mister-yoshi.github.io`. Open je `index.html` rechtstreeks vanaf je computer, dan zie je daarom "Geen live data"
