@@ -339,26 +339,28 @@ label.ck{white-space:nowrap}
 
 .sted.locked>*:not(.cgh){opacity:.4;filter:grayscale(.6)}.sted.locked .cgh .hint{display:none}.lockn{display:none;font-size:13px;color:#f3b0bb}.sted.locked .lockn{display:inline}
 
-/* Arriva-scherm */
+/* Arriva-scherm (schaalt mee met het scherm, ook volledig scherm) */
 .arv{display:none}
-.screen.isarv{background:#0d2b56!important;color:#fff;aspect-ratio:16/7;min-height:0;border-radius:10px;box-shadow:0 0 0 10px #d9dcdf,0 0 0 11px #b8bcc1,0 20px 50px -20px rgba(0,0,0,.7)}
+.screen.isarv{background:#0d2b56!important;color:#fff;aspect-ratio:16/7;min-height:0;border-radius:10px;box-shadow:0 0 0 clamp(5px,1vw,10px) #d9dcdf,0 0 0 clamp(6px,1.1vw,11px) #b8bcc1,0 20px 50px -20px rgba(0,0,0,.7);display:block!important;padding:0!important;overflow:hidden;container-type:size}
 .screen.isarv>:not(.arv){display:none!important}
-.screen.isarv{display:grid!important;grid-template-rows:1fr;padding:0!important;overflow:hidden}
-.screen.isarv .arv{display:grid;grid-template-rows:auto auto auto 1fr auto;height:100%;font-family:Outfit,Arial,sans-serif}
-.arv .ah{display:flex;align-items:baseline;gap:.5em;padding:.35em .6em .25em;background:#0b1e3b;font-size:clamp(22px,4.2vw,46px);font-weight:500;border-bottom:3px solid #20a79c}
+.screen.isarv .arv{display:grid;grid-template-rows:19fr 29fr 44fr 8fr;width:100%;height:100%;font-family:Outfit,Arial,sans-serif;--u:min(1cqh,.45cqw)}
+.screen.isarv.storing .arv{grid-template-rows:19fr 29fr 36fr 16fr}
+.arv>*{min-height:0;overflow:hidden}
+.arv .ah{display:flex;align-items:center;gap:calc(var(--u)*2.4);padding:0 calc(var(--u)*4);background:#0b1e3b;font-size:calc(var(--u)*10);font-weight:500;border-bottom:calc(var(--u)*.8) solid #20a79c;line-height:1}
 .arv .al{font-weight:600;white-space:nowrap}.arv .ad{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:".."}.arv .ac{font-size:.62em;font-variant-numeric:tabular-nums}
-.arv .ab{background:#f3efd9;color:#0e2546;padding:.25em 0 .3em 1.9em;font-size:clamp(26px,5vw,56px);line-height:1.1}
-.arv .ab b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.arv .ab small{display:block;font-size:.32em;font-weight:500;margin-top:.15em}
+.arv .ab{display:flex;flex-direction:column;justify-content:center;background:#f3efd9;color:#0e2546;padding:0 calc(var(--u)*4) 0 calc(var(--u)*13);line-height:1.05}
+.arv .ab b{font-size:calc(var(--u)*14);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arv .ab small{font-size:calc(var(--u)*4.6);font-weight:500;margin-top:calc(var(--u)*1.2)}
 .arv .ab small span,.arv .ali span span{font-size:1em}
 .arv em{font-style:normal;color:#e23b3b;margin-left:.3em}
-.arv .ast{background:#b3261e;color:#fff;padding:.3em .9em;font-size:clamp(14px,2vw,20px)}
-.arv .ali{list-style:none;margin:0;padding:.3em 0;background:linear-gradient(#123a70,#0d2b56)}
-.arv .ali li{display:grid;grid-template-columns:3.2em 1fr;gap:.4em;padding:.08em .6em;font-size:clamp(20px,3.8vw,42px);line-height:1.25}
-.arv .at{font-size:.62em;align-self:center;font-variant-numeric:tabular-nums}.arv .an{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.arv .ali .aem{display:block;font-size:clamp(16px,2.4vw,26px);opacity:.85}
-.arv .af{border-top:3px solid #20a79c;padding:.2em .6em;font-size:clamp(12px,1.6vw,17px);color:#7fd3cb;background:#0b1e3b;min-height:1.6em}
-.screen.isarv:fullscreen{aspect-ratio:auto;border-radius:0;box-shadow:none}
-@media(max-width:700px){.screen.isarv{aspect-ratio:auto;box-shadow:0 0 0 6px #d9dcdf}}
+.arv .ali{list-style:none;margin:0;padding:calc(var(--u)*1.2) 0;background:linear-gradient(#123a70,#0d2b56);display:grid;grid-auto-rows:1fr;align-content:stretch}
+.screen.isarv:not(.storing) .ali{grid-template-rows:repeat(3,1fr)}
+.arv .ali li{display:grid;grid-template-columns:calc(var(--u)*24) 1fr;align-items:center;gap:calc(var(--u)*2);padding:0 calc(var(--u)*4);font-size:calc(var(--u)*10);line-height:1}
+.arv .at{font-size:.6em;font-variant-numeric:tabular-nums;white-space:nowrap}.arv .an{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arv .ali .aem{display:flex;align-items:center;font-size:calc(var(--u)*6);opacity:.85;grid-row:1/-1}
+.arv .af{display:flex;align-items:center;border-top:calc(var(--u)*.8) solid #20a79c;padding:0 calc(var(--u)*4);font-size:calc(var(--u)*3.6);color:#7fd3cb;background:#0b1e3b}
+.arv .ast{display:flex;align-items:center;background:#b3261e;color:#fff;padding:0 calc(var(--u)*4);font-size:calc(var(--u)*5);line-height:1.15;border-top:calc(var(--u)*.8) solid #20a79c}
+.screen.isarv:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;box-shadow:none;max-width:none}
 </style>
 </head>
 <body>
@@ -517,8 +519,15 @@ function render(){
   arvRender(s,last,dl,stor,rn,rf);
 }
 
+/* volledig scherm: OBIS en RIS mee laten schalen met het scherm */
+function fsScale(){const sc=$('screen'),on=document.fullscreenElement===sc&&!sc.classList.contains('isarv'),els=['.top','.mid','.route','.ris'].map(q=>sc.querySelector(q)).filter(Boolean),set=z=>els.forEach(e=>e.style.zoom=z===1?'':z);
+ if(!on){set(1);return}let z=Math.max(1,Math.min(innerWidth/1000,innerHeight/560));set(z);
+ const over=()=>{const H=sc.getBoundingClientRect().bottom+1;return els.some(e=>{if(getComputedStyle(e).display==='none')return false;const b=e.getBoundingClientRect().bottom;return b>H||[...e.querySelectorAll('*')].some(c=>{const r=c.getBoundingClientRect();return r.height>0&&r.bottom>Math.min(b,H)+1&&getComputedStyle(c).position!=='absolute'})})};for(let k=0;k<40&&z>1&&over();k++){z=Math.max(1,z-.05);set(z)}}
+document.addEventListener('fullscreenchange',fsScale);addEventListener('resize',()=>{if(document.fullscreenElement)fsScale()});
+$('sty').addEventListener('input',()=>setTimeout(fsScale));
+
 /* ---------- Arriva-scherm (alleen bij NS live met een Arriva-trein) ---------- */
-function arvRender(s,last,dl,stor,rn,rf){const on=$('sty').value==='arv';$('screen').classList.toggle('isarv',on);if(!on)return;
+function arvRender(s,last,dl,stor,rn,rf){const on=$('sty').value==='arv';$('screen').classList.toggle('isarv',on);if(document.fullscreenElement)requestAnimationFrame(fsScale);if(!on)return;
  const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  const ty=$('ttype').value,nr=$('lnum').value.trim(),dest=S[S.length-1].n,band=stopped?S[i]:S[i];
  const tm=x=>add(x.t,x.dl),dt=x=>add('00:00',x.dm+x.dl),late=x=>x.dl>0?`<em>+${x.dl}</em>`:'';
@@ -527,9 +536,8 @@ function arvRender(s,last,dl,stor,rn,rf){const on=$('sty').value==='arv';$('scre
  const opn=(typeof LIVE!=='undefined'&&LIVE&&LIVE.op)||'';
  $('arv').innerHTML=`<div class="ah"><b class="al">${E(ty)} ${E(nr)}</b><span class="ad">${E(dest)}</span><span class="ac">${E($('manual').value)}</span></div>`+
   `<div class="ab"><b>${E(band.n)}</b><small>${sub}</small></div>`+
-  (stor?`<div class="ast">${LG().nl?'Storing: '+E(rn||''):'Perturbation : '+E(rf||'')}</div>`:'')+
-  `<ul class="ali">${nxt||`<li class="aem">${last?B('Wij wensen u een prettige dag','Nous vous souhaitons une bonne journée'):''}</li>`}</ul>`+
-  `<div class="af"><span>${E(opn)}</span></div>`}
+    `<ul class="ali">${nxt||`<li class="aem">${last?B('Wij wensen u een prettige dag','Nous vous souhaitons une bonne journée'):''}</li>`}</ul>`+
+  (stor?`<div class="ast"><span>${B('Storing: '+E(rn||''),'Perturbation : '+E(rf||''))}</span></div>`:`<div class="af"><span>${E(opn)}</span></div>`)}
 
 function risRender(s,last,dl,t,stor,rn,rf){
   if($('sty').value!=='ris')return;
