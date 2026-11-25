@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HS In dienst</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#eef0f3;--card:#fff;--tx:#14202e;--mu:#5d6876;--ln:#d8dde4;--red:#c8102e;--blue:#0b3b8c;--grey:#8a919b;--ok:#1b7f3b;--okbg:#e3f3e8;--hd:#0b3b8c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#071221;--card:#0e1d33;--tx:#e8edf4;--mu:#97a3b3;--ln:#223555;--red:#ee3b55;--blue:#5b8ee6;--grey:#9aa2ad;--ok:#52c47a;--okbg:#10301f;--hd:#0a1a30}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#071221;--card:#0e1d33;--tx:#e8edf4;--mu:#97a3b3;--ln:#223555;--red:#ee3b55;--blue:#5b8ee6;--grey:#9aa2ad;--ok:#52c47a;--okbg:#10301f;--hd:#0a1a30}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 "Helvetica Neue",Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hd);z-index:10}
+header{background:var(--hd);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+header svg{width:44px;height:30px;flex:none}
+.br{flex:1;line-height:1.15}.br b{font-size:20px;letter-spacing:.5px}.br small{display:block;font-size:12px;opacity:.8}
+.lg{display:flex;border:1px solid rgba(255,255,255,.5);border-radius:6px;overflow:hidden}
+.lg button{background:none;border:0;color:#fff;padding:6px 11px;font-weight:700;font-size:13px;cursor:pointer}
+.lg button.on{background:#fff;color:#0b3b8c}
+main{max-width:520px;margin:0 auto;padding:16px;display:grid;gap:14px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:16px}
+.stripe{height:5px;border-radius:3px;background:linear-gradient(90deg,var(--red) 0 33%,var(--blue) 33% 66%,var(--grey) 66%);margin-bottom:14px}
+h2{margin:0 0 10px;font-size:15px;text-transform:uppercase;letter-spacing:.6px;color:var(--mu)}
+.st{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700}
+.dot{width:14px;height:14px;border-radius:50%;background:var(--grey)}
+.on .dot,.st.on .dot{background:var(--ok);box-shadow:0 0 0 4px var(--okbg)}
+.tm{font:700 34px/1.1 ui-monospace,Menlo,monospace;margin:8px 0 2px}
+.mu{color:var(--mu);font-size:14px}
+label{display:block;font-size:13px;color:var(--mu);margin:10px 0 4px}
+input,select{width:100%;padding:12px;border:1px solid var(--ln);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.btn{width:100%;margin-top:14px;padding:15px;border:0;border-radius:10px;background:var(--red);color:#fff;font:700 17px inherit;font-family:inherit;cursor:pointer}
+.btn.alt{background:var(--blue)}
+.btn.out{background:none;color:var(--red);border:2px solid var(--red)}
+.cnt{display:flex;align-items:center;justify-content:center;gap:22px;margin:6px 0 4px}
+.cnt b{font-size:64px;line-height:1;min-width:80px;text-align:center}
+.rd{width:54px;height:54px;border-radius:50%;border:2px solid var(--blue);background:none;color:var(--blue);font-size:28px;cursor:pointer}
+ul{list-style:none;margin:10px 0 0;padding:0}
+li{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-top:1px solid var(--ln);font-size:15px}
+li span:first-child{font-weight:700}
+.hid{display:none}button:disabled{opacity:.4;cursor:not-allowed}
+body{background:radial-gradient(900px 420px at 100% -10%,color-mix(in srgb,var(--blue) 14%,transparent),transparent),radial-gradient(700px 400px at -10% 0,color-mix(in srgb,var(--red) 9%,transparent),transparent),var(--bg)}
+header{background:linear-gradient(110deg,var(--hd) 55%,color-mix(in srgb,var(--hd) 65%,var(--blue)));box-shadow:0 4px 18px rgba(0,0,0,.25)}
+header svg polygon{animation:slideIn .7s cubic-bezier(.2,.8,.2,1) both}
+header svg polygon:nth-child(2){animation-delay:.1s}header svg polygon:nth-child(3){animation-delay:.2s}
+.lg button{transition:background .25s,color .25s}
+.card{border-radius:16px;box-shadow:0 6px 22px rgba(11,30,60,.1);animation:up .5s cubic-bezier(.2,.8,.2,1) both}
+main>.card:nth-child(2){animation-delay:.07s}main>.card:nth-child(3){animation-delay:.14s}
+.stripe{height:6px;clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.st{font-size:22px}.dot{position:relative;transition:background .3s}.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:inherit;opacity:0}
+.st.on .dot::after{animation:pulse 1.8s infinite}
+.st.pz .dot{background:#f0a500;box-shadow:0 0 0 4px rgba(240,165,0,.25)}.st.pz .dot::after{animation:pulse 1.2s infinite}
+.tm{font-size:46px;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.rail{height:12px;margin-top:14px;border-radius:6px;background:var(--bg);position:relative;overflow:hidden;border:1px solid var(--ln)}
+.rail.go::before,.rail.pz::before{content:"";position:absolute;inset:4px -28px 4px 0;background:repeating-linear-gradient(90deg,var(--blue) 0 14px,transparent 14px 28px);animation:track 1s linear infinite;opacity:.45}
+.rail.pz::before{animation-play-state:paused;opacity:.2}
+.rail.go::after{content:"";position:absolute;top:0;bottom:0;width:38px;transform:skewX(-18deg);background:linear-gradient(90deg,var(--red) 0 33%,var(--blue) 33% 66%,var(--grey) 66%);animation:run 3.5s ease-in-out infinite}
+input,select{border-radius:10px;padding:13px;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 25%,transparent)}
+.btn{font:700 17px/1.2 "Helvetica Neue",Arial,sans-serif;border-radius:12px;box-shadow:0 4px 12px color-mix(in srgb,var(--red) 35%,transparent);transition:transform .15s,box-shadow .2s,filter .2s}
+.btn:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px)}.btn:active:not(:disabled){transform:scale(.97)}
+.btn.alt{box-shadow:0 4px 12px color-mix(in srgb,var(--blue) 35%,transparent)}.btn.out{box-shadow:none}
+.cnt b{font-variant-numeric:tabular-nums}.bump{animation:bump .35s}
+.rd{transition:transform .15s,background .2s,color .2s}.rd:hover:not(:disabled){background:var(--blue);color:#fff}.rd:active:not(:disabled){transform:scale(.88)}
+li:first-child{animation:inl .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+@keyframes inl{from{opacity:0;transform:translateX(-14px)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-14px)}}
+@keyframes pulse{from{transform:scale(1);opacity:.55}to{transform:scale(2.6);opacity:0}}
+@keyframes track{to{transform:translateX(-28px)}}
+@keyframes run{from{transform:skewX(-18deg) translateX(-120%)}to{transform:skewX(-18deg) translateX(1450%)}}
+@keyframes bump{40%{transform:scale(1.28);color:var(--red)}}
+.fx{position:fixed;inset:0;z-index:30;display:none;pointer-events:none;overflow:hidden}
+.fx.show{display:block}
+.fx i{position:absolute;top:-10%;bottom:-10%;width:45%;transform:skewX(-18deg) translateX(-160%)}
+.fx i:nth-child(1){left:-10%;background:var(--red)}.fx i:nth-child(2){left:25%;background:var(--blue)}.fx i:nth-child(3){left:60%;background:var(--grey)}
+.fx.show i{animation:bar 2s cubic-bezier(.7,0,.3,1) both}
+.fx.show i:nth-child(2){animation-delay:.08s}.fx.show i:nth-child(3){animation-delay:.16s}
+.fx.show.rev i{animation-name:barr}.fx.show.rev i:nth-child(1){animation-delay:.16s}.fx.show.rev i:nth-child(3){animation-delay:0s}
+.fxc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:20px;opacity:0}
+.fx.show .fxc{animation:txt 2s ease both}
+.fxc b{font-size:clamp(34px,10vw,56px);letter-spacing:1px;text-shadow:0 2px 12px rgba(0,0,0,.4)}
+.fxc span{font-size:18px;margin-top:8px;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+.tm.pop{animation:pop .7s cubic-bezier(.2,.8,.2,1)}
+@keyframes bar{0%{transform:skewX(-18deg) translateX(-160%)}30%,70%{transform:skewX(-18deg) translateX(0)}100%{transform:skewX(-18deg) translateX(160%)}}
+@keyframes barr{0%{transform:skewX(-18deg) translateX(160%)}30%,70%{transform:skewX(-18deg) translateX(0)}100%{transform:skewX(-18deg) translateX(-160%)}}
+@keyframes txt{0%,25%{opacity:0;transform:scale(.8)}40%,70%{opacity:1;transform:scale(1)}90%,100%{opacity:0;transform:scale(1.08)}}
+@keyframes pop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.1)}}
+.fx i{width:62%;z-index:3}
+.fx i:nth-child(1){left:-22%}.fx i:nth-child(2){left:19%}.fx i:nth-child(3){left:60%}
+.fx.show i{animation:bar2 1.5s cubic-bezier(.76,0,.24,1) both}
+.fx.show i:nth-child(1){animation-delay:0s}.fx.show i:nth-child(2){animation-delay:.09s}.fx.show i:nth-child(3){animation-delay:.18s}
+.fx.show.rev i{animation-name:barr2}
+.fx.show.rev i:nth-child(1){animation-delay:.18s}.fx.show.rev i:nth-child(2){animation-delay:.09s}.fx.show.rev i:nth-child(3){animation-delay:0s}
+.fxp{position:absolute;inset:0;z-index:0;opacity:0;background:radial-gradient(620px 420px at 50% 45%,#164a9e,#071a3a 72%)}
+.fx.show .fxp{animation:fxp 3.3s ease both}
+.fx.show .fxc{animation:fxo 3.3s both;z-index:1}
+.fxlogo{width:112px;opacity:0}.fx.show .fxlogo{animation:lg .7s cubic-bezier(.2,.9,.2,1) 1.1s both}
+.fxring{width:84px;margin:18px 0 12px;fill:none;stroke:#fff;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.fx:not(.rev) .fxring{stroke:#52c47a}.fx.rev .ok,.fx:not(.rev) .go{display:none}
+.fxring circle{stroke-dasharray:214;stroke-dashoffset:214}.fxring path{stroke-dasharray:70;stroke-dashoffset:70}
+.fx.show .fxring circle{animation:dr .7s ease 1.25s forwards}.fx.show .fxring path{animation:dr .5s ease 1.75s forwards}
+.fxc b,.fxc span{opacity:0}
+.fx.show .fxc b{animation:rise .6s ease 1.5s both}.fx.show .fxc span{animation:rise .6s ease 1.65s both}
+.fxc span{max-width:90%}
+.fxl{width:180px;height:5px;margin-top:22px;border-radius:3px;background:linear-gradient(90deg,#e8213f 0 33%,#4d82e0 33% 66%,#9aa2ad 66%);transform:scaleX(0);transform-origin:left}
+.fx.show .fxl{animation:grow .7s cubic-bezier(.2,.8,.2,1) 1.8s both}
+@keyframes bar2{0%{transform:skewX(-18deg) translateX(-170%)}42%,52%{transform:skewX(-18deg) translateX(0)}100%{transform:skewX(-18deg) translateX(170%)}}
+@keyframes barr2{0%{transform:skewX(-18deg) translateX(170%)}42%,52%{transform:skewX(-18deg) translateX(0)}100%{transform:skewX(-18deg) translateX(-170%)}}
+@keyframes fxp{0%{opacity:0}16%,86%{opacity:1}100%{opacity:0}}
+@keyframes fxo{0%,84%{opacity:1}100%{opacity:0}}
+@keyframes lg{from{opacity:0;transform:scale(.6) translateY(10px)}to{opacity:1}}
+@keyframes dr{to{stroke-dashoffset:0}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1}}
+@keyframes grow{to{transform:scaleX(1)}}
+html.bg *,html.bg *::before,html.bg *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.err{color:var(--red);font-size:14px;margin-top:8px;min-height:18px}
+
+.hm{color:#fff;text-decoration:none;font-size:30px;line-height:1;padding:0 8px 4px 0;font-weight:300}
+.gr{display:flex;gap:8px}.gr input{flex:1;min-width:0}
+.gb{flex:none;width:52px;border:1px solid var(--ln);border-radius:10px;background:var(--card);font-size:20px;cursor:pointer}
+.gi{font-size:13px;color:var(--mu);margin-top:6px;min-height:0}
+.nb{margin:10px 0 4px}
+.btn.alt2{background:transparent;color:var(--blue);border:2px solid var(--blue);box-shadow:none;margin-top:4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.alt2{color:#8fb2ff;border-color:#8fb2ff}}:root[data-theme="dark"] .btn.alt2{color:#8fb2ff;border-color:#8fb2ff}
+.nbl{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.nbl button{width:100%;display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:center;text-align:left;padding:10px 12px;border:1px solid var(--ln);border-radius:10px;background:var(--card);color:inherit;font:inherit;cursor:pointer}
+.nbl button:disabled{opacity:.5;cursor:default}
+.nt{font-size:17px;font-variant-numeric:tabular-nums}.nt s{display:block;text-decoration:none;color:var(--red);font-size:12px}
+.nd small{display:block;color:var(--mu);font-size:12px;margin-top:2px}.nd small.x{color:var(--red)}
+.nk{font-weight:800;color:#000;background:#ffc917;border-radius:6px;padding:2px 8px}
+</style>
+</head>
+<body>
+<header>
+<a class="hm" id="hmb" href="index.html#diensten" aria-label="Hoofdmenu">‹</a>
+<svg viewBox="0 0 44 30" aria-hidden="true"><polygon points="8,0 22,0 14,30 0,30" fill="#e8213f"/><polygon points="20,0 34,0 26,30 12,30" fill="#4d82e0" transform="translate(4,0)"/><polygon points="32,0 46,0 38,30 24,30" fill="#9aa2ad" transform="translate(-2,0)"/></svg>
+<div class="br"><b id="brand">HS</b><small id="sub"></small></div>
+<div class="lg"><button id="bn" class="on">NL</button><button id="bf">FR</button></div>
+</header>
+<main>
+<section class="card"><div class="stripe"></div>
+<div class="st" id="st"><span class="dot"></span><span id="stt"></span></div>
+<div class="tm" id="tm">00:00:00</div>
+<div class="mu" id="stm"></div><div class="mu" id="pb" style="font-weight:700;color:var(--red)"></div><div class="rail" id="rail"></div>
+</section>
+
+<section class="card" id="fm">
+<div class="mu" id="sm" style="font-weight:700;color:var(--ok)"></div><h2 id="h1"></h2>
+<label id="l1" for="nr"></label><input id="nr" inputmode="numeric" autocomplete="off">
+<label id="l2" for="nm"></label><input id="nm" autocomplete="name">
+<label id="l3" for="fn"></label><select id="fn"></select>
+<label id="l4" for="s0"></label><div class="gr"><input id="s0" autocomplete="off"><button type="button" class="gb" id="g0" aria-label="GPS">📍</button></div><div class="gi" id="gi0"></div><label id="l6" for="t0"></label><input id="t0" type="time"><label id="l7" for="c0"></label><input id="c0" type="number" min="0" inputmode="numeric" placeholder="0">
+<div class="err" id="er"></div>
+<button class="btn" id="bin"></button>
+</section>
+
+<section class="card hid" id="ov">
+<h2 id="h2"></h2>
+<div class="cnt"><button class="rd" id="mn" aria-label="-">−</button><b id="n">0</b><button class="rd" id="pl" aria-label="+">+</button></div>
+<div class="nb"><button type="button" class="btn alt2" id="bnb"></button><div id="nbi" class="gi"></div><ul id="nbl" class="nbl"></ul></div>
+<label id="l5" for="s1"></label><input id="s1" autocomplete="off">
+<button class="btn alt" id="bov"></button><button class="btn out" id="bpz"></button>
+<ul id="lg"></ul>
+</section>
+
+<section class="card hid" id="uit">
+<button class="btn out" id="bout"></button>
+</section>
+</main>
+<div class="fx" id="fx" aria-hidden="true"><i></i><i></i><i></i><div class="fxp"></div><div class="fxc"><svg class="fxlogo" viewBox="0 0 48 30"><polygon points="8,0 22,0 14,30 0,30" fill="#e8213f"/><polygon points="20,0 34,0 26,30 12,30" fill="#4d82e0" transform="translate(4,0)"/><polygon points="32,0 46,0 38,30 24,30" fill="#9aa2ad" transform="translate(-2,0)"/></svg><svg class="fxring" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34"/><path class="ok" d="M24 41l11 11 21-24"/><path class="go" d="M22 40h34M44 26l14 14-14 14"/></svg><b id="fxt"></b><span id="fxs"></span><div class="fxl"></div></div></div>
+<script>
+const T={
+nl:{brand:"HS",sub:"Hoggynesische Spoorwegen",off:"Niet in dienst",on:"In dienst",since:"Ingestapt {s} om {t}",h1:"Dienst starten",l1:"Personeelsnummer",l2:"Naam",l3:"Functie",l4:"Station ingestapt",l6:"Tijd ingestapt",l7:"Al gemaakte overstappen (optioneel)",bin:"In dienst melden",go:"In dienst!",bye:"Dienst afgesloten",
+fn:["Machinist","Conducteur","Stationsmedewerker","Overig"],err:"Vul alle velden in.",h2:"Overstappen",l5:"Nieuwe trein (optioneel, bijv. IC 2314)",bov:"Overgestapt op andere trein",bpz:"Pauze starten (grote overstap)",bpe:"Pauze beëindigen",pz:"Pauze",bout:"Uit dienst melden",none:"Nog geen overstappen",ovl:"Overstap",tot:"Totaal",hello:"{n} ({f}) · nr. {nr}",conf:"Tik nogmaals om uit dienst te melden",done:"Dienst afgesloten. Overstappen: {c} · werktijd {d}",ft:"Overstappen in deze dienst",bnb:"📍 Treinen op mijn locatie",gps:"Locatie bepalen…",gno:"Locatie niet beschikbaar. Zet GPS aan en geef toestemming.",near:"Dichtstbij: {s} ({d})",ld:"Vertrektijden ophalen…",nod:"Geen vertrekkende treinen gevonden.",ner:"Geen live data van NS.",pick:"Tik op een trein om over te stappen",tr:"spoor",xx:"vervalt",at:"in {s}",home:"Hoofdmenu"},
+fr:{brand:"CFH",sub:"Chemin de Fer Hoggynesiéns",off:"Pas en service",on:"En service",since:"Montée en gare de {s} à {t}",h1:"Prise de service",l1:"Numéro de personnel",l2:"Nom",l3:"Fonction",l4:"Gare de montée",l6:"Heure de montée",l7:"Changements déjà effectués (facultatif)",bin:"Prendre son service",go:"En service !",bye:"Service terminé",
+fn:["Conducteur de train","Chef de train","Employé de gare","Autre"],err:"Veuillez remplir tous les champs.",h2:"Changements de train",l5:"Nouveau train (facultatif, p. ex. IC 2314)",bov:"Changement de train effectué",bpz:"Démarrer la pause (longue correspondance)",bpe:"Terminer la pause",pz:"Pause",bout:"Fin de service",none:"Aucun changement de train",ovl:"Changement",tot:"Total",hello:"{n} ({f}) · n° {nr}",conf:"Touchez à nouveau pour terminer",done:"Service terminé. Changements de train : {c} · temps de travail {d}",ft:"Correspondances pendant ce service",bnb:"📍 Trains à ma position",gps:"Localisation en cours…",gno:"Position indisponible. Activez le GPS et autorisez l’accès.",near:"Gare la plus proche : {s} ({d})",ld:"Chargement des départs…",nod:"Aucun départ trouvé.",ner:"Pas de données en direct de NS.",pick:"Touchez un train pour changer",tr:"voie",xx:"supprimé",at:"à {s}",home:"Menu principal"}
+};
+let cf=0,lang="nl",S={on:false,t:0,nr:"",nm:"",fn:0,s0:"",log:[]};
+const $=id=>document.getElementById(id);
+try{const x=JSON.parse(localStorage.getItem("hsdienst")||"null");if(x){S=Object.assign(S,x.S);lang=x.lang||"nl"}}catch(e){}
+function save(){try{localStorage.setItem("hsdienst",JSON.stringify({S,lang}))}catch(e){}}
+const f=(s,o)=>s.replace(/\{(\w+)\}/g,(m,k)=>o[k]);
+const hm=t=>new Date(t).toLocaleTimeString(lang==="fr"?"fr-BE":"nl-NL",{hour:"2-digit",minute:"2-digit"});
+const dur=ms=>{const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+function render(){
+const t=T[lang];document.documentElement.lang=lang;document.title=t.brand+" – "+(lang==="fr"?"Service":"In dienst");
+$("brand").textContent=t.brand;$("sub").textContent=t.sub;
+$("bn").classList.toggle("on",lang==="nl");$("bf").classList.toggle("on",lang==="fr");
+["h1","l1","l2","l3","l4","l6","l7","h2","l5"].forEach(k=>$(k).textContent=t[k]);
+$("bin").textContent=t.bin;$("bnb").textContent=t.bnb;$("bnb").disabled=!!S.p;$("hmb").setAttribute("aria-label",t.home);$("bov").textContent=t.bov;$("bpz").textContent=S.p?t.bpe:t.bpz;$("bov").disabled=$("pl").disabled=$("mn").disabled=!!S.p;$("bout").textContent=t.bout;
+const sel=$("fn"),cur=S.on?S.fn:sel.selectedIndex>=0?sel.selectedIndex:0;
+sel.innerHTML=t.fn.map((x,i)=>"<option value='"+i+"'>"+x+"</option>").join("");sel.value=cur;
+$("st").classList.toggle("on",S.on);$("st").classList.toggle("pz",!!S.p);$("rail").className="rail"+(S.on?(S.p?" pz":" go"):"");$("stt").textContent=S.on?(S.p?t.pz:t.on):t.off;
+$("fm").classList.toggle("hid",S.on);$("ov").classList.toggle("hid",!S.on);$("uit").classList.toggle("hid",!S.on);
+$("stm").textContent=S.on?f(t.since,{t:hm(S.t),s:S.s0})+" · "+f(t.hello,{n:S.nm,f:t.fn[S.fn],nr:S.nr}):"";
+if(S.on){$("t0").value="";$("c0").value=""}else if(!$("t0").value){const d=new Date();$("t0").value=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+{const v=String(S.log.filter(e=>!e.pz).length),el=$("n");if(el.textContent!==v){el.textContent=v;el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump")}}
+$("lg").innerHTML=S.log.length?(()=>{let c=0;return S.log.map(e=>e.pz?"<li><span>"+t.pz+"</span><span>"+hm(e.t)+" · "+Math.max(1,Math.round(e.pz/60000))+" min</span></li>":"<li><span>"+t.ovl+" "+(++c)+"</span><span>"+hm(e.t)+(e.s?" · "+e.s.replace(/</g,"&lt;"):"")+(e.at?" · "+f(t.at,{s:e.at.replace(/</g,"&lt;")}):"")+"</span></li>").reverse().slice(0,40).join("")})():"<li><span class='mu'>"+t.none+"</span></li>";
+tick()}
+function fx(rev,t,s){if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;const e=$("fx"),m=$("tm");e.classList.remove("show","rev");void e.offsetWidth;$("fxt").textContent=t;$("fxs").textContent=s;if(rev)e.classList.add("rev");e.classList.add("show");m.classList.remove("pop");void m.offsetWidth;m.classList.add("pop");clearTimeout(fx.h);fx.h=setTimeout(()=>e.classList.remove("show"),3400)}
+function tick(){if(document.hidden)return;const n=Date.now(),pt=(S.pt||0)+(S.p?n-S.p:0);$("tm").textContent=S.on?dur(n-S.t-pt):"00:00:00";$("pb").textContent=S.on&&S.p?T[lang].pz+" "+dur(n-S.p):""}
+setInterval(tick,1000);document.addEventListener("visibilitychange",()=>{document.documentElement.classList.toggle("bg",document.hidden);tick()});
+
+/* ---------- GPS + NS: treinen op je locatie ---------- */
+const API="https://hs-trein.mitchell-middelbosch.workers.dev/";
+const esc=x=>String(x==null?"":x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let STN=null,NB=[];
+function stns(){if(STN)return Promise.resolve(STN);try{const c=JSON.parse(localStorage.getItem("hsdienst_st")||"null");if(c&&Date.now()-c.t<7*864e5&&c.d.length&&c.d[0].la!=null){STN=c.d;return Promise.resolve(STN)}}catch(e){}
+ return fetch(API+"?stations=1").then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{STN=(j.stations||[]).filter(x=>x.la&&x.lo);try{localStorage.setItem("hsdienst_st",JSON.stringify({t:Date.now(),d:STN}))}catch(e){}return STN})}
+function km(a,b,c,d){const R=6371,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r,h=Math.sin(x/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function dst(k){return k<1?Math.round(k*1000)+" m":k.toFixed(1).replace(".",",")+" km"}
+function here(){return new Promise((ok,no)=>{if(!navigator.geolocation)return no();navigator.geolocation.getCurrentPosition(p=>ok(p.coords),no,{enableHighAccuracy:true,timeout:12000,maximumAge:30000})})}
+function nearest(){return Promise.all([here(),stns()]).then(([c,L])=>{let b=null,bd=1e9;L.forEach(s=>{const d=km(c.latitude,c.longitude,s.la,s.lo);if(d<bd){bd=d;b=s}});if(!b)throw 0;return{s:b,d:bd}})}
+$("g0").onclick=()=>{const t=T[lang];$("gi0").textContent=t.gps;nearest().then(r=>{$("s0").value=r.s.n;$("gi0").textContent=f(t.near,{s:r.s.n,d:dst(r.d)})}).catch(()=>{$("gi0").textContent=t.gno})};
+$("bnb").onclick=()=>{const t=T[lang];$("nbl").innerHTML="";$("nbi").textContent=t.gps;
+ nearest().then(r=>{$("nbi").textContent=f(t.near,{s:r.s.n,d:dst(r.d)})+" · "+t.ld;
+  return fetch(API+"?station="+encodeURIComponent(r.s.c)).then(x=>{if(!x.ok)throw 1;return x.json()}).then(j=>{
+   const now=Date.now();NB=((j.payload&&j.payload.departures)||[]).filter(d=>new Date(d.actualDateTime).getTime()>now-6e4).slice(0,8).map(d=>Object.assign(d,{_st:r.s.n}));
+   $("nbi").textContent=f(t.near,{s:r.s.n,d:dst(r.d)})+(NB.length?" · "+t.pick:"");
+   $("nbl").innerHTML=NB.length?NB.map((d,i)=>{const p=d.product||{},l=Math.round((new Date(d.actualDateTime)-new Date(d.plannedDateTime))/6e4),tr=d.actualTrack||d.plannedTrack||"",st=d.stock&&d.stock.parts&&d.stock.parts.length?d.stock.parts.join(" + "):"";
+    return "<li><button type='button' data-i='"+i+"'"+(d.cancelled?" disabled":"")+"><b class='nt'>"+hm(d.plannedDateTime)+(l>0?"<s>+"+l+"</s>":"")+"</b><span class='nd'><b>"+esc((p.categoryCode||"")+" "+(p.number||""))+"</b> → "+esc(d.direction)+(st?"<small>"+esc(st)+"</small>":"")+(d.cancelled?"<small class='x'>"+t.xx+"</small>":"")+"</span>"+(tr?"<span class='nk'>"+esc(tr)+"</span>":"")+"</button></li>"}).join(""):"<li class='mu'>"+t.nod+"</li>"})})
+ .catch(e=>{$("nbi").textContent=e===1?t.ner:t.gno})};
+$("nbl").onclick=e=>{const b=e.target.closest("button[data-i]");if(!b||S.p)return;const d=NB[+b.dataset.i],p=d.product||{};
+ S.log.push({t:Date.now(),s:((p.categoryCode||"")+" "+(p.number||"")).trim()+" → "+d.direction,at:d._st});$("nbl").innerHTML="";$("nbi").textContent="";save();render()};
+$("bn").onclick=()=>{lang="nl";save();render()};$("bf").onclick=()=>{lang="fr";save();render()};
+$("bin").onclick=()=>{const nr=$("nr").value.trim(),nm=$("nm").value.trim(),s0=$("s0").value.trim();
+if(!nr||!nm||!s0||!$("t0").value){$("er").textContent=T[lang].err;return}
+$("er").textContent="";const tv=$("t0").value.split(":"),d=new Date();d.setHours(+tv[0],+tv[1],0,0);if(d>Date.now()+60000)d.setDate(d.getDate()-1);$("sm").textContent="";S={on:true,t:d.getTime(),nr,nm,fn:+$("fn").value,s0,log:Array.from({length:Math.min(99,Math.max(0,+$("c0").value||0))},()=>({t:d.getTime(),s:""})),p:0,pt:0};save();render();fx(0,T[lang].go,s0+" · "+hm(S.t))};
+$("bov").onclick=()=>{S.log.push({t:Date.now(),s:$("s1").value.trim()});$("s1").value="";save();render()};
+$("pl").onclick=()=>{S.log.push({t:Date.now(),s:""});save();render()};
+$("mn").onclick=()=>{for(let i=S.log.length-1;i>=0;i--)if(!S.log[i].pz){S.log.splice(i,1);break}save();render()};
+$("bpz").onclick=()=>{if(S.p){const d=Date.now()-S.p;S.pt=(S.pt||0)+d;S.log.push({t:S.p,pz:d});S.p=0}else S.p=Date.now();save();render()};
+$("bout").onclick=()=>{if(!cf){cf=1;$("bout").textContent=T[lang].conf;setTimeout(()=>{cf=0;render()},5000);return}cf=0;
+$("sm").textContent=(f(T[lang].done,{c:S.log.filter(e=>!e.pz).length,d:dur(Date.now()-S.t-(S.pt||0)-(S.p?Date.now()-S.p:0))}));S={on:false,t:0,nr:"",nm:"",fn:0,s0:"",log:[],p:0,pt:0};save();render();fx(1,T[lang].bye,$("sm").textContent)};
+render();
+</script>
+</body>
+</html>
