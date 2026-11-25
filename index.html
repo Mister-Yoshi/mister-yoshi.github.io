@@ -405,11 +405,10 @@ $("nv").innerHTML=TABS.map(function(t,i){return '<button data-t="'+t[0]+'" title
 $("nv").onclick=function(e){var b=e.target.closest("button");if(b)go(b.dataset.t)};
 var booted=0;
 /* ---------- Diensten-slot (code) ---------- */
-/* Let op: dit is een slot in de browser, geen echte beveiliging. Code wijzigen: SHA-256 van "hs-diensten:" + code */
-var LOCK_HASH="e56ab6c1f0db774c3aa1c5159350aea45da9887349dc1772588fcc393126c2e9",unl=false;
-try{unl=sessionStorage.getItem("hs_unl")===LOCK_HASH}catch(e){}
+/* De code staat centraal in de Worker (secret DIENSTEN_CODE). Aanpassen in Cloudflare = geldt op elk apparaat. */
+var unl=false,TOK="";try{TOK=sessionStorage.getItem("hs_tok")||""}catch(e){}
+if(TOK)fetch(TRAIN_API+"?check="+encodeURIComponent(TOK),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){unl=!!j.ok;if(!unl){try{sessionStorage.removeItem("hs_tok")}catch(e){}}if($("p-diensten").classList.contains("on"))lockUI()}).catch(function(){});
 function lockUI(){$("lk").hidden=unl;$("g-diensten").hidden=!unl;$("lko").hidden=!unl;if(unl&&!$("g-diensten").innerHTML)$("g-diensten").innerHTML=DIENST.map(tile).join("")}
-function sha(t){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return("0"+x.toString(16)).slice(-2)}).join("")})}
 function go(id){if(!document.getElementById("p-"+id))id="home";if(id==="diensten"){lockUI();if(!unl)setTimeout(function(){try{$("lkc").focus()}catch(e){}},50)}
  document.querySelectorAll(".panel").forEach(function(p){p.classList.toggle("on",p.id==="p-"+id)});
  document.querySelectorAll("#nv button").forEach(function(b){if(b.dataset.t===id)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
@@ -517,9 +516,12 @@ function pDraw(tr){if(!tr.length){$("pr").innerHTML='<div class="card pms">'+T("
 function aclk(){var n=new Date(),s=n.getSeconds(),m=n.getMinutes()+s/60,h=n.getHours()%12+m/60;
  document.getElementById("hs").setAttribute("transform","rotate("+s*6+")");document.getElementById("hm").setAttribute("transform","rotate("+m*6+")");document.getElementById("hh").setAttribute("transform","rotate("+h*30+")")}
 aclk();setInterval(aclk,1000);
-$("lk").onsubmit=function(e){e.preventDefault();var c=$("lkc").value.trim();if(!c)return;
- sha("hs-diensten:"+c).then(function(h){if(h===LOCK_HASH){unl=true;try{sessionStorage.setItem("hs_unl",h)}catch(e){}$("lkc").value="";$("lke").textContent="";lockUI()}
-  else{$("lke").innerHTML=T("Onjuiste code. Probeer het opnieuw.","Code incorrect. Réessayez.");$("lkc").value="";$("lkc").focus()}}).catch(function(){$("lke").innerHTML=T("Ontgrendelen lukt niet in deze browser.","Impossible de déverrouiller dans ce navigateur.")})};
-$("lkx").onclick=function(){unl=false;try{sessionStorage.removeItem("hs_unl")}catch(e){}$("g-diensten").innerHTML="";lockUI()};
+$("lk").onsubmit=function(e){e.preventDefault();var c=$("lkc").value.trim();if(!c)return;var b=$("lk").querySelector(".lkb");b.disabled=true;$("lke").innerHTML=T("Code controleren…","Vérification du code…");
+ fetch(TRAIN_API+"?unlock=1",{method:"POST",body:c,cache:"no-store"}).then(function(r){return r.json().then(function(j){return{s:r.status,j:j}})}).then(function(x){b.disabled=false;
+  if(x.j.ok&&x.j.token){unl=true;TOK=x.j.token;try{sessionStorage.setItem("hs_tok",TOK)}catch(e){}$("lkc").value="";$("lke").textContent="";lockUI()}
+  else if(x.j.error==="nocode"){$("lke").innerHTML=T("Er is nog geen code ingesteld in de Worker (DIENSTEN_CODE).","Aucun code n’est encore défini dans le Worker (DIENSTEN_CODE).")}
+  else{$("lke").innerHTML=T("Onjuiste code. Probeer het opnieuw.","Code incorrect. Réessayez.");$("lkc").value="";$("lkc").focus()}})
+ .catch(function(){b.disabled=false;$("lke").innerHTML=T("Kan de code nu niet controleren. Is de Worker bijgewerkt?","Impossible de vérifier le code. Le Worker est-il à jour ?")})};
+$("lkx").onclick=function(){unl=false;TOK="";try{sessionStorage.removeItem("hs_tok")}catch(e){}$("g-diensten").innerHTML="";lockUI()};
 setInterval(tick,1000);trainUp();setInterval(trainUp,6e4);setInterval(function(){if(!$("p-vertrek").classList.contains("on"))trainDraw()},3e4);applyStatus();apply();weather();setInterval(weather,6e5);go(location.hash.slice(1)||"home");
 </script></body></html>

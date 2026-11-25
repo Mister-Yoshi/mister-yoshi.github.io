@@ -83,6 +83,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 - Als er geen treinen meer rijden, zoekt de Worker de eerste trein van de ochtend op
 - De Worker accepteert alleen verzoeken van `https://mister-yoshi.github.io`. Open je `index.html` rechtstreeks vanaf je computer, dan zie je daarom "Geen live data"
 - In de HTML staat alleen het adres van de Worker, **nooit de NS-sleutel**
+- De code van het tabblad **Diensten** staat ook in de Worker (secret `DIENSTEN_CODE`). Pas je die aan in Cloudflare, dan geldt de nieuwe code meteen op elk apparaat
 
 ---
 
