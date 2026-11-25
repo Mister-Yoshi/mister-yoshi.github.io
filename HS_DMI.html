@@ -86,6 +86,7 @@ body.cab #tbar .ak:not(.need){opacity:.55}
 body.cab #tbar .ak.need{opacity:1;animation:bl 1s steps(2) infinite}
 body.cab #tbar .eb{flex:1.3;background:linear-gradient(#ee2226,#8a0000);color:#fff;border-color:#ff5a5d}
 body.cab #tbar .tb3{flex:0 0 clamp(38px,9vh,48px);display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+#hlv{display:none}
 body.cab #tbar .tb3 button{font-size:clamp(11px,1.4vw,14px)}
 body.cab.menu #tbar #tmn{background:linear-gradient(#f4f43c,#b4b400);color:#000}
 body.cab #hrail .rh{flex:0 0 auto;font:800 15px/1 system-ui;letter-spacing:.12em;color:#dfdf00}
@@ -109,8 +110,10 @@ body.cab.hide main>div:first-child{left:0;right:0}
 html:has(body.cab){background:#000}
 body.cab.hide #hrail{display:none}
 body.cab.hide #tbar{top:auto;bottom:max(10px,env(safe-area-inset-bottom));right:max(10px,env(safe-area-inset-right));width:auto;padding:0;background:none;border:0}
-body.cab.hide #tbar>*:not(.tb3),body.cab.hide #tbar .tb3>*:not(#hid){display:none}
-body.cab.hide #tbar .tb3{display:block}
+body.cab.hide #tbar>*:not(.tb3),body.cab.hide #tbar .tb3>*:not(#hid):not(#hlv){display:none}
+body.cab.hide #tbar .tb3{display:flex;gap:8px}
+body.cab.hide #hlv{display:block;min-width:110px;min-height:44px;opacity:.85}
+body.cab.hide #hlv:disabled{opacity:.35}
 body.cab.hide #hid{min-width:72px;min-height:44px;opacity:.75}
 @media (orientation:portrait){
  body.cab main>div:first-child{left:0;right:0;bottom:auto;height:calc(75vw + 20px)}
@@ -193,7 +196,7 @@ body.cab.hide #hid{min-width:72px;min-height:44px;opacity:.75}
   <div class="pm"><button id="tdn" aria-label="Langzamer">&minus;5</button><button id="tup" aria-label="Sneller">+5</button></div>
   <button id="tak" class="ak">ACK</button>
   <button id="teb" class="eb">EB</button>
-  <div class="tb3"><button id="tmn">Menu</button><button id="hid" aria-label="Knoppen verbergen of tonen">Verberg</button><button id="tex">Stop</button></div>
+  <div class="tb3"><button id="tmn">Menu</button><button id="hid" aria-label="Knoppen verbergen of tonen">Verberg</button><button id="hlv" aria-label="ETCS of HTC">ETCS ⇄ HTC</button><button id="tex">Stop</button></div>
 </div>
 </main>
 
@@ -213,19 +216,19 @@ const T={
   st:{NS:'Normal',IS:'Indication',OS:'Overspeed',WS:'Warning',SB:'Service brake',EB:'Emergency brake'},
   lim:a=>`Limit ${a} km/h`,next:(a,d)=>`Next ${a} in ${d} m`,nonext:'No ETCS next limit in HTC',ready:'HS-DMI ready',rel:'Brake released',eb:'Emergency brake',sb:'Service brake',ovw:'Overspeed warning',
   already:'Transition already announced',alreadyin:to=>`Already in ${to}`,aheadH:'Level HTC ahead',ahead2:'Level 2 ahead',ack:'Ack level transition',ackd:'Transition acknowledged',
-  lvH:'Level HTC',lv2:'Level 2, FS',noack:'Brake: no acknowledge',bd:'HTC out of service (BD)',cab:v=>`Cab signal ${v} km/h`,cancel:'Transition cancelled',htconly:'Only available in HTC',tcah:'Lower pantograph ahead',tclow:'Lower pantograph',tcup:'Raise pantograph',panup:'Pantograph still up',sys:(v,t)=>`Line ${v} kV ${t}`,pdown:'Pantograph lowered',pupm:'Pantograph raised'},
+  lvH:'Level HTC',lv2:'Level 2, FS',noack:'Brake: no acknowledge',bd:'HTC out of service (BD)',cab:v=>`Cab signal ${v} km/h`,cancel:'Transition cancelled',htconly:'Only available in HTC',lvst:'Level change at standstill',tcah:'Lower pantograph ahead',tclow:'Lower pantograph',tcup:'Raise pantograph',panup:'Pantograph still up',sys:(v,t)=>`Line ${v} kV ${t}`,pdown:'Pantograph lowered',pupm:'Pantograph raised'},
  nl:{b:'HS',ttl:'HS DMI',sub:'Machinistendisplay in ETCS-stijl voor de Hoggynesische Spoorwegen (HS), met ETCS niveau 2 en HTC (Hoggynesian Train Control)',
   menu:[['Hoofd'],['Over-','brug'],['Gege-','vens'],['Spec'],[]],
   st:{NS:'Normaal',IS:'Indicatie',OS:'Te snel',WS:'Waarschuwing',SB:'Dienstrem',EB:'Noodrem'},
   lim:a=>`Limiet ${a} km/h`,next:(a,d)=>`Volgende ${a} over ${d} m`,nonext:'Geen ETCS-limiet in HTC',ready:'HS-DMI gereed',rel:'Rem opgeheven',eb:'Noodrem',sb:'Dienstrem',ovw:'Waarschuwing: te snel',
   already:'Overgang al aangekondigd',alreadyin:to=>`Al in ${to}`,aheadH:'Overgang naar HTC',ahead2:'Overgang naar ETCS L2',ack:'Bevestig niveauovergang',ackd:'Overgang bevestigd',
-  lvH:'Niveau HTC',lv2:'Niveau 2, FS',noack:'Rem: niet bevestigd',bd:'HTC buiten dienst (BD)',cab:v=>`Cabinesein ${v} km/h`,cancel:'Overgang geannuleerd',htconly:'Alleen in HTC beschikbaar',tcah:'Straks pantograaf neer',tclow:'Pantograaf neer',tcup:'Pantograaf op',panup:'Pantograaf nog omhoog',sys:(v,t)=>`Bovenleiding ${v} kV ${t}`,pdown:'Pantograaf neer',pupm:'Pantograaf omhoog'},
+  lvH:'Niveau HTC',lv2:'Niveau 2, FS',noack:'Rem: niet bevestigd',bd:'HTC buiten dienst (BD)',cab:v=>`Cabinesein ${v} km/h`,cancel:'Overgang geannuleerd',htconly:'Alleen in HTC beschikbaar',lvst:'Wisselen alleen bij stilstand',tcah:'Straks pantograaf neer',tclow:'Pantograaf neer',tcup:'Pantograaf op',panup:'Pantograaf nog omhoog',sys:(v,t)=>`Bovenleiding ${v} kV ${t}`,pdown:'Pantograaf neer',pupm:'Pantograaf omhoog'},
  fr:{b:'CFH',ttl:'CFH DMI',sub:'Écran de conduite de type ETCS pour le Chemin de Fer Hoggynesiéns (CFH), avec ETCS niveau 2 et HTC (Hoggynesian Train Control)',
   menu:[['Menu'],['Déro-','gation'],['Don-','nées'],['Spéc'],[]],
   st:{NS:'Normal',IS:'Indication',OS:'Excès vitesse',WS:'Avertissement',SB:'Frein de service',EB:"Frein d'urgence"},
   lim:a=>`Limite ${a} km/h`,next:(a,d)=>`Suivante ${a} dans ${d} m`,nonext:'Pas de limite ETCS en HTC',ready:'CFH-DMI prêt',rel:'Frein desserré',eb:"Freinage d'urgence",sb:'Freinage de service',ovw:'Alerte excès de vitesse',
   already:'Transition déjà annoncée',alreadyin:to=>`Déjà en ${to}`,aheadH:'Transition vers HTC',ahead2:'Transition vers ETCS L2',ack:'Acquitter transition',ackd:'Transition acquittée',
-  lvH:'Niveau HTC',lv2:'Niveau 2, FS',noack:'Frein : non acquitté',bd:'HTC hors service (BD)',cab:v=>`Signal cabine ${v} km/h`,cancel:'Transition annulée',htconly:'Uniquement en HTC',tcah:'Pantographe à baisser',tclow:'Baissez le pantographe',tcup:'Levez le pantographe',panup:'Pantographe encore levé',sys:(v,t)=>`Caténaire ${v} kV ${t}`,pdown:'Pantographe baissé',pupm:'Pantographe levé'}};
+  lvH:'Niveau HTC',lv2:'Niveau 2, FS',noack:'Frein : non acquitté',bd:'HTC hors service (BD)',cab:v=>`Signal cabine ${v} km/h`,cancel:'Transition annulée',htconly:'Uniquement en HTC',lvst:'Changement à l’arrêt seul.',tcah:'Pantographe à baisser',tclow:'Baissez le pantographe',tcup:'Levez le pantographe',panup:'Pantographe encore levé',sys:(v,t)=>`Caténaire ${v} kV ${t}`,pdown:'Pantographe baissé',pupm:'Pantographe levé'}};
 const tl=(k,...a)=>{const f=T[lang][k];return typeof f=='function'?f(...a):f};
 function setLang(l){lang=l;if(Object.values(DL).includes($('loc').value))$('loc').value=DL[l];$('ttl').textContent=T[l].ttl;$('sub').textContent=T[l].sub;document.documentElement.lang=l;document.title=T[l].b+' DMI'}
 $('lg').onchange=()=>setLang($('lg').value);
@@ -457,6 +460,7 @@ const tabs=document.createElement('div');tabs.className='tabs';['Hoofd','Over-Ri
 document.querySelectorAll('#tbar button').forEach(b=>b.addEventListener('pointerdown',()=>{try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}));
 function setHide(h){document.body.classList.toggle('hide',h);if(h)openM(-1);$('hid').textContent=h?'Toon':'Verberg'}
 $('hid').onclick=()=>setHide(!document.body.classList.contains('hide'));
+function lvlTap(){if(v>=.5){msg(['lvst'],1);return}swLvl(lvl=='HTC'?'ETCS':'HTC')}
 function swLvl(to){if(v>=.5||lvl==to)return;tr=null;hn=null;if(to=='HTC'){lvl='HTC';nl=null;msg(CAB[cab].bd?['bd']:['lvH'],1);CAB[cab].bd?beeps():play('b')}else{lvl='ETCS';msg(['lv2'])}}
 $('lE').onclick=()=>swLvl('ETCS');
 $('lH').onclick=()=>swLvl('HTC');
@@ -465,16 +469,18 @@ $('teb').onclick=()=>$('ebb').onclick();
 function hold(id,f){const b=$(id);let t,i,h;b.onclick=()=>{if(h){h=0;return}f()};b.addEventListener('pointerdown',()=>{h=0;t=setTimeout(()=>{h=1;f();i=setInterval(f,120)},400)});['pointerup','pointerleave','pointercancel'].forEach(e=>b.addEventListener(e,()=>{clearTimeout(t);clearInterval(i)}))}
 CAB.forEach((c,i)=>{const b=document.createElement('button');b.className='sg '+c.c;b.innerHTML='<span class="sq">'+c.t+'</span><span class="k">'+(c.bd?'BD':c.v+' km/h')+'</span>';b.setAttribute('aria-label','Cabinesein '+(c.bd?'BD':c.v+' km/h'));b.onclick=()=>{play('k');setCab(i)};b.addEventListener('pointerdown',()=>{try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}});$('rcs').append(b)});
 document.querySelectorAll('#rcs .sg').forEach((b,j)=>b.classList.toggle('on',j==cab));
-$('rlE').onclick=()=>{play('k');swLvl('ETCS')};$('rlH').onclick=()=>{play('k');swLvl('HTC')};
+$('rlE').onclick=()=>{play('k');swLvl('ETCS')};$('hlv').onclick=()=>{play('k');lvlTap()};$('rlH').onclick=()=>{play('k');swLvl('HTC')};
 function railUp(){const mv=v>=.5,c=CAB[cab],h=lvl=='HTC';$('rlE').classList.toggle('p',!h);$('rlH').classList.toggle('p',h);$('rlE').disabled=mv||!h;$('rlH').disabled=mv||h;
- $('rhv').innerHTML='<small>'+(h?'Toegestaan (HTC)':'Bij binnenkomst HTC')+'</small>'+(c.bd?'BD':c.v+' km/h');
+ $('hlv').textContent=h?'HTC → ETCS':'ETCS → HTC';$('hlv').disabled=mv;$('rhv').innerHTML='<small>'+(h?'Toegestaan (HTC)':'Bij binnenkomst HTC')+'</small>'+(c.bd?'BD':c.v+' km/h');
  $('rhn').textContent=h?(c.bd?'BD: geen bewaking':'Tik een sein om te wisselen'):(mv?'Wisselen naar HTC kan bij stilstand':'Sein wordt actief in HTC')}
 hold('tup',()=>setSpd(clamp(set+5,0,400)));
 hold('tdn',()=>setSpd(clamp(set-5,0,400)));
 cv.addEventListener('pointerdown',e=>{
  const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*640,py=(e.clientY-r.top)/r.height*480;
  /* ACK-vak (65,270,35,37) met ruime tikmarge */
- if(px>=45&&px<=120&&py>=255&&py<=320){play('k');$('ack').onclick()}
+ if(px>=45&&px<=120&&py>=255&&py<=312){play('k');$('ack').onclick()}
+ /* niveau- en modusvak (0,313,55,100): tik = ETCS <-> HTC, alleen bij stilstand */
+ else if(px<55&&py>=313&&py<=413){play('k');lvlTap()}
  if(px>=581&&py>=12&&py<=262&&!document.body.classList.contains('hide')){play('k');const i=Math.min(4,Math.floor((py-12)/50));openM(mi===i?-1:i)}
  e.preventDefault();
 });
