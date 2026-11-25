@@ -24,6 +24,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 ### 🚉 Vertrek
 - **Live vertrekstaat van station Assen**, met echte NS-data:
   - tijd, vertraging, bestemming, spoor (met een opvallend bordje bij een spoorwijziging) en soort trein (IC of SPR)
+  - **tik op een trein** voor alle tussenhaltes met tijden, vertraging en sporen
   - **materieel** per trein, zoals `VIRM-6` of `ICM-3 + ICM-4`, met een waarschuwing als de trein korter is dan normaal
   - meldingen van NS en het aantal verstoringen, met een link naar ns.nl/storingen
   - **"Dienst voorbij"**: na de laatste trein verschijnt een rustig scherm met de eerste trein van de ochtend
@@ -80,6 +81,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 ```
 
 - De Worker haalt de vertrektijden van Assen (`ASN`) op en vraagt per trein het materieel op
+- Voor de tussenhaltes vraagt de Worker de rit op (`?journey=<treinnummer>`)
 - Voor de storingen haalt de Worker de actieve meldingen op (`?disruptions=1`)
 - Voor de reisplanner levert de Worker de stationslijst (`?stations=1`) en reisadviezen (`?from=…&to=…`)
 - Als er geen treinen meer rijden, zoekt de Worker de eerste trein van de ochtend op
