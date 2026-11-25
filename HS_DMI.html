@@ -141,12 +141,16 @@ body.cab.hide #tbar .tb3 button{font-size:13px}
  body.cab #tbar{left:50%}
  body.cab.menu aside{width:100vw}
 }
+.topb{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.homeb{display:inline-flex;align-items:center;padding:5px 12px;min-height:34px;box-sizing:border-box;border:1px solid var(--ln);border-radius:6px;background:var(--bt);color:var(--tx);text-decoration:none;font:inherit}
+.homeb:hover{border-color:var(--ac)}.homeb:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+body.cab .topb{display:none}
 </style>
 </head>
 <body>
 <main>
 <div>
-  <button id="cabb" class="p" style="margin-bottom:8px">Cabinemodus (aanraakscherm)</button>
+  <div class="topb"><a id="home" class="homeb" href="index.html#diensten">← Hoofdmenu</a><button id="cabb" class="p">Cabinemodus (aanraakscherm)</button></div>
   <canvas id="c" width="1280" height="960" aria-label="Driver machine interface"></canvas>
 </div>
 <aside>
@@ -255,7 +259,7 @@ const T={
   already:'Transition déjà annoncée',alreadyin:to=>`Déjà en ${to}`,aheadH:'Transition vers HTC',ahead2:'Transition vers ETCS L2',ack:'Acquitter transition',ackd:'Transition acquittée',
   lvH:'Niveau HTC',lv2:'Niveau 2, FS',noack:'Frein : non acquitté',bd:'HTC hors service (BD)',cab:v=>`Signal cabine ${v} km/h`,cancel:'Transition annulée',htconly:'Uniquement en HTC',lvst:'Changement à l’arrêt seul.',noetcs:'Train sans ETCS',trn:a=>`Train : ${a}`,trst:'Changer de train à l’arrêt',tcah:'Pantographe à baisser',tclow:'Baissez le pantographe',tcup:'Levez le pantographe',panup:'Pantographe encore levé',sys:(v,t)=>`Caténaire ${v} kV ${t}`,pdown:'Pantographe baissé',pupm:'Pantographe levé'}};
 const tl=(k,...a)=>{const f=T[lang][k];return typeof f=='function'?f(...a):f};
-function setLang(l){lang=l;if(Object.values(DL).includes($('loc').value))$('loc').value=DL[l];$('ttl').textContent=T[l].ttl;$('sub').textContent=T[l].sub;document.documentElement.lang=l;document.title=T[l].b+' DMI'}
+function setLang(l){lang=l;if(Object.values(DL).includes($('loc').value))$('loc').value=DL[l];$('ttl').textContent=T[l].ttl;$('sub').textContent=T[l].sub;document.documentElement.lang=l;document.title=T[l].b+' DMI';$('home').textContent={nl:'← Hoofdmenu',fr:'← Menu principal',en:'← Main menu'}[l]||'← Hoofdmenu'}
 $('lg').onchange=()=>setLang($('lg').value);
 function setTrain(k){if(!TRAINS[k]||k==trn)return;if(v>=.5){$('trn').value=trn;msg(['trst'],1);return}
  trn=k;$('trn').value=k;const P=TR();msg(['trn',P.n]);if(set>P.vmax)setSpd(P.vmax);if(lim>P.vmax)lim=P.vmax,$('lr').value=$('ln').value=P.vmax;
