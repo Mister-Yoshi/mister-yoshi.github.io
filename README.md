@@ -29,7 +29,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
   - meldingen van NS en het aantal verstoringen, met een link naar ns.nl/storingen
   - **"Dienst voorbij"**: na de laatste trein verschijnt een rustig scherm met de eerste trein van de ochtend
 - **Storingen en werkzaamheden van NS**: actuele storingen (rood) en werkzaamheden (oranje), met oorzaak, verwachte duur, extra reistijd en vervangend vervoer. Meldingen rond Assen staan bovenaan
-- **Live busborden** in dezelfde stijl als de vertrekstaat, standaard voor *Busstation Marsdijk* en *Noorderstaete* in Assen. Met **Wijzig halte** zoek en kies je zelf een andere bushalte (data via [Transitous](https://transitous.org/sources/), open data o.a. van OVapi/NDOV)
+- **Live busborden** in dezelfde stijl als de vertrekstaat, standaard voor *Busstation Marsdijk* en *Noorderstaete* in Assen. Tik op een busrit voor de tussenhaltes en het ritnummer. Met **Wijzig halte** zoek en kies je zelf een andere bushalte (data via [Transitous](https://transitous.org/sources/), open data o.a. van OVapi/NDOV)
 - Bewust **zonder animaties**: vaste maten en vaste rijen, zodat er niets verspringt. Ververst elke minuut
 - Zijn er geen gegevens, dan staat er "Geen live data". De pagina toont nooit verzonnen vertrektijden
 
@@ -38,6 +38,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 - Stations zoeken tijdens het typen (ook Belgische en Duitse stations), met knop ⇅ om om te wisselen. De laatste keuze wordt onthouden
 - Per reis: vertrek- en aankomsttijd met vertraging, reisduur, aantal overstappen, soorten treinen en drukte
 - Open een reis voor alle delen: tijden, sporen (met spoorwijziging), richting, overstaptijd, meldingen en vervallen treinen
+- Keuze **Trein (NS)** of **Bus en OV**: de OV-planner (via Transitous) plant met bus, tram, metro en trein, met per rit een knop **Tussenhaltes**
 - Knoppen **Eerder** en **Later**
 - Net als Vertrek zonder animaties
 

@@ -150,6 +150,11 @@ body:not(.only-nl):not(.only-fr) #p-plan form .nl+.fr::before,body:not(.only-nl)
 .bso b{display:block;font-size:15px}.bso small{color:var(--dim);font-size:12.5px}.bso:hover,.bso:focus-visible{border-color:var(--blue)}
 @media(max-width:900px){.busg{grid-template-columns:1fr}}
 @media(max-width:700px){.bvs .b1{width:76px}.bvs .b2{width:74px}}
+
+.pmd{margin-bottom:2px}.pmd .pbt{font-weight:700}
+.lm2{grid-column:2/4;margin:2px 0 4px}.jbt{font-size:12.5px;padding:6px 12px}
+.bvs tr.rw{cursor:pointer}.bvs tr.rw:hover td{background:rgba(0,201,167,.07)}.bvs tr.rw:focus-visible{outline:2px solid var(--yel);outline-offset:-2px}
+.rn{display:block;margin-top:3px;font:600 11px "IBM Plex Mono",ui-monospace,Consolas,monospace;color:var(--dim)}
 /* tussenhaltes */
 .vs tr.rw{cursor:pointer}.vs tr.rw:hover td{background:rgba(77,124,255,.08)}.vs tr.rw:focus-visible{outline:2px solid var(--yel);outline-offset:-2px}
 #jd{width:min(540px,94vw);max-height:84vh;padding:0;overflow:hidden}
@@ -364,6 +369,7 @@ dialog{border-radius:14px}
  <section class="panel" id="p-vertrek"><div class="ph"><h2><span class="nl">Vertrek <em>live</em></span><span class="fr">Départs <em>en direct</em></span></h2><p><span class="nl">Actuele treinen en bussen vanaf Assen.</span><span class="fr">Trains et bus en temps réel depuis Assen.</span></p></div><div id="bd"></div></section>
  <section class="panel" id="p-plan"><div class="ph"><h2><span class="nl">Reis<em>planner</em></span><span class="fr">Planifier un <em>trajet</em></span></h2><p><span class="nl">Plan een treinreis met actuele NS-gegevens.</span><span class="fr">Planifiez un trajet en train avec les données NS en temps réel.</span></p></div>
   <form class="card pln" id="pfm" autocomplete="off">
+   <div class="ptg pmd" role="group" aria-label="Soort reis"><button type="button" class="pbt" id="pmn" aria-pressed="true">🚆 <span class="nl">Trein (NS)</span><span class="fr">Train (NS)</span></button><button type="button" class="pbt" id="pmo" aria-pressed="false">🚌 <span class="nl">Bus en OV</span><span class="fr">Bus et TC</span></button></div>
    <div class="pst"><label class="pl"><span class="lab mono"><span class="nl">Van</span><span class="fr">Gare de départ</span></span><input id="pfi" class="pin" placeholder="Station" spellcheck="false"><div class="psg" id="pfs"></div></label>
     <button type="button" class="pbt psw" id="psw" aria-label="Omwisselen">⇅</button>
     <label class="pl"><span class="lab mono"><span class="nl">Naar</span><span class="fr">Gare d’arrivée</span></span><input id="pti" class="pin" placeholder="Station" spellcheck="false"><div class="psg" id="pts"></div></label></div>
@@ -538,18 +544,25 @@ function stLoad(cb){if(STN)return cb();try{var c=JSON.parse(localStorage.getItem
 function stFind(v){v=nrm(v);if(!v||!STN)return[];var a=[];STN.forEach(function(x){var sc=x.c.toLowerCase()===v?0:x.nn.indexOf(v)===0?1:x.q.indexOf(" "+v)>-1||x.q.indexOf(v)===0?2:x.q.indexOf(v)>-1?3:9;if(sc<9)a.push([sc+(x.l==="NL"?0:.5),x])});
  return a.sort(function(p,q){return p[0]-q[0]||p[1].n.localeCompare(q[1].n)}).slice(0,6).map(function(p){return p[1]})}
 function acSet(inp,box){var sel=-1,list=[];
- function show(){list=stFind(inp.value);sel=list.length?0:-1;box.innerHTML=list.map(function(x,i){return '<div data-i="'+i+'"'+(i===sel?' class="a"':'')+'><span>'+esc(x.n)+'</span><small>'+esc(x.c)+(x.l&&x.l!=="NL"?" · "+esc(x.l):"")+'</small></div>'}).join("");box.classList.toggle("on",!!list.length)}
+ function show(){list=stFind(inp.value);sel=list.length?0:-1;box.innerHTML=list.map(function(x,i){return '<div data-i="'+i+'"'+(i===sel?' class="a"':'')+'><span>'+esc(x.n)+'</span><small>'+(x.ov?esc(x.l||""):esc(x.c)+(x.l&&x.l!=="NL"?" · "+esc(x.l):""))+'</small></div>'}).join("");box.classList.toggle("on",!!list.length)}
+ var ovT=0;function ovShow(){clearTimeout(ovT);var q=inp.value.trim();if(q.length<2){box.classList.remove("on");return}ovT=setTimeout(function(){fetch(TRAIN_API+"?bushalte="+encodeURIComponent(q)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){if(inp.value.trim()!==q)return;list=(j.stops||[]).map(function(x){return{n:x.n,c:x.id,l:x.a,ov:1}});sel=list.length?0:-1;box.innerHTML=list.map(function(x,i){return '<div data-i="'+i+'"'+(i===sel?' class="a"':'')+'><span>'+esc(x.n)+'</span><small>'+esc(x.l||"")+'</small></div>'}).join("");box.classList.toggle("on",!!list.length)}).catch(function(){})},280)}
  function pick(i){var x=list[i];if(!x)return;inp.value=x.n;inp.dataset.c=x.c;box.classList.remove("on");pSave()}
- inp.addEventListener("input",function(){inp.dataset.c="";stLoad(show)});
+ inp.addEventListener("input",function(){inp.dataset.c="";if(pM==="ov")ovShow();else stLoad(show)});
  inp.addEventListener("focus",function(){stLoad(function(){})});
  inp.addEventListener("keydown",function(e){if(!box.classList.contains("on"))return;if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();sel=(sel+(e.key==="ArrowDown"?1:-1)+list.length)%list.length;[].forEach.call(box.children,function(d,i){d.className=i===sel?"a":""})}else if(e.key==="Enter"&&sel>-1){e.preventDefault();pick(sel)}else if(e.key==="Escape")box.classList.remove("on")});
  box.addEventListener("mousedown",function(e){var d=e.target.closest("[data-i]");if(d){e.preventDefault();pick(+d.dataset.i)}});
  inp.addEventListener("blur",function(){setTimeout(function(){box.classList.remove("on")},120)})}
-function pSave(){try{localStorage.setItem("hs_plan",JSON.stringify({f:[$("pfi").value,$("pfi").dataset.c||""],t:[$("pti").value,$("pti").dataset.c||""]}))}catch(e){}}
+function pSave(){try{localStorage.setItem(pM==="ov"?"hs_plan_ov":"hs_plan",JSON.stringify({f:[$("pfi").value,$("pfi").dataset.c||""],t:[$("pti").value,$("pti").dataset.c||""]}))}catch(e){}}
 function p2(n){return("0"+n).slice(-2)}
 function pNow(){var d=new Date();$("pdt").value=d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());$("ptm").value=p2(d.getHours())+":"+p2(d.getMinutes())}
 function pMode(a){pArr=a;$("pdp").setAttribute("aria-pressed",!a);$("par").setAttribute("aria-pressed",a)}
-function planInit(){if(pBoot)return;pBoot=1;
+var pM="ns";
+function pLoad(){var sv={};try{sv=JSON.parse(localStorage.getItem(pM==="ov"?"hs_plan_ov":"hs_plan")||"{}")}catch(e){}
+ $("pfi").value=sv.f?sv.f[0]:(pM==="ov"?"":"Assen");$("pfi").dataset.c=sv.f?sv.f[1]:(pM==="ov"?"":"ASN");$("pti").value=sv.t?sv.t[0]:"";$("pti").dataset.c=sv.t?sv.t[1]:"";
+ $("pfi").placeholder=$("pti").placeholder=pM==="ov"?both("Halte of station","Arrêt ou gare"):"Station"}
+function pSetM(m){if(pM===m)return;pM=m;$("pmn").setAttribute("aria-pressed",m==="ns");$("pmo").setAttribute("aria-pressed",m==="ov");pLoad();
+ $("pr").innerHTML='<div class="card pms">'+(m==="ov"?T("Plan een reis met bus, tram, metro en trein. Gegevens via Transitous (open data).","Planifiez un trajet en bus, tram, métro et train. Données via Transitous (open data)."):T("Kies een vertrek- en aankomststation en tik op Plan reis.","Choisissez une gare de départ et d’arrivée, puis appuyez sur Planifier."))+'</div>'}
+function planInit(){if(pBoot)return;pBoot=1;$("pmn").onclick=function(){pSetM("ns")};$("pmo").onclick=function(){pSetM("ov")};
  var sv={};try{sv=JSON.parse(localStorage.getItem("hs_plan")||"{}")}catch(e){}
  $("pfi").value=sv.f?sv.f[0]:"Assen";$("pfi").dataset.c=sv.f?sv.f[1]:"ASN";if(sv.t){$("pti").value=sv.t[0];$("pti").dataset.c=sv.t[1]}
  acSet($("pfi"),$("pfs"));acSet($("pti"),$("pts"));pNow();
@@ -557,7 +570,7 @@ function planInit(){if(pBoot)return;pBoot=1;
  $("psw").onclick=function(){var a=$("pfi"),b=$("pti"),v=a.value,c=a.dataset.c;a.value=b.value;a.dataset.c=b.dataset.c||"";b.value=v;b.dataset.c=c||"";pSave()};
  $("pfm").onsubmit=function(e){e.preventDefault();var d=new Date($("pdt").value+"T"+($("ptm").value||"00:00"));pPlan(isNaN(d)?new Date():d,pArr)};
  $("pr").innerHTML='<div class="card pms">'+T("Kies een vertrek- en aankomststation en tik op Plan reis.","Choisissez une gare de départ et d’arrivée, puis appuyez sur Planifier.")+'</div>'}
-function pPlan(d,arr){var f=$("pfi").dataset.c||$("pfi").value.trim(),t=$("pti").dataset.c||$("pti").value.trim();
+function pPlan(d,arr){if(pM==="ov")return ovPlan(d,arr);var f=$("pfi").dataset.c||$("pfi").value.trim(),t=$("pti").dataset.c||$("pti").value.trim();
  if(!f||!t){$("pr").innerHTML='<div class="card pms">'+T("Vul zowel Van als Naar in.","Indiquez une gare de départ et une gare d’arrivée.")+'</div>';return}
  pLast={f:f,t:t};$("pr").innerHTML='<div class="card pms">'+T("Reisadvies ophalen…","Recherche de l'itinéraire…")+'</div>';
  fetch(TRAIN_API+"?from="+encodeURIComponent(f)+"&to="+encodeURIComponent(t)+"&dateTime="+encodeURIComponent(d.toISOString())+(arr?"&arr=1":"")).then(function(r){return r.json().then(function(j){if(!r.ok)throw j;return j})})
@@ -572,10 +585,10 @@ function pDraw(tr){if(!tr.length){$("pr").innerHTML='<div class="card pms">'+T("
   t.legs.forEach(function(l,i){if(i){var pv=t.legs[i-1],m=dl(l.o.at||l.o.pt,pv.d.at||pv.d.pt);h+='<div class="xf">'+T("Overstap","Correspondance")+" · "+m+" min</div>"}
    var tr0=l.o.atr||l.o.ptr,tr1=l.d.atr||l.d.ptr;
    h+='<div class="lg"><div class="t">'+tmS(l.o)+'</div><div class="n">'+esc(l.o.n||"")+'</div>'+(tr0?'<span class="k'+(l.o.atr&&l.o.atr!==l.o.ptr?" ch":"")+'">'+esc(tr0)+'</span>':'<span></span>')
-    +'<div class="lr'+(l.x?" x":"")+(l.walk?" w":"")+'">'+(l.walk?T("Lopen","À pied"):'<span class="ty">'+esc(l.p?l.p.c||"":"")+'</span>'+(l.p&&l.p.nr?'<b class="tn">'+esc(String(l.p.nr))+'</b>':'')+esc(l.p?l.p.n||"":"")+(l.dir?" → "+esc(l.dir):""))+'</div>'+(l.m?'<div class="lm">'+esc(l.m)+'</div>':'')
+    +'<div class="lr'+(l.x?" x":"")+(l.walk?" w":"")+'">'+(l.walk?T("Lopen","À pied"):'<span class="ty">'+esc(l.p?l.p.c||"":"")+'</span>'+(l.p&&l.p.nr?'<b class="tn">'+esc(String(l.p.nr))+'</b>':'')+esc(l.p?l.p.n||"":"")+(l.dir?" → "+esc(l.dir):""))+'</div>'+(l.m?'<div class="lm">'+esc(l.m)+'</div>':'')+(l.trip?'<div class="lm2"><button type="button" class="pbt jbt" data-trip="'+esc(l.trip)+'" data-tt="'+esc((l.p?l.p.c:"")+(l.dir?" → "+l.dir:""))+'" data-pt="'+esc(l.o.pt||"")+'">'+T("Tussenhaltes","Arrêts")+(l.ns?" ("+l.ns+")":"")+'</button></div>':'')
     +'<div class="t">'+tmS(l.d)+'</div><div class="n">'+esc(l.d.n||"")+'</div>'+(tr1?'<span class="k'+(l.d.atr&&l.d.atr!==l.d.ptr?" ch":"")+'">'+esc(tr1)+'</span>':'<span></span>')+'</div>'});
   h+='</div></details>'});
- $("pr").innerHTML=h+'<div class="ft mono" style="color:var(--dim);font-size:11.5px;padding:4px 6px">'+T("Bron: NS · tijden zijn actueel op het moment van zoeken","Source : NS · horaires à jour au moment de la recherche")+'</div>';
+ $("pr").innerHTML=h+'<div class="ft mono" style="color:var(--dim);font-size:11.5px;padding:4px 6px">'+(pM==="ov"?T("Bron: Transitous (open data) · tijden zijn actueel op het moment van zoeken","Source : Transitous (open data) · horaires à jour au moment de la recherche")+' · <a href="https://transitous.org/sources/" target="_blank" rel="noopener" style="color:inherit">transitous.org/sources</a>':T("Bron: NS · tijden zijn actueel op het moment van zoeken","Source : NS · horaires à jour au moment de la recherche"))+'</div>';
  $("pea").onclick=function(){pPlan(new Date(new Date(tr[0].legs[0].o.pt)-30*6e4),false)};
  $("pla").onclick=function(){var z=tr[tr.length-1].legs[0].o.pt;pPlan(new Date(new Date(z).getTime()+6e4),false)}}
 (function(){var g=document.getElementById("ctk"),h="";for(var i=0;i<60;i++){var a=i*6,big=i%5===0;h+='<line class="'+(big?"tb":"ts")+'" y1="'+(big?-90:-90)+'" y2="'+(big?-72:-84)+'" transform="rotate('+a+')"/>'}g.innerHTML=h})();
@@ -620,7 +633,7 @@ document.addEventListener("click",function(e){var r=e.target.closest&&e.target.c
 document.addEventListener("keydown",function(e){if(e.key!=="Enter")return;var r=e.target.closest&&e.target.closest("#vstaat tr.rw");if(r&&VROWS[+r.dataset.k])jOpen(VROWS[+r.dataset.k])});
 $("jdx").onclick=function(){$("jd").close()};$("jd").addEventListener("click",function(e){if(e.target.id==="jd")$("jd").close()});
 /* ---------- Bus: live via Transitous (open data) ---------- */
-var BUSDEF=[{q:"Busstation Marsdijk Assen",n:"Busstation Marsdijk"},{q:"Noorderstaete Assen",n:"Noorderstaete"}],BUS=[],bdata=[];
+var BV=[],BUSDEF=[{q:"Busstation Marsdijk Assen",n:"Busstation Marsdijk"},{q:"Noorderstaete Assen",n:"Noorderstaete"}],BUS=[],bdata=[];
 function busSave(){try{localStorage.setItem("hs_bus",JSON.stringify(BUS.map(function(b){return{id:b.id,n:b.n,a:b.a}})))}catch(e){}}
 function busInit(){try{BUS=JSON.parse(localStorage.getItem("hs_bus")||"[]")}catch(e){BUS=[]}
  BUSDEF.forEach(function(d,i){if(!BUS[i])BUS[i]={id:"",n:d.n,a:"Assen",q:d.q}});
@@ -634,10 +647,10 @@ function busDraw(i){var b=BUS[i],d=bdata[i]||{},R=8,el=$("bb"+i);if(!el||b.edit)
  h+='<table><thead><tr><th class="b1">'+T("Tijd","Heure")+'</th><th class="b2">+</th><th class="b3">'+T("Lijn","Ligne")+'</th><th>'+T("Richting","Direction")+'</th></tr></thead><tbody>';
  if(d.err){h+='</tbody></table><div class="em">'+T("Geen live data","Pas de données en direct")+'</div><div class="ft mono">'+T("Controleer of de Worker is bijgewerkt","Vérifiez que le Worker est à jour")+'</div>';setH("bb"+i,h);return}
  if(!d.deps){h+='</tbody></table><div class="em">'+T("Laden…","Chargement…")+'</div>';setH("bb"+i,h);return}
- var now=d.t,v=d.deps.filter(function(x){return new Date(x.at||x.pt).getTime()>now-3e4}).slice(0,R);
+ var now=d.t,v=d.deps.filter(function(x){return new Date(x.at||x.pt).getTime()>now-3e4}).slice(0,R);BV[i]=v;
  for(var k=0;k<R;k++){var x=v[k];if(!x){h+='<tr><td class="b1"></td><td class="b2"></td><td class="b3"></td><td>'+(k===0?'<span class="n">'+T("Geen vertrekkende bussen","Aucun départ de bus")+'</span>':'')+'</td></tr>';continue}
   var l=x.pt&&x.at?Math.round((new Date(x.at)-new Date(x.pt))/6e4):0;
-  h+='<tr'+(x.x?' class="cx"':'')+'><td class="b1"><span class="t">'+hm(x.pt||x.at)+'</span></td><td class="b2"><span class="dl '+(x.x?"x":l>0?"":"ok")+'">'+(x.x?T("vervalt","supprimé"):l>0?"+"+l:(x.rt?"":"<i class=\"pl\">"+T("gepland","prévu")+"</i>"))+'</span></td><td class="b3"><span class="ln">'+esc(x.line)+'</span></td><td><span class="d">'+esc(x.dir)+'</span>'+(x.op?'<span class="n">'+esc(x.op)+'</span>':'<span class="n"></span>')+'</td></tr>'}
+  h+='<tr class="'+(x.t?"rw":"")+(x.x?" cx":"")+'"'+(x.t?' tabindex="0" data-b="'+i+'" data-k="'+k+'"':'')+'><td class="b1"><span class="t">'+hm(x.pt||x.at)+'</span></td><td class="b2"><span class="dl '+(x.x?"x":l>0?"":"ok")+'">'+(x.x?T("vervalt","supprimé"):l>0?"+"+l:(x.rt?"":"<i class=\"pl\">"+T("gepland","prévu")+"</i>"))+'</span></td><td class="b3"><span class="ln">'+esc(x.line)+'</span>'+(x.rit?'<span class="rn">'+esc(x.rit)+'</span>':'')+'</td><td><span class="d">'+esc(x.dir)+'</span>'+(x.op?'<span class="n">'+esc(x.op)+'</span>':'<span class="n"></span>')+'</td></tr>'}
  h+='</tbody></table><div class="ft mono">'+T("Bijgewerkt ","Mis à jour ")+hm(d.t)+' · <a href="https://transitous.org/sources/" target="_blank" rel="noopener">Transitous</a> · '+T("ververst elke minuut","actualisé toutes les minutes")+'</div>';setH("bb"+i,h)}
 function busEdit(i){var b=BUS[i];b.edit=1;var el=$("bb"+i);el.dataset.h="";
  el.innerHTML='<div class="vh mono"><span>'+T("Kies een bushalte","Choisissez un arrêt de bus")+'</span><button class="bset" data-x="'+i+'">'+T("Annuleer","Annuler")+'</button></div><div class="bse"><input class="pin" id="bsi'+i+'" placeholder="'+both("Zoek halte, bijv. Assen Station","Chercher un arrêt, ex. Assen Station")+'" autocomplete="off" spellcheck="false"><div class="bsl" id="bsl'+i+'"></div></div>';
@@ -646,5 +659,27 @@ function busEdit(i){var b=BUS[i];b.edit=1;var el=$("bb"+i);el.dataset.h="";
   fetch(TRAIN_API+"?bushalte="+encodeURIComponent(q)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){res=j.stops||[];lst.innerHTML=res.length?res.map(function(x,k){return '<button class="bso" data-k="'+k+'"><b>'+esc(x.n)+'</b>'+(x.a?'<small>'+esc(x.a)+'</small>':'')+'</button>'}).join(""):'<p class="jm">'+T("Geen haltes gevonden.","Aucun arrêt trouvé.")+'</p>'}).catch(function(){lst.innerHTML='<p class="jm">'+T("Zoeken lukt nu niet.","La recherche ne fonctionne pas.")+'</p>'})},300)};
  lst.onclick=function(e){var o=e.target.closest(".bso");if(!o)return;var x=res[+o.dataset.k];BUS[i]={id:x.id,n:x.n,a:x.a};bdata[i]=null;busSave();$("bb"+i).dataset.h="";busDraw(i);busUp(i)}}
 document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".bset");if(!b)return;if(b.dataset.x!=null){var i=+b.dataset.x;delete BUS[i].edit;$("bb"+i).dataset.h="";busDraw(i)}else busEdit(+b.dataset.i)});
+/* ---------- OV-reisplanner (Transitous) ---------- */
+function mLbl(m){var M={BUS:["Bus","Bus"],COACH:["Bus","Car"],TRAM:["Tram","Tram"],SUBWAY:["Metro","Métro"],METRO:["Metro","Métro"],FERRY:["Veer","Ferry"],AIRPLANE:["Vlucht","Vol"]},v=M[m]||(/RAIL|SUBURBAN/.test(m)?["Trein","Train"]:[m,m]);return L.nl?v[0]:v[1]}
+function ovRes(inp){if(inp.dataset.c)return Promise.resolve(inp.dataset.c);var q=inp.value.trim();if(!q)return Promise.reject(1);
+ return fetch(TRAIN_API+"?bushalte="+encodeURIComponent(q)).then(function(r){return r.json()}).then(function(j){var x=(j.stops||[])[0];if(!x)throw 2;inp.value=x.n;inp.dataset.c=x.id;pSave();return x.id})}
+function ovPlan(d,arr){if(!$("pfi").value.trim()||!$("pti").value.trim()){$("pr").innerHTML='<div class="card pms">'+T("Vul zowel Van als Naar in.","Indiquez un départ et une arrivée.")+'</div>';return}
+ $("pr").innerHTML='<div class="card pms">'+T("Reisadvies ophalen…","Recherche de l'itinéraire…")+'</div>';
+ Promise.all([ovRes($("pfi")),ovRes($("pti"))]).then(function(ids){return fetch(TRAIN_API+"?ovplan=1&from="+encodeURIComponent(ids[0])+"&to="+encodeURIComponent(ids[1])+"&time="+encodeURIComponent(d.toISOString())+(arr?"&arr=1":""))})
+ .then(function(r){return r.json().then(function(j){if(!r.ok)throw j;return j})}).then(function(j){
+  var trips=(j.its||[]).map(function(it){var legs=it.legs.map(function(l){var wk=l.m==="WALK";return{o:{n:l.o.n,pt:l.o.pt,at:l.o.at,ptr:l.o.ptr,atr:l.o.tr},d:{n:l.d.n,pt:l.d.pa||l.d.pt,at:l.d.aa||l.d.at,ptr:l.d.ptr,atr:l.d.tr},dir:l.dir,x:l.x,walk:wk,p:wk?null:{c:mLbl(l.m)+(l.line?" "+l.line:""),n:l.op?" "+l.op:"",nr:l.rit},m:"",trip:wk?"":l.trip,ns:l.ns}});
+   return{pd:Math.round((it.dur||0)/60),ad:null,tf:it.tf||0,st:"NORMAL",cr:null,legs:legs}}).filter(function(t){return t.legs.length});
+  pDraw(trips)}).catch(function(e){$("pr").innerHTML='<div class="card pms">'+(e===2?T("Halte niet gevonden. Kies er een uit de lijst.","Arrêt introuvable. Choisissez-en un dans la liste."):e&&e.error?T("Er kon geen reis worden gevonden (fout "+e.error+").","Aucun trajet trouvé (erreur "+e.error+")."):T("Geen live data. Is de Worker bijgewerkt?","Pas de données. Le Worker est-il à jour ?"))+'</div>'})}
+/* ---------- tussenhaltes van een busrit / OV-rit ---------- */
+function jOpenTrip(trip,title,sub,pt){$("jdt").innerHTML=esc(title);$("jds").innerHTML=sub||"";$("jdb").innerHTML='<p class="jm">'+T("Tussenhaltes ophalen…","Chargement des arrêts…")+'</p>';$("jd").showModal();
+ fetch(TRAIN_API+"?bustrip="+encodeURIComponent(trip)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){var S=j.stops||[];if(!S.length)throw 0;
+  if(j.rit&&sub.indexOf(j.rit)<0)$("jds").innerHTML=(sub?sub+" · ":"")+T("Rit "+esc(j.rit),"Course "+esc(j.rit));
+  var hi=-1;if(pt){var tp=new Date(pt).getTime();S.forEach(function(s,i){if(hi<0&&s.pd&&Math.abs(new Date(s.pd).getTime()-tp)<6e4)hi=i})}
+  $("jdb").innerHTML='<ol class="jl">'+S.map(function(s,i){var p=s.pd||s.pa,a=s.ad||s.aa,l=p&&a?Math.round((new Date(a)-new Date(p))/6e4):0;
+   return '<li class="js'+(hi>-1&&i<hi?" past":"")+(i===hi?" here":"")+(i===S.length-1?" end":"")+(s.x?" x":"")+'"><span class="jt">'+(p?hm(p):"")+(l>0?'<s>+'+l+'</s>':'')+'</span><span class="jd"></span><span class="jn">'+esc(s.n)+(s.x?' <em>'+T("vervalt","supprimé")+'</em>':'')+'</span>'+(s.tr?'<span class="jk">'+esc(s.tr)+'</span>':'<span></span>')+'</li>'}).join("")+'</ol><p class="jm small">'+T("Bron: Transitous (open data)","Source : Transitous (open data)")+(hi>-1?T(" · grijze haltes liggen vóór jouw halte"," · les arrêts en gris sont avant votre arrêt"):"")+'</p>'})
+ .catch(function(){$("jdb").innerHTML='<p class="jm">'+T("De tussenhaltes zijn nu niet beschikbaar.","Les arrêts ne sont pas disponibles pour le moment.")+'</p>'})}
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".jbt");if(b){e.preventDefault();e.stopPropagation();jOpenTrip(b.dataset.trip,b.dataset.tt,"",b.dataset.pt);return}
+ var r=e.target.closest&&e.target.closest(".bvs tr.rw");if(r){var i=+r.dataset.b,x=(BV[i]||[])[+r.dataset.k];if(x&&x.t)jOpenTrip(x.t,"Bus "+x.line+" → "+x.dir,T("Vertrek "+esc(BUS[i].n)+" "+hm(x.pt||x.at)+(x.rit?" · rit "+esc(x.rit):""),"Départ "+esc(BUS[i].n)+" "+hm(x.pt||x.at)+(x.rit?" · course "+esc(x.rit):"")),x.pt)}},true);
+document.addEventListener("keydown",function(e){if(e.key!=="Enter")return;var r=e.target.closest&&e.target.closest(".bvs tr.rw");if(r)r.click()});
 setInterval(tick,1000);trainUp();setInterval(trainUp,6e4);setInterval(function(){if(!$("p-vertrek").classList.contains("on"))trainDraw()},3e4);applyStatus();apply();weather();setInterval(weather,6e5);go(location.hash.slice(1)||"home");
 </script></body></html>
