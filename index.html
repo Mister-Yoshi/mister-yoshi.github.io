@@ -208,7 +208,7 @@ body:not(.only-nl):not(.only-fr) #p-plan form .nl+.fr::before,body:not(.only-nl)
 .mapw{display:flex;flex-direction:column;gap:10px}
 .mapc{position:relative;height:clamp(420px,calc(100vh - 290px),900px);border-radius:16px;overflow:hidden;background:#0e1626;border:1px solid var(--line);touch-action:none;cursor:grab;user-select:none}
 .mapc:active{cursor:grabbing}.mapc:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
-.mtl{position:absolute;inset:0}.mtl img{position:absolute;left:0;top:0;width:256px;height:256px;pointer-events:none}
+.mtl{position:absolute;inset:0;filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.88) saturate(.35)}.mapc::before{content:"";position:absolute;inset:0;z-index:1;background:rgba(18,40,120,.22);pointer-events:none}#mcv{z-index:2}.mtl img{position:absolute;left:0;top:0;width:256px;height:256px;pointer-events:none}
 #mcv{position:absolute;inset:0;pointer-events:none}
 .mpop{position:absolute;left:0;top:0;z-index:3;margin:-18px 0 0 16px;background:rgba(9,16,44,.96);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-width:170px;box-shadow:0 10px 30px rgba(0,0,0,.5);cursor:default}
 .mpop[hidden]{display:none}.mpop b{font-size:16px}.mpop span{color:var(--dim);font-size:13px}.mpb{display:flex;gap:6px;margin-top:6px}.mpb .pbt{font-size:12.5px;padding:7px 10px;text-decoration:none}
@@ -417,7 +417,7 @@ dialog{border-radius:14px}
  <section class="panel" id="p-kaart"><div class="ph"><h2><span class="nl">Live <em>kaart</em></span><span class="fr">Carte <em>en direct</em></span></h2><p><span class="nl">Alle treinen die NS volgt, live op de kaart. Tik op een trein voor meer.</span><span class="fr">Tous les trains suivis par NS, en direct sur la carte. Touchez un train pour plus d’infos.</span></p></div>
   <div class="mapw"><div class="mapc" id="map" tabindex="0" aria-label="Kaart"><div class="mtl" id="mtl"></div><canvas id="mcv"></canvas><div class="mpop" id="mpop" hidden></div></div>
    <div class="mbar"><div class="mflt" role="group" aria-label="Filter"><button data-f="all" class="on">Alle</button><button data-f="IC">IC</button><button data-f="SPR">SPR</button><button data-f="X">Overig</button></div><span class="mst" id="mst">…</span><span class="msp"></span><button class="mbt" id="mloc" title="Mijn locatie">⌖</button><button class="mbt" id="masn" title="Assen">ASN</button><button class="mbt" id="mzi" aria-label="Inzoomen">+</button><button class="mbt" id="mzo" aria-label="Uitzoomen">−</button></div>
-   <p class="matt">Kaart © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-bijdragers © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a> · treinposities: NS</p></div>
+   <p class="matt">Kaart © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-bijdragers · treinposities: NS</p></div>
  </section>
  <section class="panel" id="p-plan"><div class="ph"><h2><span class="nl">Reis<em>planner</em></span><span class="fr">Planifier un <em>trajet</em></span></h2><p><span class="nl">Plan een reis met de trein of met bus, tram en metro (BTM). Treinen via NS, BTM via Transitous (open data).</span><span class="fr">Planifiez un trajet en train ou en bus, tram et métro. Trains via NS, bus, tram et métro via Transitous (open data).</span></p></div>
   <form class="card pln" id="pfm" autocomplete="off">
@@ -767,7 +767,7 @@ function mapInit(){if(MAP){mapSize();return}
  window.mapSize=mapSize;
  function tiles(){var z=M.z,n=Math.pow(2,z),x0=Math.floor((M.cx-M.w/2)/256),x1=Math.floor((M.cx+M.w/2)/256),y0=Math.floor((M.cy-M.h/2)/256),y1=Math.floor((M.cy+M.h/2)/256),keep={};
   for(var x=x0;x<=x1;x++)for(var y=Math.max(0,y0);y<=Math.min(n-1,y1);y++){var k=z+"/"+x+"/"+y,t=M.tiles[k];keep[k]=1;
-   if(!t){t=document.createElement("img");t.alt="";t.draggable=false;var xx=((x%n)+n)%n;t.src="https://"+"abcd"[(xx+y)%4]+".basemaps.cartocdn.com/dark_all/"+z+"/"+xx+"/"+y+(dpr>1?"@2x":"")+".png";t.onerror=function(){this.style.visibility="hidden"};M.tiles[k]=t;tl.appendChild(t)}
+   if(!t){t=document.createElement("img");t.alt="";t.draggable=false;var xx=((x%n)+n)%n;t.src="https://tile.openstreetmap.org/"+z+"/"+xx+"/"+y+".png";t.onerror=function(){this.style.visibility="hidden"};M.tiles[k]=t;tl.appendChild(t)}
    t.style.transform="translate("+Math.round(x*256-M.cx+M.w/2)+"px,"+Math.round(y*256-M.cy+M.h/2)+"px)"}
   Object.keys(M.tiles).forEach(function(k){if(!keep[k]){M.tiles[k].remove();delete M.tiles[k]}})}
  function col(t){var c=(t.ty||"").toUpperCase();return c==="IC"?"#ffc917":c==="SPR"?"#4d7cff":"#a5a8ab"}
@@ -788,7 +788,7 @@ function mapInit(){if(MAP){mapSize();return}
  function popPos(){var p=$("mpop");if(!M.sel||p.hidden)return;var t=M.tr.find(function(x){return x.nr===M.sel.nr})||M.sel,q=sp(t.la,t.lo);p.style.transform="translate("+Math.round(q[0])+"px,"+Math.round(q[1])+"px)"}
  function pop(t){M.sel=t;var p=$("mpop");if(!t){p.hidden=true;draw();return}
   p.innerHTML='<b>'+esc((t.ty||T("Trein","Train"))+" "+t.nr)+'</b><span>'+t.v+' km/h</span><div class="mpb"><button class="pbt" data-j="'+esc(t.nr)+'">'+T("Tussenhaltes","Arrêts")+'</button><a class="pbt" href="hs_obis.html?trein='+encodeURIComponent(t.nr)+'">OBIS ↗</a></div>';p.hidden=false;draw()}
- function zoomAt(dz,ax,ay){var z2=Math.max(6,Math.min(17,M.z+dz));if(z2===M.z)return;var f=Math.pow(2,z2-M.z);ax=ax==null?M.w/2:ax;ay=ay==null?M.h/2:ay;
+ function zoomAt(dz,ax,ay){var z2=Math.max(6,Math.min(18,M.z+dz));if(z2===M.z)return;var f=Math.pow(2,z2-M.z);ax=ax==null?M.w/2:ax;ay=ay==null?M.h/2:ay;
   var wx=M.cx+ax-M.w/2,wy=M.cy+ay-M.h/2;M.cx=wx*f-(ax-M.w/2);M.cy=wy*f-(ay-M.h/2);M.z=z2;Object.keys(M.tiles).forEach(function(k){M.tiles[k].remove()});M.tiles={};draw()}
  // aanwijzen, slepen, knijpen
  var pts={},drag=null,pin=null,moved=0;

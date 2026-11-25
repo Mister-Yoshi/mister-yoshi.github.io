@@ -39,7 +39,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 - Kleuren per soort: geel IC, blauw SPR, grijs overig, met een pijltje voor de rijrichting. Filter op IC, SPR of Overig
 - Tik op een trein voor het treinnummer en de snelheid, de **tussenhaltes** of de trein openen in de **OBIS**
 - Slepen, scrollen of knijpen om te zoomen, knoppen voor Assen en je eigen locatie. Stations verschijnen bij inzoomen
-- Kaarttegels © OpenStreetMap-bijdragers © CARTO
+- Kaarttegels © OpenStreetMap-bijdragers (standaard OSM-tegels, donker gemaakt in de browser)
 
 ### 🧭 Reisplanner
 - **Reis plannen met de NS-API**: van station naar station, op vertrek- of aankomsttijd
