@@ -90,7 +90,7 @@ body.cab #tbar .tb3{flex:0 0 clamp(38px,9vh,48px);display:grid;grid-template-col
 body.cab #tbar .tb3 button{font-size:clamp(11px,1.4vw,14px)}
 body.cab.menu #tbar #tmn{background:linear-gradient(#f4f43c,#b4b400);color:#000}
 body.cab #hrail .rh{flex:0 0 auto;font:800 15px/1 system-ui;letter-spacing:.12em;color:#dfdf00}
-body.cab #hrail .rh span{font-weight:600;font-size:11px;letter-spacing:.1em;color:#8ea0b5;text-transform:uppercase;margin-left:4px}
+body.cab #hrail .rh span{display:block;margin-top:3px;font-weight:600;font-size:11px;letter-spacing:.1em;color:#8ea0b5;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body.cab #hrail .lv{flex:0 0 clamp(34px,8vh,44px);display:grid;grid-template-columns:1fr 1fr;gap:6px}
 body.cab #hrail .lv button{font-size:clamp(12px,1.5vw,15px)}
 body.cab #hrail .lv button.p{background:linear-gradient(#2b7fe6,#1556a8);border-color:#5aa2ff;opacity:1}
@@ -105,6 +105,11 @@ body.cab #hrail .sg.g .sq{background:#00c020;color:#000}
 body.cab #hrail .sg.b .sq{background:#2020d8;color:#fff}
 body.cab #hrail .sg.on{border-color:#dfdf00;box-shadow:0 0 0 2px #dfdf00,0 3px 0 #000}
 body.cab #hrail .sg.on .sq{opacity:1}
+body.cab #hrail #res{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr)}
+body.cab.lvh #hrail #res,body.cab:not(.lvh) #hrail #rcs{display:none}
+body.cab #hrail .ep{font-size:clamp(14px,min(2vw,4.4vh),22px);font-variant-numeric:tabular-nums}
+body.cab #hrail .ep.on{background:linear-gradient(#4a4f58,#2c3038);border-color:#dfdf00;color:#fff;box-shadow:0 0 0 2px #dfdf00,0 3px 0 #000}
+body.cab #hrail .ep:disabled{opacity:.25}
 body.cab #hrail .rn{flex:0 0 auto;min-height:2.4em;font:500 11px/1.2 system-ui;color:#8ea0b5;text-align:center}
 body.cab.hide main>div:first-child{left:0;right:0}
 html:has(body.cab){background:#000}
@@ -131,7 +136,7 @@ body.cab.hide #hid{min-width:72px;min-height:44px;opacity:.75}
 </div>
 <aside>
   <div class="ph"><b id="pt"></b><button id="px" aria-label="Sluiten">✕</button></div>
-  <div class="card"><h1 id="ttl">HS DMI</h1><div class="mu" id="sub"></div><div class="row">Taal / Langue / Language <select id="lg"><option value="nl">Nederlands</option><option value="fr">Français</option><option value="en">English</option></select></div></div>
+  <div class="card"><h1 id="ttl">HS DMI</h1><div class="mu" id="sub"></div><div class="row">Taal / Langue / Language <select id="lg"><option value="nl">Nederlands</option><option value="fr">Français</option><option value="en">English</option></select></div><div class="row">Trein / Train <select id="trn"><option value="icng">ICNG (ETCS + HTC, 200 km/h)</option><option value="tgvr">TGV Réseau (ETCS + HTC, 320 km/h)</option><option value="tgvd">TGV Duplex (ETCS + HTC, 320 km/h)</option><option value="icmm">ICMm (alleen HTC, 140 km/h)</option></select></div></div>
 
   <div class="card"><h2>ETCS permitted speed (km/h)</h2>
     <div class="row"><input type="range" id="lr" min="0" max="400" step="5" aria-label="Permitted speed"><input type="number" id="ln" min="0" max="400" step="5"></div>
@@ -185,10 +190,11 @@ body.cab.hide #hid{min-width:72px;min-height:44px;opacity:.75}
   </div>
 </aside>
 <div id="hrail">
-  <div class="rh">HTC <span>cabinesein</span></div>
+  <div class="rh" id="rrh">SNELHEID <span id="rtn">ICNG</span></div>
   <div class="lv"><button id="rlE">ETCS</button><button id="rlH">HTC</button></div>
   <div class="hv" id="rhv">&ndash;</div>
   <div class="cs" id="rcs"></div>
+  <div class="cs es" id="res"></div>
   <div class="rn" id="rhn"></div>
 </div>
 <div id="tbar">
@@ -204,6 +210,9 @@ body.cab.hide #hid{min-width:72px;min-height:44px;opacity:.75}
 <script>
 const $=i=>document.getElementById(i),cv=$('c'),x=cv.getContext('2d');x.scale(2,2);
 const BG='#031122',PN='#020c18',G='#c3c3c3',Y='#dfdf00',O='#ea9100',R='#bf0002',DEC=.7,CX=193,CY=163;
+/* treintypes: vmax km/h, a0 aanzetversnelling m/s², k vermogen/massa (a=k/u), r0+r2·u² rijweerstand; benaderingen */
+const TRAINS={icng:{n:'ICNG',vmax:200,a0:1.2,k:23.33,r0:.01,r2:.00004,etcs:1},tgvr:{n:'TGV Réseau',vmax:320,a0:.55,k:22.8,r0:.006,r2:.00003,etcs:1},tgvd:{n:'TGV Duplex',vmax:320,a0:.5,k:20.8,r0:.006,r2:.0000275,etcs:1},icmm:{n:'ICMm',vmax:140,a0:.7,k:8,r0:.012,r2:.00006,etcs:0}};
+let trn='icng';const TR=()=>TRAINS[trn];
 let lang='nl',lvl='ETCS',cab=2,hn=null,hd=0,vs=25,pp=1,pg=1,tc=null,nr=0,tr=null,tb=false,ow=0,ov=null,lim=140,set=0,v=0,nl=null,nd=0,sb=false,eb=false,msgs=[],last=0,ac,warn=null;const buf={};
 const pad=n=>String(n).padStart(2,'0'),clamp=(a,l,h)=>Math.min(h,Math.max(l,a)),mix=(a,b,p)=>a+(b-a)*clamp((p-110)/100,0,1);
 const msg=(t,q)=>{const d=new Date();msgs.unshift([pad(d.getHours())+':'+pad(d.getMinutes()),t]);if(msgs.length>2)msgs.length=2;if(!q)play('i')};
@@ -216,28 +225,33 @@ const T={
   st:{NS:'Normal',IS:'Indication',OS:'Overspeed',WS:'Warning',SB:'Service brake',EB:'Emergency brake'},
   lim:a=>`Limit ${a} km/h`,next:(a,d)=>`Next ${a} in ${d} m`,nonext:'No ETCS next limit in HTC',ready:'HS-DMI ready',rel:'Brake released',eb:'Emergency brake',sb:'Service brake',ovw:'Overspeed warning',
   already:'Transition already announced',alreadyin:to=>`Already in ${to}`,aheadH:'Level HTC ahead',ahead2:'Level 2 ahead',ack:'Ack level transition',ackd:'Transition acknowledged',
-  lvH:'Level HTC',lv2:'Level 2, FS',noack:'Brake: no acknowledge',bd:'HTC out of service (BD)',cab:v=>`Cab signal ${v} km/h`,cancel:'Transition cancelled',htconly:'Only available in HTC',lvst:'Level change at standstill',tcah:'Lower pantograph ahead',tclow:'Lower pantograph',tcup:'Raise pantograph',panup:'Pantograph still up',sys:(v,t)=>`Line ${v} kV ${t}`,pdown:'Pantograph lowered',pupm:'Pantograph raised'},
+  lvH:'Level HTC',lv2:'Level 2, FS',noack:'Brake: no acknowledge',bd:'HTC out of service (BD)',cab:v=>`Cab signal ${v} km/h`,cancel:'Transition cancelled',htconly:'Only available in HTC',lvst:'Level change at standstill',noetcs:'Train has no ETCS',trn:a=>`Train: ${a}`,trst:'Change train at standstill',tcah:'Lower pantograph ahead',tclow:'Lower pantograph',tcup:'Raise pantograph',panup:'Pantograph still up',sys:(v,t)=>`Line ${v} kV ${t}`,pdown:'Pantograph lowered',pupm:'Pantograph raised'},
  nl:{b:'HS',ttl:'HS DMI',sub:'Machinistendisplay in ETCS-stijl voor de Hoggynesische Spoorwegen (HS), met ETCS niveau 2 en HTC (Hoggynesian Train Control)',
   menu:[['Hoofd'],['Over-','brug'],['Gege-','vens'],['Spec'],[]],
   st:{NS:'Normaal',IS:'Indicatie',OS:'Te snel',WS:'Waarschuwing',SB:'Dienstrem',EB:'Noodrem'},
   lim:a=>`Limiet ${a} km/h`,next:(a,d)=>`Volgende ${a} over ${d} m`,nonext:'Geen ETCS-limiet in HTC',ready:'HS-DMI gereed',rel:'Rem opgeheven',eb:'Noodrem',sb:'Dienstrem',ovw:'Waarschuwing: te snel',
   already:'Overgang al aangekondigd',alreadyin:to=>`Al in ${to}`,aheadH:'Overgang naar HTC',ahead2:'Overgang naar ETCS L2',ack:'Bevestig niveauovergang',ackd:'Overgang bevestigd',
-  lvH:'Niveau HTC',lv2:'Niveau 2, FS',noack:'Rem: niet bevestigd',bd:'HTC buiten dienst (BD)',cab:v=>`Cabinesein ${v} km/h`,cancel:'Overgang geannuleerd',htconly:'Alleen in HTC beschikbaar',lvst:'Wisselen alleen bij stilstand',tcah:'Straks pantograaf neer',tclow:'Pantograaf neer',tcup:'Pantograaf op',panup:'Pantograaf nog omhoog',sys:(v,t)=>`Bovenleiding ${v} kV ${t}`,pdown:'Pantograaf neer',pupm:'Pantograaf omhoog'},
+  lvH:'Niveau HTC',lv2:'Niveau 2, FS',noack:'Rem: niet bevestigd',bd:'HTC buiten dienst (BD)',cab:v=>`Cabinesein ${v} km/h`,cancel:'Overgang geannuleerd',htconly:'Alleen in HTC beschikbaar',lvst:'Wisselen alleen bij stilstand',noetcs:'Trein heeft geen ETCS',trn:a=>`Trein: ${a}`,trst:'Trein wisselen bij stilstand',tcah:'Straks pantograaf neer',tclow:'Pantograaf neer',tcup:'Pantograaf op',panup:'Pantograaf nog omhoog',sys:(v,t)=>`Bovenleiding ${v} kV ${t}`,pdown:'Pantograaf neer',pupm:'Pantograaf omhoog'},
  fr:{b:'CFH',ttl:'CFH DMI',sub:'Écran de conduite de type ETCS pour le Chemin de Fer Hoggynesiéns (CFH), avec ETCS niveau 2 et HTC (Hoggynesian Train Control)',
   menu:[['Menu'],['Déro-','gation'],['Don-','nées'],['Spéc'],[]],
   st:{NS:'Normal',IS:'Indication',OS:'Excès vitesse',WS:'Avertissement',SB:'Frein de service',EB:"Frein d'urgence"},
   lim:a=>`Limite ${a} km/h`,next:(a,d)=>`Suivante ${a} dans ${d} m`,nonext:'Pas de limite ETCS en HTC',ready:'CFH-DMI prêt',rel:'Frein desserré',eb:"Freinage d'urgence",sb:'Freinage de service',ovw:'Alerte excès de vitesse',
   already:'Transition déjà annoncée',alreadyin:to=>`Déjà en ${to}`,aheadH:'Transition vers HTC',ahead2:'Transition vers ETCS L2',ack:'Acquitter transition',ackd:'Transition acquittée',
-  lvH:'Niveau HTC',lv2:'Niveau 2, FS',noack:'Frein : non acquitté',bd:'HTC hors service (BD)',cab:v=>`Signal cabine ${v} km/h`,cancel:'Transition annulée',htconly:'Uniquement en HTC',lvst:'Changement à l’arrêt seul.',tcah:'Pantographe à baisser',tclow:'Baissez le pantographe',tcup:'Levez le pantographe',panup:'Pantographe encore levé',sys:(v,t)=>`Caténaire ${v} kV ${t}`,pdown:'Pantographe baissé',pupm:'Pantographe levé'}};
+  lvH:'Niveau HTC',lv2:'Niveau 2, FS',noack:'Frein : non acquitté',bd:'HTC hors service (BD)',cab:v=>`Signal cabine ${v} km/h`,cancel:'Transition annulée',htconly:'Uniquement en HTC',lvst:'Changement à l’arrêt seul.',noetcs:'Train sans ETCS',trn:a=>`Train : ${a}`,trst:'Changer de train à l’arrêt',tcah:'Pantographe à baisser',tclow:'Baissez le pantographe',tcup:'Levez le pantographe',panup:'Pantographe encore levé',sys:(v,t)=>`Caténaire ${v} kV ${t}`,pdown:'Pantographe baissé',pupm:'Pantographe levé'}};
 const tl=(k,...a)=>{const f=T[lang][k];return typeof f=='function'?f(...a):f};
 function setLang(l){lang=l;if(Object.values(DL).includes($('loc').value))$('loc').value=DL[l];$('ttl').textContent=T[l].ttl;$('sub').textContent=T[l].sub;document.documentElement.lang=l;document.title=T[l].b+' DMI'}
 $('lg').onchange=()=>setLang($('lg').value);
+function setTrain(k){if(!TRAINS[k]||k==trn)return;if(v>=.5){$('trn').value=trn;msg(['trst'],1);return}
+ trn=k;$('trn').value=k;const P=TR();msg(['trn',P.n]);if(set>P.vmax)setSpd(P.vmax);if(lim>P.vmax)lim=P.vmax,$('lr').value=$('ln').value=P.vmax;
+ if(!P.etcs){if(tr&&tr.to=='ETCS')tr=null;if(lvl=='ETCS')swLvl('HTC')}
+ try{localStorage.setItem('hsdmi_trn',k)}catch(e){}}
+$('trn').onchange=()=>setTrain($('trn').value);
 
 function bind(r,n,f){const u=a=>{a=clamp(+a||0,+n.min,+n.max);r.value=n.value=a;f(a)};r.oninput=()=>u(r.value);n.onchange=()=>u(n.value);return u}
 function mk(p,t,f){const b=document.createElement('button');b.textContent=t;b.onclick=f;p.append(b)}
 const setLim=bind($('lr'),$('ln'),a=>{lim=a;if(lvl=='ETCS')msg(['lim',a])});
 const setSpd=bind($('sr'),$('sn'),a=>{set=a});
-[40,80,100,130,160,200,250,300].forEach(n=>mk($('lp'),n,()=>setLim(n)));
+[40,80,100,130,160,200,250,300,320].forEach(n=>mk($('lp'),n,()=>setLim(n)));
 [['Stop',()=>0],['= Limit',()=>lim],['Limit +5',()=>lim+5],['Limit +10',()=>lim+10],['Limit +15',()=>lim+15],['Limit +25',()=>lim+25]].forEach(([t,f])=>mk($('sp'),t,()=>setSpd(f())));
 $('ns').onclick=()=>{if(lvl=='HTC'){msg(['nonext'],1);return}nl=clamp(+$('nl').value||0,0,400);nd=clamp(+$('nd').value||50,50,20000);msg(['next',nl,nd])};
 $('nc').onclick=()=>{nl=null};
@@ -254,6 +268,7 @@ function beeps(){if(!$('snd').checked||!ac)return;ac.resume();for(let k=0;k<3;k+
 function trings(){if(!$('snd').checked||!ac)return;ac.resume();for(let k=0;k<3;k++){const t=ac.currentTime+k*.34;[2200,3300,4400].forEach((f,j)=>{const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.2/(j+1),t+.004);g.gain.exponentialRampToValueAtTime(.0005,t+.3);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.32)})}}
 function setCab(i,tg){cab=i;[...$('cb').children].forEach((b,j)=>b.classList.toggle('p',j==i));document.querySelectorAll('#rcs .sg').forEach((b,j)=>b.classList.toggle('on',j==i));if(lvl=='HTC'){msg(CAB[i].bd?['bd']:['cab',CAB[i].v],1);CAB[i].bd?beeps():tg?trings():play('b')}}
 function startTr(to){
+  if(to=='ETCS'&&!TR().etcs){msg(['noetcs'],1);return}
   if(tr||lvl==to){msg(tr?['already']:['alreadyin',to],1);return}
   tr={to,d:clamp(+$('td').value||2000,400,20000),ack:0,w:0};
   msg(to=='HTC'?['aheadH']:['ahead2']);
@@ -277,7 +292,7 @@ function ebSym(){x.fillStyle=R;x.fillRect(292,271,32,35);x.fillStyle=G;x.fillRec
 
 /* ---- supervision ---- */
 let vpS=null,vpL=null,vT=null;const DR=.5;
-const vEff=()=>nl!=null&&nl<lim?Math.min(lim,Math.sqrt((nl/3.6)**2+2*DEC*Math.max(0,nd))*3.6):lim;
+const vEff=()=>Math.min(TR().vmax,nl!=null&&nl<lim?Math.min(lim,Math.sqrt((nl/3.6)**2+2*DEC*Math.max(0,nd))*3.6):lim);
 const htcV=()=>{const c=CAB[cab];return hn!=null&&CAB[hn].v<c.v?Math.min(c.v,Math.sqrt((CAB[hn].v/3.6)**2+2*DEC*Math.max(0,hd))*3.6):c.v};
 function calc(){
   if(lvl=='HTC'){const c=CAB[cab],vp=vpS??htcV(),f=c.bd?1e9:8,raw=c.bd?'NS':v>vp+f?'EB':v>vp+2?'WS':v>vp?'OS':'NS';return{vp,dW:2,dS:1e9,dE:f,htc:1,bd:c.bd,st:eb?'EB':tb?'SB':raw}}
@@ -296,7 +311,7 @@ function step(dt){
   }
   if(eb)v=Math.max(0,v-1.2*3.6*dt);
   else if(sb||tb)v=Math.max(0,v-DEC*3.6*dt);
-  else{const k=.6*3.6*dt,pw=pp>=1&&!(tc&&tc.ph==1),u=v/3.6,rr=.01+.00004*u*u,tgt=Math.min(set,200);v=v<tgt?(pw?Math.min(tgt,v+Math.max(0,Math.min(1.2,23.33/Math.max(u,1))-rr)*3.6*dt):Math.max(0,v-rr*3.6*dt)):Math.max(tgt,v-k)}
+  else{const k=.6*3.6*dt,pw=pp>=1&&!(tc&&tc.ph==1),u=v/3.6,P=TR(),rr=P.r0+P.r2*u*u,tgt=Math.min(set,P.vmax);v=v<tgt?(pw?Math.min(tgt,v+Math.max(0,Math.min(P.a0,P.k/Math.max(u,1))-rr)*3.6*dt):Math.max(0,v-rr*3.6*dt)):Math.max(tgt,v-k)}
   if(lvl=='ETCS'&&nl!=null){nd-=v/3.6*dt;if(nd<=0){const n=nl;nl=null;setLim(n)}}
   if(tr){tr.d-=v/3.6*dt;if(!tr.w&&tr.d<=300){tr.w=1;msg(['ack'])}if(tr.d<=0)doTr()}
   if(lvl=='HTC'&&hn!=null){hd-=v/3.6*dt;if(hd<=0){const i=hn;hn=null;setCab(i)}}
@@ -461,7 +476,7 @@ document.querySelectorAll('#tbar button').forEach(b=>b.addEventListener('pointer
 function setHide(h){document.body.classList.toggle('hide',h);if(h)openM(-1);$('hid').textContent=h?'Toon':'Verberg'}
 $('hid').onclick=()=>setHide(!document.body.classList.contains('hide'));
 function lvlTap(){if(v>=.5){msg(['lvst'],1);return}swLvl(lvl=='HTC'?'ETCS':'HTC')}
-function swLvl(to){if(v>=.5||lvl==to)return;tr=null;hn=null;if(to=='HTC'){lvl='HTC';nl=null;msg(CAB[cab].bd?['bd']:['lvH'],1);CAB[cab].bd?beeps():play('b')}else{lvl='ETCS';msg(['lv2'])}}
+function swLvl(to){if(v>=.5||lvl==to)return;if(to=='ETCS'&&!TR().etcs){msg(['noetcs'],1);return}tr=null;hn=null;if(to=='HTC'){lvl='HTC';nl=null;msg(CAB[cab].bd?['bd']:['lvH'],1);CAB[cab].bd?beeps():play('b')}else{lvl='ETCS';msg(['lv2'])}}
 $('lE').onclick=()=>swLvl('ETCS');
 $('lH').onclick=()=>swLvl('HTC');
 $('tak').onclick=()=>$('ack').onclick();
@@ -469,11 +484,12 @@ $('teb').onclick=()=>$('ebb').onclick();
 function hold(id,f){const b=$(id);let t,i,h;b.onclick=()=>{if(h){h=0;return}f()};b.addEventListener('pointerdown',()=>{h=0;t=setTimeout(()=>{h=1;f();i=setInterval(f,120)},400)});['pointerup','pointerleave','pointercancel'].forEach(e=>b.addEventListener(e,()=>{clearTimeout(t);clearInterval(i)}))}
 CAB.forEach((c,i)=>{const b=document.createElement('button');b.className='sg '+c.c;b.innerHTML='<span class="sq">'+c.t+'</span><span class="k">'+(c.bd?'BD':c.v+' km/h')+'</span>';b.setAttribute('aria-label','Cabinesein '+(c.bd?'BD':c.v+' km/h'));b.onclick=()=>{play('k');setCab(i)};b.addEventListener('pointerdown',()=>{try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}});$('rcs').append(b)});
 document.querySelectorAll('#rcs .sg').forEach((b,j)=>b.classList.toggle('on',j==cab));
+[40,80,100,130,160,200,250,300,320].forEach(n=>{const b=document.createElement('button');b.className='ep';b.dataset.v=n;b.textContent=n;b.onclick=()=>{play('k');setLim(n)};$('res').append(b)});
 $('rlE').onclick=()=>{play('k');swLvl('ETCS')};$('hlv').onclick=()=>{play('k');lvlTap()};$('rlH').onclick=()=>{play('k');swLvl('HTC')};
-function railUp(){const mv=v>=.5,c=CAB[cab],h=lvl=='HTC';$('rlE').classList.toggle('p',!h);$('rlH').classList.toggle('p',h);$('rlE').disabled=mv||!h;$('rlH').disabled=mv||h;
- $('hlv').textContent=h?'HTC → ETCS':'ETCS → HTC';$('hlv').disabled=mv;$('rhv').innerHTML='<small>'+(h?'Toegestaan (HTC)':'Bij binnenkomst HTC')+'</small>'+(c.bd?'BD':c.v+' km/h');
- $('rhn').textContent=h?(c.bd?'BD: geen bewaking':'Tik een sein om te wisselen'):(mv?'Wisselen naar HTC kan bij stilstand':'Sein wordt actief in HTC')}
-hold('tup',()=>setSpd(clamp(set+5,0,400)));
+function railUp(){const mv=v>=.5,c=CAB[cab],h=lvl=='HTC',P=TR();$('rtn').textContent=P.n;document.body.classList.toggle('lvh',h);$('res').querySelectorAll('.ep').forEach(b=>{const n=+b.dataset.v;b.disabled=n>P.vmax;b.classList.toggle('on',n==lim)});$('rlE').classList.toggle('p',!h);$('rlH').classList.toggle('p',h);$('rlE').disabled=mv||!h||!P.etcs;$('rlH').disabled=mv||h;
+ $('hlv').textContent=h?'HTC → ETCS':'ETCS → HTC';$('hlv').disabled=mv;$('rhv').innerHTML=h?'<small>Toegestaan (HTC)</small>'+(c.bd?'BD':c.v+' km/h'):'<small>Toegestaan (ETCS)</small>'+Math.min(lim,P.vmax)+' km/h';
+ $('rhn').textContent=(h?(c.bd?'BD: geen bewaking':'HTC-cabinesein'):'ETCS-snelheid')+' · max '+P.vmax+' km/h'+(P.etcs?'':' · alleen HTC')}
+hold('tup',()=>setSpd(clamp(set+5,0,TR().vmax)));
 hold('tdn',()=>setSpd(clamp(set-5,0,400)));
 cv.addEventListener('pointerdown',e=>{
  const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*640,py=(e.clientY-r.top)/r.height*480;
@@ -485,7 +501,7 @@ cv.addEventListener('pointerdown',e=>{
  e.preventDefault();
 });
 setInterval(()=>{const t=$('tv');if(t)t.textContent=Math.round(set)+' km/h';railUp();$('tak').classList.toggle('need',!$('ack').disabled)},250);
-load();requestAnimationFrame(loop);
+load();try{const k=localStorage.getItem('hsdmi_trn');if(k&&TRAINS[k]){trn=k;$('trn').value=k;if(!TRAINS[k].etcs){lvl='HTC'}}}catch(e){}requestAnimationFrame(loop);
 </script>
 </body>
 </html>
