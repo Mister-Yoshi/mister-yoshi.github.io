@@ -338,6 +338,27 @@ label.ck{white-space:nowrap}
 @media(max-width:560px){.ctt,.ctsp{display:none}.cbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.cbar>*{font-size:13px!important;padding:10px 6px!important;white-space:nowrap;text-align:center;overflow:hidden;text-overflow:ellipsis}.tp{grid-template-columns:48px 1fr 1fr 48px}}
 
 .sted.locked>*:not(.cgh){opacity:.4;filter:grayscale(.6)}.sted.locked .cgh .hint{display:none}.lockn{display:none;font-size:13px;color:#f3b0bb}.sted.locked .lockn{display:inline}
+
+/* Arriva-scherm */
+.arv{display:none}
+.screen.isarv{background:#0d2b56!important;color:#fff;aspect-ratio:16/7;min-height:0;border-radius:10px;box-shadow:0 0 0 10px #d9dcdf,0 0 0 11px #b8bcc1,0 20px 50px -20px rgba(0,0,0,.7)}
+.screen.isarv>:not(.arv){display:none!important}
+.screen.isarv{display:grid!important;grid-template-rows:1fr;padding:0!important;overflow:hidden}
+.screen.isarv .arv{display:grid;grid-template-rows:auto auto auto 1fr auto;height:100%;font-family:Outfit,Arial,sans-serif}
+.arv .ah{display:flex;align-items:baseline;gap:.5em;padding:.35em .6em .25em;background:#0b1e3b;font-size:clamp(22px,4.2vw,46px);font-weight:500;border-bottom:3px solid #20a79c}
+.arv .al{font-weight:600;white-space:nowrap}.arv .ad{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:".."}.arv .ac{font-size:.62em;font-variant-numeric:tabular-nums}
+.arv .ab{background:#f3efd9;color:#0e2546;padding:.25em 0 .3em 1.9em;font-size:clamp(26px,5vw,56px);line-height:1.1}
+.arv .ab b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.arv .ab small{display:block;font-size:.32em;font-weight:500;margin-top:.15em}
+.arv .ab small span,.arv .ali span span{font-size:1em}
+.arv em{font-style:normal;color:#e23b3b;margin-left:.3em}
+.arv .ast{background:#b3261e;color:#fff;padding:.3em .9em;font-size:clamp(14px,2vw,20px)}
+.arv .ali{list-style:none;margin:0;padding:.3em 0;background:linear-gradient(#123a70,#0d2b56)}
+.arv .ali li{display:grid;grid-template-columns:3.2em 1fr;gap:.4em;padding:.08em .6em;font-size:clamp(20px,3.8vw,42px);line-height:1.25}
+.arv .at{font-size:.62em;align-self:center;font-variant-numeric:tabular-nums}.arv .an{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arv .ali .aem{display:block;font-size:clamp(16px,2.4vw,26px);opacity:.85}
+.arv .af{border-top:3px solid #20a79c;padding:.2em .6em;font-size:clamp(12px,1.6vw,17px);color:#7fd3cb;background:#0b1e3b;min-height:1.6em}
+.screen.isarv:fullscreen{aspect-ratio:auto;border-radius:0;box-shadow:none}
+@media(max-width:700px){.screen.isarv{aspect-ratio:auto;box-shadow:0 0 0 6px #d9dcdf}}
 </style>
 </head>
 <body>
@@ -351,6 +372,7 @@ label.ck{white-space:nowrap}
   <div class="mid" id="mid"></div>
   <div class="route"><div class="line" id="line"></div></div>
   <div class="ris" id="ris"></div>
+  <div class="arv" id="arv"></div>
 </section>
 
 <section class="ctl">
@@ -384,7 +406,7 @@ label.ck{white-space:nowrap}
     <div class="cg">
       <div class="cgh"><b>Weergave</b></div>
       <div class="cgb">
-        <label>Scherm<select id="sty"><option value="obis">OBIS</option><option value="ris">RIS (SLT)</option></select></label>
+        <label>Scherm<select id="sty"><option value="obis">OBIS</option><option value="ris">RIS (SLT)</option><option value="arv" hidden disabled>Arriva-scherm</option></select></label>
         <label>Inhoud<select id="view"><option value="auto">Automatisch</option><option value="journey">Rit</option><option value="conn">Aansluitingen</option></select></label>
         <div class="lgs"><span>Taal</span><label class="ck"><input id="lnl" type="checkbox" checked> NL</label><label class="ck"><input id="lfr" type="checkbox" checked> FR</label></div>
       </div>
@@ -397,7 +419,7 @@ label.ck{white-space:nowrap}
     <div class="cg">
       <div class="cgh"><b>Trein</b></div>
       <div class="cgb">
-        <label>Soort<select id="ttype"><option>IC</option><option>SPR</option><option>TGV</option><option>RER</option><option>RE</option><option>RS</option></select></label>
+        <label>Soort<select id="ttype"><option>IC</option><option>SPR</option><option>TGV</option><option>RER</option><option>RE</option><option>RS</option><option value="ST">ST (Stoptrein)</option><option value="S">S (Sneltrein)</option></select></label>
         <label>Lijn of nummer<input id="lnum" maxlength="6" value="4"></label>
         <label title="Vertraging bij het begin. Een halte kan een eigen vertraging hebben, die dan doorloopt naar de volgende haltes.">Vertraging (min)<input id="delay" type="number" min="0" max="120" value="0"></label>
       </div>
@@ -492,10 +514,26 @@ function render(){
   window._a=A;
   $('clock').textContent=$('manual').value;
   risRender(s,last,dl,t,stor,rn,rf);
+  arvRender(s,last,dl,stor,rn,rf);
 }
+
+/* ---------- Arriva-scherm (alleen bij NS live met een Arriva-trein) ---------- */
+function arvRender(s,last,dl,stor,rn,rf){const on=$('sty').value==='arv';$('screen').classList.toggle('isarv',on);if(!on)return;
+ const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const ty=$('ttype').value,nr=$('lnum').value.trim(),dest=S[S.length-1].n,band=stopped?S[i]:S[i];
+ const tm=x=>add(x.t,x.dl),dt=x=>add('00:00',x.dm+x.dl),late=x=>x.dl>0?`<em>+${x.dl}</em>`:'';
+ let sub;if(stopped&&!last)sub=B('Vertrek','Départ')+': '+dt(band)+late(band);else if(stopped&&last)sub=B('Eindstation','Terminus');else sub=B('Aankomst','Arrivée')+': '+tm(band)+late(band);
+ const nxt=S.slice(i+1,i+4).map(x=>`<li><span class="at">${tm(x)}${late(x)}</span><span class="an">${E(x.n)}</span></li>`).join('');
+ const opn=(typeof LIVE!=='undefined'&&LIVE&&LIVE.op)||'';
+ $('arv').innerHTML=`<div class="ah"><b class="al">${E(ty)} ${E(nr)}</b><span class="ad">${E(dest)}</span><span class="ac">${E($('manual').value)}</span></div>`+
+  `<div class="ab"><b>${E(band.n)}</b><small>${sub}</small></div>`+
+  (stor?`<div class="ast">${LG().nl?'Storing: '+E(rn||''):'Perturbation : '+E(rf||'')}</div>`:'')+
+  `<ul class="ali">${nxt||`<li class="aem">${last?B('Wij wensen u een prettige dag','Nous vous souhaitons une bonne journée'):''}</li>`}</ul>`+
+  `<div class="af"><span>${E(opn)}</span></div>`}
+
 function risRender(s,last,dl,t,stor,rn,rf){
   if($('sty').value!=='ris')return;
-  const dpt=add('00:00',s.dm+dl),lg=LG(),rem=s.m+dl-cl(s.m+dl),e=S[S.length-1].n,N={SPR:'Sprinter',IC:'Intercity',TGV:'TGV',RER:'RER',RE:'RegioExpress',RS:'RegioSprinter'}[$('ttype').value]||$('ttype').value;
+  const dpt=add('00:00',s.dm+dl),lg=LG(),rem=s.m+dl-cl(s.m+dl),e=S[S.length-1].n,N={SPR:'Sprinter',IC:'Intercity',TGV:'TGV',RER:'RER',RE:'RegioExpress',RS:'RegioSprinter',ST:'Stoptrein',S:'Sneltrein'}[$('ttype').value]||$('ttype').value;
   const BB=(a,c)=>lg.nl&&lg.fr?`${a}<span class="fr">${c}</span>`:lg.fr?c:a;
   const F=(k,v,x='')=>`<div class="fact ${x}"><small>${k}</small><b>${v}</b></div>`;
   const vw=$('view').value,dly=dl?'<em>+'+dl+'</em>':'',lt=dl?'late':'',plat=s.pl?F(B('Spoor','Voie'),s.pl,'plat'):'';
@@ -573,9 +611,11 @@ function liveLoad(nr){nr=String(nr||'').replace(/\D/g,'');if(!nr){nsSt('Voer een
   $('stops').value=st.map((x,k)=>{const d=x.pd&&x.ad?Math.round((new Date(x.ad)-new Date(x.pd))/6e4):x.pa&&x.aa?Math.round((new Date(x.aa)-new Date(x.pa))/6e4):0;
    return [x.n,k===0?'':T(x.pa),k===st.length-1?'':T(x.pd),x.atr||x.ptr||'','', 'R',Math.max(0,d)].join(';')}).join('\n');
   $('delay').value=0;$('lnum').value=nr;$('rtxt').value='NS '+nr;
-  const c=(j.cat||'').toUpperCase(),ty=['IC','SPR','RE','RS'].includes(c)?c:c==='SNG'||c==='ST'?'SPR':'IC';$('ttype').value=ty;
+  const c=(j.cat||'').toUpperCase(),op=j.op||'',ns=!op||/^ns\b|nederlandse spoorwegen/i.test(op);LIVE.op=op;
+  const ty=ns?(['IC','SPR','RE','RS'].includes(c)?c:c==='SNG'||c==='ST'?'SPR':'IC'):(['SPR','ST','STP','SNG','RS'].includes(c)?'ST':'S');$('ttype').value=ty;
+  const ao=$('sty').querySelector('option[value=arv]');if(/arriva/i.test(op)){ao.hidden=false;ao.disabled=false;$('sty').value='arv';$('sty').disabled=true}else{if($('sty').value==='arv')$('sty').value='obis';ao.hidden=true;ao.disabled=true;$('sty').disabled=false}
   $('stops').dispatchEvent(new Event('input'));$('screen').classList.add('live');liveLock(true);
-  livePos();nsSt('Live: '+(j.cat||'')+' '+nr+' naar '+(j.dest||st[st.length-1].n)+' · bijgewerkt '+hmL(Date.now())+' · bron NS');
+  livePos();nsSt('Live: '+(j.cat||'')+' '+nr+(op&&!ns?' ('+op+')':'')+' naar '+(j.dest||st[st.length-1].n)+' · bijgewerkt '+hmL(Date.now())+' · bron NS');
   liveConnLoad();
   clearInterval(liveT);if($('nsfol').checked)liveT=setInterval(()=>liveLoad(LIVE.nr),6e4);
   clearInterval(liveC);liveC=setInterval(()=>{if(LIVE){livePos();}},15e3);
@@ -592,7 +632,7 @@ function liveConnLoad(){if(!LIVE)return;const x=LIVE.stops.find(z=>z.n===S[i].n)
   LIVEC={n:S[i].n,arr,rows};
   const lines=$('stops').value.split('\n');const k=i;if(lines[k]){const f=lines[k].split(';');f[4]=rows.filter(r=>!r.x).slice(0,4).map(r=>r.txt.replace(/,/g,' ')).join(', ');lines[k]=f.join(';');$('stops').value=lines.join('\n');$('stops').dispatchEvent(new Event('input'))}
   render()}).catch(()=>{LIVEC=null})}
-function liveOff(){clearInterval(liveT);clearInterval(liveC);LIVE=null;LIVEC=null;$('screen').classList.remove('live');liveLock(false);nsSt('Live uit. Je kunt de rit nu zelf aanpassen of afspelen.')}
+function liveOff(){clearInterval(liveT);clearInterval(liveC);LIVE=null;LIVEC=null;$('screen').classList.remove('live');liveLock(false);{const ao=$('sty').querySelector('option[value=arv]');if($('sty').value==='arv')$('sty').value='obis';ao.hidden=true;ao.disabled=true;$('sty').disabled=false;render()}nsSt('Live uit. Je kunt de rit nu zelf aanpassen of afspelen.')}
 $('nsgo').onclick=()=>liveLoad($('nsnr').value);$('nsnr').addEventListener('keydown',e=>{if(e.key==='Enter')liveLoad($('nsnr').value)});
 $('nsoff').onclick=liveOff;$('nsfol').onchange=()=>{clearInterval(liveT);if(LIVE&&$('nsfol').checked)liveT=setInterval(()=>liveLoad(LIVE.nr),6e4)};
 const LOCK=['adv','back','auto','rst','manual','spd'];function liveLock(on){LOCK.forEach(id=>{$(id).disabled=on;$(id).title=on?'Niet beschikbaar tijdens NS live. Gebruik Stop live om zelf te bedienen.':''});$('nsoff').disabled=!on;const ed=document.querySelector('.ctl .sted');if(ed){ed.inert=on;ed.classList.toggle('locked',on)}}
