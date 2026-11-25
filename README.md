@@ -92,4 +92,12 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 
 ---
 
+## Licentie en bronnen
+
+De code in deze repo valt onder de [MIT-licentie](LICENSE).
+
+Live gegevens komen van de NS-API's (vertrektijden, materieel, reisadvies, storingen) en van [Transitous](https://transitous.org/sources/) (bustijden en haltes, open data o.a. van OVapi/NDOV). Weer via Open-Meteo, plaatsnaam via OpenStreetMap/Nominatim.
+
+---
+
 © 2026 Hoggynesische Spoorwegen · Chemin de fer Hoggynésiens · Gemaakt met Gemini & Claude
