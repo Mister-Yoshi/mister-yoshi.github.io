@@ -86,7 +86,20 @@ body.cab #tbar .ak:not(.need){opacity:.55}
 body.cab #tbar .ak.need{opacity:1;animation:bl 1s steps(2) infinite}
 body.cab #tbar .eb{flex:1.3;background:linear-gradient(#ee2226,#8a0000);color:#fff;border-color:#ff5a5d}
 body.cab #tbar .tb3{flex:0 0 clamp(38px,9vh,48px);display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-#hlv{display:none}
+#hlv,#htr,#tpk{display:none}
+body.cab #hrail .rh{flex:0 0 auto;text-align:left;padding:6px 8px!important;border-radius:8px!important;background:#020c18!important;border:1px solid #1e2f45!important;box-shadow:none!important;color:#dfdf00!important;font:800 15px/1 system-ui!important;letter-spacing:.12em}
+body.cab #hrail .rh span{color:#c3c3c3!important}
+body.cab.tp #tpk{display:flex;position:fixed;inset:0;z-index:20;align-items:center;justify-content:center;background:rgba(0,0,0,.6)}
+#tpk .tpb{width:min(520px,92vw);max-height:92vh;overflow:auto;background:linear-gradient(#0a121d,#050a12);border:1px solid #2a3a50;border-radius:14px;padding:14px;box-shadow:0 20px 60px rgba(0,0,0,.8);color:#c3c3c3;font-family:system-ui,sans-serif}
+#tpk .tph{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:19px;color:#dfdf00}
+#tpk button{min-height:0;margin:0;border-radius:10px;color:#dbe3ec;background:linear-gradient(#34475f,#1b2838);border:1px solid #4a5d78;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 3px 0 #000;font-family:system-ui,sans-serif}
+#tpk #tpx{width:48px;height:44px;font-size:20px}
+#tpk .tpg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#tpk .tpg button{padding:12px 10px;text-align:left;font-size:18px;font-weight:800}
+#tpk .tpg button small{display:block;margin-top:4px;font-size:12px;font-weight:500;color:#8ea0b5}
+#tpk .tpg button.on{border-color:#dfdf00;box-shadow:0 0 0 2px #dfdf00,0 3px 0 #000}
+#tpk .tpg button:disabled{opacity:.4}
+#tpk .tpn{margin-top:10px;font-size:12px;color:#8ea0b5;text-align:center}
 body.cab #tbar .tb3 button{font-size:clamp(11px,1.4vw,14px)}
 body.cab.menu #tbar #tmn{background:linear-gradient(#f4f43c,#b4b400);color:#000}
 body.cab #hrail .rh{flex:0 0 auto;font:800 15px/1 system-ui;letter-spacing:.12em;color:#dfdf00}
@@ -115,11 +128,13 @@ body.cab.hide main>div:first-child{left:0;right:0}
 html:has(body.cab){background:#000}
 body.cab.hide #hrail{display:none}
 body.cab.hide #tbar{top:auto;bottom:max(10px,env(safe-area-inset-bottom));right:max(10px,env(safe-area-inset-right));width:auto;padding:0;background:none;border:0}
-body.cab.hide #tbar>*:not(.tb3),body.cab.hide #tbar .tb3>*:not(#hid):not(#hlv){display:none}
+body.cab.hide #tbar>*:not(.tb3),body.cab.hide #tbar .tb3>*:not(#hid):not(#hlv):not(#htr){display:none}
+body.cab.hide #htr{display:block;min-width:64px;min-height:38px;opacity:.85}
 body.cab.hide #tbar .tb3{display:flex;gap:8px}
-body.cab.hide #hlv{display:block;min-width:110px;min-height:44px;opacity:.85}
+body.cab.hide #hlv{display:block;min-width:96px;min-height:38px;opacity:.85}
 body.cab.hide #hlv:disabled{opacity:.35}
-body.cab.hide #hid{min-width:72px;min-height:44px;opacity:.75}
+body.cab.hide #hid{min-width:60px;min-height:38px;opacity:.75}
+body.cab.hide #tbar .tb3 button{font-size:13px}
 @media (orientation:portrait){
  body.cab main>div:first-child{left:0;right:0;bottom:auto;height:calc(75vw + 20px)}
  body.cab #hrail,body.cab #tbar{top:calc(75vw + 20px);width:50%;border:0;border-top:1px solid #1e2f45}
@@ -190,19 +205,20 @@ body.cab.hide #hid{min-width:72px;min-height:44px;opacity:.75}
   </div>
 </aside>
 <div id="hrail">
-  <div class="rh" id="rrh">SNELHEID <span id="rtn">ICNG</span></div>
+  <button class="rh" id="rrh" aria-label="Treintype kiezen">SNELHEID <span id="rtn">ICNG ▾</span></button>
   <div class="lv"><button id="rlE">ETCS</button><button id="rlH">HTC</button></div>
   <div class="hv" id="rhv">&ndash;</div>
   <div class="cs" id="rcs"></div>
   <div class="cs es" id="res"></div>
   <div class="rn" id="rhn"></div>
 </div>
+<div id="tpk" role="dialog" aria-label="Treintype"><div class="tpb"><div class="tph"><b>Treintype</b><button id="tpx" aria-label="Sluiten">✕</button></div><div class="tpg" id="tpg"></div><div class="tpn" id="tpn"></div></div></div>
 <div id="tbar">
   <div class="sv" id="tv">0 km/h</div>
   <div class="pm"><button id="tdn" aria-label="Langzamer">&minus;5</button><button id="tup" aria-label="Sneller">+5</button></div>
   <button id="tak" class="ak">ACK</button>
   <button id="teb" class="eb">EB</button>
-  <div class="tb3"><button id="tmn">Menu</button><button id="hid" aria-label="Knoppen verbergen of tonen">Verberg</button><button id="hlv" aria-label="ETCS of HTC">ETCS ⇄ HTC</button><button id="tex">Stop</button></div>
+  <div class="tb3"><button id="tmn">Menu</button><button id="hid" aria-label="Knoppen verbergen of tonen">Verberg</button><button id="hlv" aria-label="ETCS of HTC">ETCS ⇄ HTC</button><button id="htr" aria-label="Treintype kiezen">Trein</button><button id="tex">Stop</button></div>
 </div>
 </main>
 
@@ -464,7 +480,7 @@ function cabMode(on){
  else if(document.fullscreenElement||document.webkitFullscreenElement){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}}catch(e){}
 }
 $('cabb').onclick=()=>cabMode(true);
-$('tex').onclick=()=>{openM(-1);setHide(false);cabMode(false)};
+$('tex').onclick=()=>{tpOpen(false);openM(-1);setHide(false);cabMode(false)};
 const SEC=[4,0,0,0,3,3,3,1,2],TT=['Hoofdmenu','Over-Ride','Gegevens','Spec','Instellingen'];
 document.querySelectorAll('aside .card').forEach((c,i)=>c.dataset.s=SEC[i]);
 let mi=-1;
@@ -485,9 +501,14 @@ function hold(id,f){const b=$(id);let t,i,h;b.onclick=()=>{if(h){h=0;return}f()}
 CAB.forEach((c,i)=>{const b=document.createElement('button');b.className='sg '+c.c;b.innerHTML='<span class="sq">'+c.t+'</span><span class="k">'+(c.bd?'BD':c.v+' km/h')+'</span>';b.setAttribute('aria-label','Cabinesein '+(c.bd?'BD':c.v+' km/h'));b.onclick=()=>{play('k');setCab(i)};b.addEventListener('pointerdown',()=>{try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}});$('rcs').append(b)});
 document.querySelectorAll('#rcs .sg').forEach((b,j)=>b.classList.toggle('on',j==cab));
 [40,80,100,130,160,200,250,300,320].forEach(n=>{const b=document.createElement('button');b.className='ep';b.dataset.v=n;b.textContent=n;b.onclick=()=>{play('k');setLim(n)};$('res').append(b)});
+Object.entries(TRAINS).forEach(([k,P])=>{const b=document.createElement('button');b.dataset.k=k;b.innerHTML=P.n+'<small>'+(P.etcs?'ETCS + HTC':'alleen HTC')+' · max '+P.vmax+' km/h</small>';b.onclick=()=>{play('k');setTrain(k);if(trn==k)tpOpen(false)};$('tpg').append(b)});
+function tpOpen(o){document.body.classList.toggle('tp',o);if(o)tpUp()}
+function tpUp(){const mv=v>=.5;$('tpg').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.k==trn);b.disabled=mv&&b.dataset.k!=trn});$('tpn').textContent=mv?'Van trein wisselen kan alleen bij stilstand':'Tik een trein om te kiezen'}
+$('rrh').onclick=()=>{play('k');tpOpen(true)};$('htr').onclick=()=>{play('k');tpOpen(true)};$('tpx').onclick=()=>tpOpen(false);
+$('tpk').addEventListener('pointerdown',e=>{if(e.target.id=='tpk')tpOpen(false)});
 $('rlE').onclick=()=>{play('k');swLvl('ETCS')};$('hlv').onclick=()=>{play('k');lvlTap()};$('rlH').onclick=()=>{play('k');swLvl('HTC')};
-function railUp(){const mv=v>=.5,c=CAB[cab],h=lvl=='HTC',P=TR();$('rtn').textContent=P.n;document.body.classList.toggle('lvh',h);$('res').querySelectorAll('.ep').forEach(b=>{const n=+b.dataset.v;b.disabled=n>P.vmax;b.classList.toggle('on',n==lim)});$('rlE').classList.toggle('p',!h);$('rlH').classList.toggle('p',h);$('rlE').disabled=mv||!h||!P.etcs;$('rlH').disabled=mv||h;
- $('hlv').textContent=h?'HTC → ETCS':'ETCS → HTC';$('hlv').disabled=mv;$('rhv').innerHTML=h?'<small>Toegestaan (HTC)</small>'+(c.bd?'BD':c.v+' km/h'):'<small>Toegestaan (ETCS)</small>'+Math.min(lim,P.vmax)+' km/h';
+function railUp(){const mv=v>=.5,c=CAB[cab],h=lvl=='HTC',P=TR();$('rtn').textContent=P.n+' ▾';if(document.body.classList.contains('tp'))tpUp();document.body.classList.toggle('lvh',h);$('res').querySelectorAll('.ep').forEach(b=>{const n=+b.dataset.v;b.disabled=n>P.vmax;b.classList.toggle('on',n==lim)});$('rlE').classList.toggle('p',!h);$('rlH').classList.toggle('p',h);$('rlE').disabled=mv||!h||!P.etcs;$('rlH').disabled=mv||h;
+ $('hlv').textContent=h?'HTC → ETCS':'ETCS → HTC';$('hlv').disabled=mv||!P.etcs;$('rhv').innerHTML=h?'<small>Toegestaan (HTC)</small>'+(c.bd?'BD':c.v+' km/h'):'<small>Toegestaan (ETCS)</small>'+Math.min(lim,P.vmax)+' km/h';
  $('rhn').textContent=(h?(c.bd?'BD: geen bewaking':'HTC-cabinesein'):'ETCS-snelheid')+' · max '+P.vmax+' km/h'+(P.etcs?'':' · alleen HTC')}
 hold('tup',()=>setSpd(clamp(set+5,0,TR().vmax)));
 hold('tdn',()=>setSpd(clamp(set-5,0,400)));
