@@ -90,6 +90,47 @@ form button{font:inherit;font-weight:700;font-size:14px;letter-spacing:.08em;tex
 .lab{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
 .ty{font-size:11px;font-weight:600;border:1px solid var(--yel);color:var(--yel);border-radius:6px;padding:2px 8px;font-family:"IBM Plex Mono",monospace}
 .sx{font-size:13px;font-weight:600}.sx.ok{color:#1fd38a}.sx.bad{color:var(--red)}.sx.st{color:#b980ff}
+
+/* Reisplanner (stil, geen animatie) */
+#p-plan{animation:none}#p-plan *{transition:none}
+body:not(.only-fr) #p-plan form .nl,body:not(.only-fr) #pr .nl{display:inline}
+body:not(.only-nl) #p-plan form .fr,body:not(.only-nl) #pr .fr{display:inline;font-size:inherit;opacity:1}
+body:not(.only-nl):not(.only-fr) #p-plan form .nl+.fr::before,body:not(.only-nl):not(.only-fr) #pr .nl+.fr::before{content:" / ";opacity:.6}
+#p-plan .pbt,#p-plan .pgo{text-transform:none;letter-spacing:0;box-shadow:none}
+.pln{display:flex;flex-direction:column;gap:16px;padding:22px}
+.pst{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end}
+.pl{position:relative;display:flex;flex-direction:column;gap:6px}.pl .lab .fr{font-size:1em}
+.pin{font:inherit;font-size:17px;color:var(--ink);background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:14px;padding:13px 14px;width:100%;box-sizing:border-box;color-scheme:dark}
+.pin:focus{outline:2px solid var(--blue);outline-offset:1px}
+.psg{display:none;position:absolute;left:0;right:0;top:100%;margin-top:6px;z-index:20;background:#0b1226;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.6)}
+.psg.on{display:block}.psg div{padding:11px 14px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;font-size:15px}
+.psg div small{color:var(--dim);font-family:"IBM Plex Mono",monospace}.psg div.a,.psg div:hover{background:rgba(77,124,255,.22)}
+.pbt{font:inherit;font-size:15px;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;white-space:nowrap}
+.pbt .fr,.pgo .fr{font-size:1em}.psw{font-size:20px;padding:10px 14px}
+.pbt[aria-pressed=true]{background:rgba(77,124,255,.28);border-color:var(--blue)}
+.pwh{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.ptg{display:flex;gap:6px}.pdi{width:auto;flex:0 1 auto}
+.pgo{margin-left:auto;font:inherit;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,var(--red),#ff6a3d);border:0;border-radius:14px;padding:13px 22px;cursor:pointer}
+#pr{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+.pms{padding:22px;color:var(--dim)}
+.trp{border:1px solid var(--line);border-radius:18px;background:rgba(14,20,38,.85);overflow:hidden}
+.trp>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:6px 18px;align-items:center;padding:16px 20px}
+.trp>summary::-webkit-details-marker{display:none}
+.trp[open]>summary{border-bottom:1px solid var(--line);background:rgba(77,124,255,.08)}
+.tm2{font:600 24px "IBM Plex Mono",monospace;white-space:nowrap}.tm2 s{text-decoration:none;color:var(--red);font-size:14px;margin-left:4px}.tm2 i{font-style:normal;color:var(--dim);margin:0 8px}
+.ti2{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--dim);font-size:14px;align-items:center}.ti2 b{color:var(--ink);font-weight:600}
+.pch{display:flex;gap:4px;flex-wrap:wrap}.pch span{font:600 11px "IBM Plex Mono",monospace;border:1px solid var(--yel);color:var(--yel);border-radius:6px;padding:2px 7px}
+.pst2{justify-self:start;font-size:12.5px;font-weight:700;border-radius:999px;padding:4px 10px;white-space:nowrap}.pst2.x{background:rgba(185,128,255,.2);color:#cfa8ff}.pst2.w{background:rgba(245,148,31,.18);color:#f5941f}
+.crd{font-size:12.5px;color:var(--dim)}
+.lgs{padding:8px 20px 16px}
+.lg{display:grid;grid-template-columns:62px 1fr auto;gap:2px 14px;padding:10px 0}
+.lg .t{font:600 17px "IBM Plex Mono",monospace}.lg .t s{display:block;text-decoration:none;color:var(--red);font-size:12px}
+.lg .n{font-weight:700;font-size:16px}.lg .k{font-family:"IBM Plex Mono",monospace;font-size:13px;color:#000;background:var(--yel);border-radius:6px;padding:2px 7px;align-self:center}.lg .k.ch{background:#fff;outline:2px solid var(--red)}
+.lr{grid-column:2/4;display:flex;gap:10px;align-items:center;color:var(--dim);font-size:13.5px;padding:6px 0 6px 14px;border-left:3px solid var(--blue);margin:4px 0}
+.lr .ty{flex:none}.lr.x{border-color:var(--red);text-decoration:line-through}.lr.w{border-left-style:dashed;border-color:var(--grey)}
+.lm{grid-column:2/4;color:#f5941f;font-size:13px}
+.xf{color:var(--dim);font-size:12.5px;padding:6px 0 6px 76px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
+.pmr{display:flex;gap:10px;justify-content:space-between}
+@media(max-width:700px){.pst{grid-template-columns:1fr}.psw{justify-self:center;transform:none}.pgo{margin-left:0;width:100%}.trp>summary{grid-template-columns:1fr auto;padding:14px 16px}.trp>summary .ti2{grid-column:1/-1}.tm2{font-size:20px}.lgs{padding:6px 14px 14px}.xf{padding-left:14px}}
 /* Vertrekstaat: vaste maten, geen beweging */
 #p-vertrek *,#p-vertrek *::before,#p-vertrek *::after{animation:none!important;transition:none!important}
 .vs{border:1px solid rgba(255,201,23,.35);border-radius:20px;background:#0b1226;overflow:hidden;font-variant-numeric:tabular-nums}
@@ -142,6 +183,17 @@ footer{margin-top:50px;text-align:center;color:var(--dim);font-size:12px;letter-
  </div>
  <div class="sec mono"><span class="nl">Snelle links</span><span class="fr">Liens rapides</span></div><div class="grid" id="g-home"></div></section>
  <section class="panel" id="p-vertrek"><div class="ph"><h2><span class="nl">Vertrek <em>live</em></span><span class="fr">Départs <em>en direct</em></span></h2><p><span class="nl">Actuele treinen en bussen vanaf Assen.</span><span class="fr">Trains et bus en temps réel depuis Assen.</span></p></div><div id="bd"></div></section>
+ <section class="panel" id="p-plan"><div class="ph"><h2><span class="nl">Reis<em>planner</em></span><span class="fr">Itinér<em>aire</em></span></h2><p><span class="nl">Plan een treinreis met actuele NS-gegevens.</span><span class="fr">Planifiez un trajet en train avec les données NS en temps réel.</span></p></div>
+  <form class="card pln" id="pfm" autocomplete="off">
+   <div class="pst"><label class="pl"><span class="lab mono"><span class="nl">Van</span><span class="fr">De</span></span><input id="pfi" class="pin" placeholder="Station" spellcheck="false"><div class="psg" id="pfs"></div></label>
+    <button type="button" class="pbt psw" id="psw" aria-label="Omwisselen">⇅</button>
+    <label class="pl"><span class="lab mono"><span class="nl">Naar</span><span class="fr">À</span></span><input id="pti" class="pin" placeholder="Station" spellcheck="false"><div class="psg" id="pts"></div></label></div>
+   <div class="pwh"><div class="ptg"><button type="button" class="pbt" id="pdp" aria-pressed="true"><span class="nl">Vertrek</span><span class="fr">Départ</span></button><button type="button" class="pbt" id="par" aria-pressed="false"><span class="nl">Aankomst</span><span class="fr">Arrivée</span></button></div>
+    <input type="date" id="pdt" class="pin pdi"><input type="time" id="ptm" class="pin pdi"><button type="button" class="pbt" id="pnw"><span class="nl">Nu</span><span class="fr">Maint.</span></button>
+    <button class="pgo" id="pgo"><span class="nl">Plan reis</span><span class="fr">Planifier</span></button></div>
+  </form>
+  <div id="pr"></div>
+ </section>
  <section class="panel" id="p-kaartjes"><div class="ph"><h2><span class="nl">Kaart<em>jes</em></span><span class="fr">Bil<em>lets</em></span></h2><p><span class="nl">Kies een operator.</span><span class="fr">Choisissez un opérateur.</span></p></div><div class="grid" id="g-kaartjes"></div></section>
  <section class="panel" id="p-intl"><div class="ph"><h2><span class="nl">Internationale <em>kaartjes</em></span><span class="fr">Billets <em>internationaux</em></span></h2><p><span class="nl">Per operator: hogesnelheid, nachttrein of budget.</span><span class="fr">Par opérateur : grande vitesse, train de nuit ou petit prix.</span></p></div><div class="grid" id="g-intl"></div></section>
  <section class="panel" id="p-diensten"><div class="ph"><h2><span class="nl">HS <em>diensten</em></span><span class="fr">Services <em>CFH</em></span></h2><p><span class="nl">Ondersteuning, tools en beheer.</span><span class="fr">Soutien, outils et gestion.</span></p></div><div class="grid" id="g-diensten"></div></section>
@@ -163,7 +215,7 @@ werkzaamheden:{c:"#f5941f",l:"Werkzaamheden",lf:"Travaux",nl:"Werkzaamheden — 
 staking:{c:"#b980ff",l:"Staking",lf:"Grève",nl:"Staking — minder of geen treinen",fr:"Grève — trafic réduit ou interrompu"}};
 var cfg=ls("hs_status3")||{type:"operationeel",nl:"",fr:""};if(!ST[cfg.type])cfg={type:"operationeel",nl:"",fr:""};
 /* ── data ── */
-var TABS=[["home","🏠","Start","Accueil"],["vertrek","🚉","Vertrek","Départs"],["kaartjes","🎫","Kaartjes","Billets"],["intl","🌍","Internationaal","International"],["diensten","🧰","Diensten","Services"]];
+var TABS=[["home","🏠","Start","Accueil"],["vertrek","🚉","Vertrek","Départs"],["plan","🧭","Reisplanner","Itinéraire"],["kaartjes","🎫","Kaartjes","Billets"],["intl","🌍","Internationaal","International"],["diensten","🧰","Diensten","Services"]];
 var HOME=[
 {n:"Treinposities",ic:"📡",u:"https://treinposities.nl",c:"#ff4136",nl:"Alle treinen live op de kaart",fr:"Tous les trains en direct",live:1},
 {n:"NS",ic:"🇳🇱",u:"https://www.ns.nl",c:"#4d7cff",nl:"Reisplanner, storingen en tickets",fr:"Planificateur, perturbations, billets"},
@@ -234,7 +286,7 @@ function go(id){if(!document.getElementById("p-"+id))id="home";
  document.querySelectorAll(".panel").forEach(function(p){p.classList.toggle("on",p.id==="p-"+id)});
  document.querySelectorAll("#nv button").forEach(function(b){if(b.dataset.t===id)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
  if(id==="vertrek"&&!booted){booted=1;$("bd").innerHTML='<div class="bgrp trn"><div class="bh">🚆 '+T("Trein","Train")+'</div><div class="vs" id="vstaat"><div class="em">…</div></div></div>'+Object.keys(BOARDS).map(function(k){var g=BOARDS[k];return '<div class="bgrp '+k+'"><div class="bh">'+(k==="bus"?"🚌 ":"🚆 ")+T(g.nl,g.fr)+'<span class="lvb mono">LIVE</span></div><div class="bgrid">'+g.items.map(function(x){return '<div class="bc"><b class="mono"><span>'+x.label+'</span><a href="'+x.url+'" target="_blank" rel="noopener" aria-label="Open">↗</a></b><iframe src="'+x.url+'" loading="lazy" title="'+x.label+'"></iframe></div>'}).join("")+'</div></div>'}).join("")}
- if(id==="vertrek")trainDraw();try{history.replaceState(null,"","#"+id)}catch(e){}scrollTo({top:0,behavior:rm?"auto":"smooth"})}
+ if(id==="vertrek")trainDraw();if(id==="plan")planInit();try{history.replaceState(null,"","#"+id)}catch(e){}scrollTo({top:0,behavior:rm?"auto":"smooth"})}
 addEventListener("hashchange",function(){go(location.hash.slice(1))});
 /* status */
 function applyStatus(){var c=ST[cfg.type],n=cfg.nl||c.nl,f=cfg.fr||cfg.nl||c.fr;document.documentElement.style.setProperty("--sc",c.c);
@@ -285,5 +337,53 @@ if(!rm)addEventListener("mousemove",function(e){var r=document.documentElement.s
  function use(u){if(!u||!u.length)return;var c=u[Math.random()*u.length|0],im=new Image();im.onload=function(){document.body.style.backgroundImage="linear-gradient(160deg,rgba(0,6,22,.9),rgba(0,14,40,.86) 55%,rgba(0,8,25,.92)),url('"+c+"')";document.body.style.backgroundSize="auto,cover";document.body.style.backgroundAttachment=innerWidth>600?"fixed":"scroll"};im.src=c}
  var c=ls(K);if(c&&Date.now()-c.ts<36e5)return use(c.list);
  fetch("https://api.github.com/repos/"+R+"/contents/"+F).then(function(r){return r.json()}).then(function(f){var u=f.filter(function(x){return/\.(jpe?g|png|webp|avif)$/i.test(x.name)}).map(function(x){return x.download_url});ls(K,{list:u,ts:Date.now()});use(u)}).catch(function(){})})();
+/* ---------- Reisplanner ---------- */
+var STN=null,pArr=false,pLast=null,pBoot=0;
+function nrm(x){return(x||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim()}
+function stLoad(cb){if(STN)return cb();try{var c=JSON.parse(localStorage.getItem("hs_st")||"null");if(c&&Date.now()-c.t<7*864e5&&c.d&&c.d.length){STN=c.d;return cb()}}catch(e){}
+ fetch(TRAIN_API+"?stations=1").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){STN=(j.stations||[]).map(function(x){x.q=nrm(x.n+" "+x.s+" "+x.c);x.nn=nrm(x.n);return x});try{localStorage.setItem("hs_st",JSON.stringify({t:Date.now(),d:STN}))}catch(e){}cb()}).catch(function(){cb(1)})}
+function stFind(v){v=nrm(v);if(!v||!STN)return[];var a=[];STN.forEach(function(x){var sc=x.c.toLowerCase()===v?0:x.nn.indexOf(v)===0?1:x.q.indexOf(" "+v)>-1||x.q.indexOf(v)===0?2:x.q.indexOf(v)>-1?3:9;if(sc<9)a.push([sc+(x.l==="NL"?0:.5),x])});
+ return a.sort(function(p,q){return p[0]-q[0]||p[1].n.localeCompare(q[1].n)}).slice(0,6).map(function(p){return p[1]})}
+function acSet(inp,box){var sel=-1,list=[];
+ function show(){list=stFind(inp.value);sel=list.length?0:-1;box.innerHTML=list.map(function(x,i){return '<div data-i="'+i+'"'+(i===sel?' class="a"':'')+'><span>'+esc(x.n)+'</span><small>'+esc(x.c)+(x.l&&x.l!=="NL"?" · "+esc(x.l):"")+'</small></div>'}).join("");box.classList.toggle("on",!!list.length)}
+ function pick(i){var x=list[i];if(!x)return;inp.value=x.n;inp.dataset.c=x.c;box.classList.remove("on");pSave()}
+ inp.addEventListener("input",function(){inp.dataset.c="";stLoad(show)});
+ inp.addEventListener("focus",function(){stLoad(function(){})});
+ inp.addEventListener("keydown",function(e){if(!box.classList.contains("on"))return;if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();sel=(sel+(e.key==="ArrowDown"?1:-1)+list.length)%list.length;[].forEach.call(box.children,function(d,i){d.className=i===sel?"a":""})}else if(e.key==="Enter"&&sel>-1){e.preventDefault();pick(sel)}else if(e.key==="Escape")box.classList.remove("on")});
+ box.addEventListener("mousedown",function(e){var d=e.target.closest("[data-i]");if(d){e.preventDefault();pick(+d.dataset.i)}});
+ inp.addEventListener("blur",function(){setTimeout(function(){box.classList.remove("on")},120)})}
+function pSave(){try{localStorage.setItem("hs_plan",JSON.stringify({f:[$("pfi").value,$("pfi").dataset.c||""],t:[$("pti").value,$("pti").dataset.c||""]}))}catch(e){}}
+function p2(n){return("0"+n).slice(-2)}
+function pNow(){var d=new Date();$("pdt").value=d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());$("ptm").value=p2(d.getHours())+":"+p2(d.getMinutes())}
+function pMode(a){pArr=a;$("pdp").setAttribute("aria-pressed",!a);$("par").setAttribute("aria-pressed",a)}
+function planInit(){if(pBoot)return;pBoot=1;
+ var sv={};try{sv=JSON.parse(localStorage.getItem("hs_plan")||"{}")}catch(e){}
+ $("pfi").value=sv.f?sv.f[0]:"Assen";$("pfi").dataset.c=sv.f?sv.f[1]:"ASN";if(sv.t){$("pti").value=sv.t[0];$("pti").dataset.c=sv.t[1]}
+ acSet($("pfi"),$("pfs"));acSet($("pti"),$("pts"));pNow();
+ $("pnw").onclick=function(){pNow()};$("pdp").onclick=function(){pMode(false)};$("par").onclick=function(){pMode(true)};
+ $("psw").onclick=function(){var a=$("pfi"),b=$("pti"),v=a.value,c=a.dataset.c;a.value=b.value;a.dataset.c=b.dataset.c||"";b.value=v;b.dataset.c=c||"";pSave()};
+ $("pfm").onsubmit=function(e){e.preventDefault();var d=new Date($("pdt").value+"T"+($("ptm").value||"00:00"));pPlan(isNaN(d)?new Date():d,pArr)};
+ $("pr").innerHTML='<div class="card pms">'+T("Kies een vertrek- en aankomststation en tik op Plan reis.","Choisissez une gare de départ et d'arrivée, puis touchez Planifier.")+'</div>'}
+function pPlan(d,arr){var f=$("pfi").dataset.c||$("pfi").value.trim(),t=$("pti").dataset.c||$("pti").value.trim();
+ if(!f||!t){$("pr").innerHTML='<div class="card pms">'+T("Vul zowel Van als Naar in.","Remplissez De et À.")+'</div>';return}
+ pLast={f:f,t:t};$("pr").innerHTML='<div class="card pms">'+T("Reisadvies ophalen…","Recherche de l'itinéraire…")+'</div>';
+ fetch(TRAIN_API+"?from="+encodeURIComponent(f)+"&to="+encodeURIComponent(t)+"&dateTime="+encodeURIComponent(d.toISOString())+(arr?"&arr=1":"")).then(function(r){return r.json().then(function(j){if(!r.ok)throw j;return j})})
+ .then(function(j){pDraw(j.trips||[])}).catch(function(e){$("pr").innerHTML='<div class="card pms">'+(e&&e.error?T("NS kon geen reisadvies geven (fout "+e.error+"). Controleer de stations.","NS n'a pas pu calculer d'itinéraire (erreur "+e.error+"). Vérifiez les gares."):T("Geen live data. Is de Worker bijgewerkt met de reisplanner?","Pas de données. Le Worker est-il à jour avec le planificateur ?"))+'</div>'})}
+function dl(a,b){return a&&b?Math.round((new Date(a)-new Date(b))/6e4):0}
+function tmS(x){var l=dl(x.at,x.pt);return hm(x.pt)+(l>0?'<s>+'+l+'</s>':'')}
+function dur(m){return m==null?"":Math.floor(m/60)+":"+p2(m%60)}
+function pDraw(tr){if(!tr.length){$("pr").innerHTML='<div class="card pms">'+T("Geen reizen gevonden.","Aucun trajet trouvé.")+'</div>';return}
+ var CR={LOW:T("rustig","calme"),MEDIUM:T("gemiddeld","moyen"),HIGH:T("druk","chargé")},h='<div class="pmr"><button class="pbt" id="pea">← '+T("Eerder","Plus tôt")+'</button><button class="pbt" id="pla">'+T("Later","Plus tard")+' →</button></div>';
+ tr.forEach(function(t){var L0=t.legs[0],L1=t.legs[t.legs.length-1],rides=t.legs.filter(function(l){return!l.walk&&l.p}),x=t.st==="CANCELLED"||t.legs.some(function(l){return l.x}),w=!x&&t.st&&t.st!=="NORMAL";
+  h+='<details class="trp"><summary><div class="tm2">'+tmS(L0.o)+'<i>→</i>'+tmS(L1.d)+'</div><div class="ti2"><b>'+dur(t.ad||t.pd)+'</b><span>'+(t.tf?t.tf+"× "+T("overstap","corresp."):T("direct","direct"))+'</span><span class="pch">'+rides.map(function(l){return '<span>'+esc(l.p.c||"")+'</span>'}).join("")+'</span>'+(t.cr&&CR[t.cr]?'<span class="crd">👤 '+CR[t.cr]+'</span>':'')+'</div>'+(x?'<span class="pst2 x">'+T("Vervalt","Supprimé")+'</span>':w?'<span class="pst2 w">'+T("Gewijzigd","Modifié")+'</span>':'<span></span>')+'</summary><div class="lgs">';
+  t.legs.forEach(function(l,i){if(i){var pv=t.legs[i-1],m=dl(l.o.at||l.o.pt,pv.d.at||pv.d.pt);h+='<div class="xf">'+T("Overstap","Correspondance")+" · "+m+" min</div>"}
+   var tr0=l.o.atr||l.o.ptr,tr1=l.d.atr||l.d.ptr;
+   h+='<div class="lg"><div class="t">'+tmS(l.o)+'</div><div class="n">'+esc(l.o.n||"")+'</div>'+(tr0?'<span class="k'+(l.o.atr&&l.o.atr!==l.o.ptr?" ch":"")+'">'+esc(tr0)+'</span>':'<span></span>')
+    +'<div class="lr'+(l.x?" x":"")+(l.walk?" w":"")+'">'+(l.walk?T("Lopen","À pied"):'<span class="ty">'+esc(l.p?l.p.c||"":"")+'</span>'+esc(l.p?l.p.n||"":"")+(l.dir?" → "+esc(l.dir):""))+'</div>'+(l.m?'<div class="lm">'+esc(l.m)+'</div>':'')
+    +'<div class="t">'+tmS(l.d)+'</div><div class="n">'+esc(l.d.n||"")+'</div>'+(tr1?'<span class="k'+(l.d.atr&&l.d.atr!==l.d.ptr?" ch":"")+'">'+esc(tr1)+'</span>':'<span></span>')+'</div>'});
+  h+='</div></details>'});
+ $("pr").innerHTML=h+'<div class="ft mono" style="color:var(--dim);font-size:11.5px;padding:4px 6px">'+T("Bron: NS · tijden zijn actueel op het moment van zoeken","Source : NS · horaires actuels au moment de la recherche")+'</div>';
+ $("pea").onclick=function(){pPlan(new Date(new Date(tr[0].legs[0].o.pt)-30*6e4),false)};
+ $("pla").onclick=function(){var z=tr[tr.length-1].legs[0].o.pt;pPlan(new Date(new Date(z).getTime()+6e4),false)}}
 setInterval(tick,1000);trainUp();setInterval(trainUp,6e4);setInterval(function(){if(!$("p-vertrek").classList.contains("on"))trainDraw()},3e4);applyStatus();apply();weather();setInterval(weather,6e5);go(location.hash.slice(1)||"home");
 </script></body></html>

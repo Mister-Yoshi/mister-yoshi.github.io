@@ -12,7 +12,7 @@ De website van de **Hoggynesische Spoorwegen**: een startpagina voor de browser 
 
 Een app-achtige pagina in de HS-huisstijl: rood, blauw en grijs, met het treintje dat over de rails onder de kop rijdt. Alles op de pagina is tweetalig (Nederlands en Frans). Met de knoppen **NL / FR** kies je Nederlands, Frans of allebei.
 
-Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met de toetsen **1–5**. Met **/** spring je naar de zoekbalk.
+Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met de toetsen **1–6**. Met **/** spring je naar de zoekbalk.
 
 ### 🏠 Start
 - Begroeting die past bij het tijdstip, met datum en klok
@@ -30,6 +30,14 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 - **Live busborden** voor *Busstation Marsdijk* en *Noorderstaete* in Assen (via drgl.nl)
 - Bewust **zonder animaties**: vaste maten en vaste rijen, zodat er niets verspringt. Ververst elke minuut
 - Zijn er geen gegevens, dan staat er "Geen live data". De pagina toont nooit verzonnen vertrektijden
+
+### 🧭 Reisplanner
+- **Reis plannen met de NS-API**: van station naar station, op vertrek- of aankomsttijd
+- Stations zoeken tijdens het typen (ook Belgische en Duitse stations), met knop ⇅ om om te wisselen. De laatste keuze wordt onthouden
+- Per reis: vertrek- en aankomsttijd met vertraging, reisduur, aantal overstappen, soorten treinen en drukte
+- Open een reis voor alle delen: tijden, sporen (met spoorwijziging), richting, overstaptijd, meldingen en vervallen treinen
+- Knoppen **Eerder** en **Later**
+- Net als Vertrek zonder animaties
 
 ### 🎫 Kaartjes
 - Kaartjes kopen bij **NS**, **NMBS** en **HS Ticketing**
@@ -71,6 +79,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 ```
 
 - De Worker haalt de vertrektijden van Assen (`ASN`) op en vraagt per trein het materieel op
+- Voor de reisplanner levert de Worker de stationslijst (`?stations=1`) en reisadviezen (`?from=…&to=…`)
 - Als er geen treinen meer rijden, zoekt de Worker de eerste trein van de ochtend op
 - De Worker accepteert alleen verzoeken van `https://mister-yoshi.github.io`. Open je `index.html` rechtstreeks vanaf je computer, dan zie je daarom "Geen live data"
 - In de HTML staat alleen het adres van de Worker, **nooit de NS-sleutel**
