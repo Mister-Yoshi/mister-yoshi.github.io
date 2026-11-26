@@ -169,7 +169,7 @@ body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
  <main id="app">
   <div class="ph">
    <h1><span class="nl">HS <em>Aztec</em></span><span class="fr">Billetterie <em>Aztec</em></span></h1>
-   <p><span class="nl">Maak ondertekende kaartjes met een Aztec-code, zoals op echte treinkaartjes, en controleer ze met de scanner.</span><span class="fr">Créez des billets signés avec un code Aztec, comme sur les vrais billets de train, et contrôlez-les avec le scanner.</span></p>
+   <p><span class="nl">Maak kaartjes volgens de UIC-standaard 918.9 (Aztec-code met cryptografische handtekening van de HS), zoals op echte treinkaartjes, en controleer ze met de scanner.</span><span class="fr">Créez des billets selon la norme UIC 918.9 (code Aztec avec signature cryptographique de la CFH), comme sur les vrais billets de train, et contrôlez-les avec le scanner.</span></p>
   </div>
   <div id="chk" class="hint il"><span class="nl">Toegang controleren…</span><span class="fr">Vérification de l’accès…</span></div>
   <form class="card lock" id="lk" autocomplete="off">
@@ -235,6 +235,133 @@ body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
 /* Aztec-codegenerator (ISO/IEC 24778), zonder externe bibliotheek.
    Gegevens als bytes via "binary shift"; foutcorrectie standaard 33 % + 3 woorden.
    HSAztec.encode(bytes) -> {size, get(x,y)} met x = kolom, y = rij. */
+/* UIC 918.9 (DOSIPAS "U2" + FCB3) – compacte UPER-codering (ASN.1 unaligned PER), alleen wat HS nodig heeft.
+   Schema volgt de officiële UIC-barcodebibliotheek (uicBarcodeHeader v2, uicRailTicketData v3). */
+var HSUIC=(function(){
+ function W(){this.b=[]}
+ W.prototype.bits=function(v,n){for(var i=n-1;i>=0;i--)this.b.push(Math.floor(v/Math.pow(2,i))%2)};
+ W.prototype.len=function(n){if(n<128)this.bits(n,8);else if(n<16384){this.bits(2,2);this.bits(n,14)}else throw new Error("te lang")};
+ W.prototype.bytes=function(){var o=new Uint8Array(Math.ceil(this.b.length/8));for(var i=0;i<this.b.length;i++)if(this.b[i])o[i>>3]|=128>>(i&7);return o};
+ function R(u8){this.u=u8;this.p=0}
+ R.prototype.bit=function(){if(this.p>=this.u.length*8)throw new Error("einde");var v=(this.u[this.p>>3]>>(7-(this.p&7)))&1;this.p++;return v};
+ R.prototype.bits=function(n){var v=0;for(var i=0;i<n;i++)v=v*2+this.bit();return v};
+ R.prototype.len=function(){if(this.bit()===0)return this.bits(7);if(this.bit()===0)return this.bits(14);throw new Error("fragmentatie niet ondersteund")};
+ function nb(r){return r<=1?0:Math.ceil(Math.log2(r))}
+ var te=new TextEncoder(),td=new TextDecoder("utf-8",{fatal:true});
+
+ /* typen */
+ function seq(ext,f){return{t:"seq",ext:ext,f:f}}
+ function int(lo,hi){return{t:"int",lo:lo,hi:hi}}
+ var BOOL={t:"bool"},IA5={t:"ia5"},UTF8={t:"utf8"},OCT={t:"oct"},OID={t:"oid"},UINT={t:"int"},X={t:"x"};
+ function ia5n(a,b){return{t:"ia5",min:a,max:b}}
+ function seqof(o){return{t:"seqof",of:o}}
+ function en(names,ext){return{t:"enum",names:names,ext:ext}}
+ function choice(ext,alts){return{t:"choice",ext:ext,alts:alts}}
+ var O={opt:1};
+
+ function enc(w,ty,v){switch(ty.t){
+  case "seq":
+   if(ty.ext)w.bits(0,1);
+   ty.f.forEach(function(f){var o=f[2];if(o&&(o.opt||"def"in o)){var has=v[f[0]]!==undefined&&!("def"in o&&v[f[0]]===o.def);w.bits(has?1:0,1)}});
+   ty.f.forEach(function(f){var o=f[2],x=v[f[0]];if(o&&(x===undefined||("def"in o&&x===o.def)))return;if(x===undefined)throw new Error("ontbreekt: "+f[0]);enc(w,f[1],x)});return;
+  case "int":
+   if(ty.lo!==undefined){if(v<ty.lo||v>ty.hi)throw new Error("buiten bereik");w.bits(v-ty.lo,nb(ty.hi-ty.lo+1));return}
+   var by=[],n=v;do{by.unshift(n&255);n=Math.floor(n/256)}while(n>0&&n!==-1);if(v>=0&&by[0]&128)by.unshift(0);w.len(by.length);by.forEach(function(b){w.bits(b,8)});return;
+  case "bool":w.bits(v?1:0,1);return;
+  case "ia5":
+   if(!/^[\x00-\x7f]*$/.test(v))throw new Error("geen IA5");
+   if(ty.min!==undefined){if(ty.min!==ty.max)w.bits(v.length-ty.min,nb(ty.max-ty.min+1))}else w.len(v.length);
+   for(var i=0;i<v.length;i++)w.bits(v.charCodeAt(i),7);return;
+  case "utf8":var u=te.encode(v);w.len(u.length);u.forEach(function(b){w.bits(b,8)});return;
+  case "oct":w.len(v.length);v.forEach(function(b){w.bits(b,8)});return;
+  case "oid":var p=v.split(".").map(Number),c=[40*p[0]+p[1]];p.slice(2).forEach(function(x){var t=[x&127];x=Math.floor(x/128);while(x>0){t.unshift(128|(x&127));x=Math.floor(x/128)}c=c.concat(t)});
+   w.len(c.length);c.forEach(function(b){w.bits(b,8)});return;
+  case "enum":var k=ty.names.indexOf(v);if(k<0)throw new Error("enum");if(ty.ext)w.bits(0,1);w.bits(k,nb(ty.names.length));return;
+  case "seqof":w.len(v.length);v.forEach(function(x){enc(w,ty.of,x)});return;
+  case "choice":var nm=Object.keys(v)[0],ix=ty.alts.findIndex(function(a){return a[0]===nm});if(ix<0)throw new Error("choice");if(ty.ext)w.bits(0,1);w.bits(ix,nb(ty.alts.length));enc(w,ty.alts[ix][1],v[nm]);return;
+  default:throw new Error("niet ondersteund")}}
+ function dec(r,ty){switch(ty.t){
+  case "seq":
+   if(ty.ext&&r.bit())throw new Error("uitbreiding niet ondersteund");
+   var pres={};ty.f.forEach(function(f){var o=f[2];if(o&&(o.opt||"def"in o))pres[f[0]]=r.bit()});
+   var v={};ty.f.forEach(function(f){var o=f[2];if(o&&(o.opt||"def"in o)&&!pres[f[0]]){if("def"in o)v[f[0]]=o.def;return}v[f[0]]=dec(r,f[1])});return v;
+  case "int":
+   if(ty.lo!==undefined)return ty.lo+r.bits(nb(ty.hi-ty.lo+1));
+   var n=r.len(),x=0;for(var i=0;i<n;i++){var b=r.bits(8);x=i===0&&b&128?b-256:x*256+b}return x;
+  case "bool":return r.bit()===1;
+  case "ia5":var l=ty.min!==undefined?ty.min+(ty.min!==ty.max?r.bits(nb(ty.max-ty.min+1)):0):r.len(),s="";for(i=0;i<l;i++)s+=String.fromCharCode(r.bits(7));return s;
+  case "utf8":n=r.len();var u=new Uint8Array(n);for(i=0;i<n;i++)u[i]=r.bits(8);return td.decode(u);
+  case "oct":n=r.len();u=new Uint8Array(n);for(i=0;i<n;i++)u[i]=r.bits(8);return u;
+  case "oid":n=r.len();var c=[];for(i=0;i<n;i++)c.push(r.bits(8));var out=[Math.floor(c[0]/40),c[0]%40],acc=0;for(i=1;i<n;i++){acc=acc*128+(c[i]&127);if(!(c[i]&128)){out.push(acc);acc=0}}return out.join(".");
+  case "enum":if(ty.ext&&r.bit())throw new Error("uitbreiding niet ondersteund");return ty.names[r.bits(nb(ty.names.length))];
+  case "seqof":n=r.len();var a=[];for(i=0;i<n;i++)a.push(dec(r,ty.of));return a;
+  case "choice":if(ty.ext&&r.bit())throw new Error("uitbreiding niet ondersteund");var ix=r.bits(nb(ty.alts.length)),o={};o[ty.alts[ix][0]]=dec(r,ty.alts[ix][1]);return o;
+  default:throw new Error("onbekend onderdeel in het kaartje")}}
+
+ /* FCB3 (uicRailTicketData v3) – alleen de gebruikte delen zijn uitgewerkt, de rest is X (mag niet voorkomen) */
+ var CLASS=en(["notApplicable","first","second","tourist","comfort","premium","business","all","premiumFirst","standardFirst","premiumSecond","standardSecond"],true);
+ var CODETABLE=en(["stationUIC","stationUICReservation","stationERA","localCarrierStationCodeTable","proprietaryIssuerStationCodeTable"],false);
+ var ISSUING=seq(true,[["securityProviderNum",int(1,32000),O],["securityProviderIA5",IA5,O],["issuerNum",int(1,32000),O],["issuerIA5",IA5,O],
+  ["issuingYear",int(2016,2269)],["issuingDay",int(1,366)],["issuingTime",int(0,1439)],["issuerName",UTF8,O],["specimen",BOOL],["securePaperTicket",BOOL],["activated",BOOL],
+  ["currency",ia5n(3,3),{def:"EUR"}],["currencyFract",int(1,3),{def:2}],["issuerPNR",IA5,O],["extension",X,O],["issuedOnTrainNum",UINT,O],["issuedOnTrainIA5",IA5,O],["issuedOnLine",UINT,O],["pointOfSale",X,O]]);
+ var TRAVELER=seq(true,[["firstName",UTF8,O],["secondName",UTF8,O],["lastName",UTF8,O],["idCard",IA5,O],["passportId",IA5,O],["title",ia5n(1,3),O],["gender",X,O],["customerIdIA5",IA5,O],["customerIdNum",UINT,O],
+  ["yearOfBirth",int(1901,2155),O],["monthOfBirth",int(1,12),O],["dayOfBirth",int(1,31),O],["ticketHolder",BOOL],["passengerType",X,O],["passengerWithReducedMobility",BOOL,O],
+  ["countryOfResidence",int(1,999),O],["countryOfPassport",int(1,999),O],["countryOfIdCard",int(1,999),O],["status",X,O]]);
+ var TRAVELERDATA=seq(true,[["traveler",seqof(TRAVELER),O],["preferedLanguage",ia5n(2,2),O],["groupName",UTF8,O]]);
+ var OPEN=seq(true,[["referenceNum",UINT,O],["referenceIA5",IA5,O],["productOwnerNum",int(1,32000),O],["productOwnerIA5",IA5,O],["productIdNum",int(0,65535),O],["productIdIA5",IA5,O],
+  ["externalIssuerId",UINT,O],["issuerAutorizationId",UINT,O],["returnIncluded",BOOL],["stationCodeTable",CODETABLE,{def:"stationUIC"}],
+  ["fromStationNum",int(1,9999999),O],["fromStationIA5",IA5,O],["toStationNum",int(1,9999999),O],["toStationIA5",IA5,O],["fromStationNameUTF8",UTF8,O],["toStationNameUTF8",UTF8,O],
+  ["validRegionDesc",UTF8,O],["validRegion",X,O],["returnDescription",X,O],["validFromDay",int(-367,700),{def:0}],["validFromTime",int(0,1439),O],["validFromUTCOffset",int(-60,60),O],
+  ["validUntilDay",int(-1,500),{def:0}],["validUntilTime",int(0,1439),O],["validUntilUTCOffset",int(-60,60),O],["activatedDay",seqof(int(0,500)),O],["classCode",CLASS,{def:"second"}],
+  ["serviceLevel",ia5n(1,2),O],["carrierNum",seqof(int(1,32000)),O],["carrierIA5",seqof(IA5),O],["includedServiceBrands",X,O],["excludedServiceBrands",X,O],["tariffs",X,O],["price",UINT,O],
+  ["vatDetails",X,O],["infoText",UTF8,O],["includedAddOns",X,O],["luggage",X,O],["includedTransportTypes",X,O],["excludedTransportTypes",X,O],["extension",X,O]]);
+ var TICKET=choice(true,[["reservation",X],["carCarriageReservation",X],["openTicket",OPEN],["pass",X],["voucher",X],["customerCard",X],["counterMark",X],["parkingGround",X],["fipTicket",X],["stationPassage",X],["extension",X],["delayConfirmation",X]]);
+ var DOC=seq(true,[["token",X,O],["ticket",TICKET]]);
+ var FCB=seq(true,[["issuingDetail",ISSUING],["travelerDetail",TRAVELERDATA,O],["transportDocument",seqof(DOC),O],["controlDetail",X,O],["extension",X,O]]);
+ /* DOSIPAS-header v2 ("U2") */
+ var DATA=seq(false,[["format",IA5],["data",OCT]]);
+ var L1=seq(false,[["securityProviderNum",int(1,32000),O],["securityProviderIA5",IA5,O],["keyId",int(0,99999),O],["data",seqof(DATA)],["level1KeyAlg",OID,O],["level2KeyAlg",OID,O],
+  ["level1SigningAlg",OID,O],["level2SigningAlg",OID,O],["level2publicKey",OCT,O],["endOfValidityYear",int(2016,2269),O],["endOfValidityDay",int(1,366),O],["endOfValidityTime",int(0,1439),O],["validityDuration",int(1,3600),O]]);
+ var L2=seq(false,[["level1Data",L1],["level1Signature",OCT,O],["level2Data",DATA,O]]);
+ var FRAME=seq(false,[["format",IA5],["level2SignedData",L2],["level2Signature",OCT,O]]);
+ function E(ty,v){var w=new W();enc(w,ty,v);return w.bytes()}
+ function D(ty,u8){return dec(new R(u8),ty)}
+
+ /* ECDSA-handtekening: DER <-> r||s (WebCrypto gebruikt r||s, de UIC-bibliotheek DER) */
+ function derToRaw(d){var i=2;if(d[1]&128)i=2+(d[1]&127);var rl=d[i+1],r=d.slice(i+2,i+2+rl);i=i+2+rl;var sl=d[i+1],s=d.slice(i+2,i+2+sl);
+  function fx(x){while(x.length>32&&x[0]===0)x=x.slice(1);var o=new Uint8Array(32);o.set(x,32-x.length);return o}var o=new Uint8Array(64);o.set(fx(r),0);o.set(fx(s),32);return o}
+ function rawToDer(raw){function it(x){var i=0;while(i<31&&x[i]===0)i++;x=x.slice(i);if(x[0]&128){var y=new Uint8Array(x.length+1);y.set(x,1);x=y}return[2,x.length].concat(Array.from(x))}
+  var r=it(raw.slice(0,32)),s=it(raw.slice(32,64)),b=r.concat(s);return new Uint8Array([48,b.length].concat(b))}
+
+ /* datum-hulpjes (UTC) */
+ function doy(dt){return Math.floor((Date.UTC(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate())-Date.UTC(dt.getUTCFullYear(),0,1))/864e5)+1}
+ function ymdToUTC(s){var p=s.split("-").map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2]))}
+ function iso(dt){return dt.toISOString().slice(0,10)}
+
+ var KEYALG="1.2.840.10045.3.1.7",SIGALG="1.2.840.10045.4.3.2";
+ /* Kaartje -> te ondertekenen level1Data. t = {id,n,f,t,d,tr,c,lg} */
+ function buildLevel1(t,keyId,now){now=now||new Date();
+  var name=String(t.n).trim().split(/\s+/),trv={ticketHolder:true,lastName:name.length>1?name.slice(1).join(" "):name[0]};if(name.length>1)trv.firstName=name[0];
+  var trav=ymdToUTC(t.d),iss=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())),fromDay=Math.round((trav.getTime()-iss.getTime())/864e5);
+  var open={referenceIA5:t.id,productOwnerIA5:"HS",returnIncluded:false,fromStationNameUTF8:t.f,toStationNameUTF8:t.t,validFromDay:fromDay,validUntilDay:0,validUntilTime:1439,classCode:t.c==1?"first":"second"};
+  if(t.tr)open.infoText=t.tr;
+  var fcb={issuingDetail:{securityProviderIA5:"HS",issuerIA5:"HS",issuingYear:now.getUTCFullYear(),issuingDay:doy(now),issuingTime:now.getUTCHours()*60+now.getUTCMinutes(),
+    issuerName:"Hoggynesische Spoorwegen",specimen:false,securePaperTicket:false,activated:true,issuerPNR:t.id},
+   travelerDetail:{traveler:[trv],preferedLanguage:t.lg==="fr"?"fr":"nl"},transportDocument:[{ticket:{openTicket:open}}]};
+  return{securityProviderIA5:"HS",keyId:keyId,data:[{format:"FCB3",data:E(FCB,fcb)}],level1KeyAlg:KEYALG,level1SigningAlg:SIGALG,
+   endOfValidityYear:trav.getUTCFullYear(),endOfValidityDay:doy(trav),endOfValidityTime:1439}}
+ function level1Bytes(l1){return E(L1,l1)}
+ function frame(l1,derSig){return E(FRAME,{format:"U2",level2SignedData:{level1Data:l1,level1Signature:derSig}})}
+ /* Barcode-bytes -> {l1, sig, ticket} (geen controle van de handtekening) */
+ function read(bytes){var f=D(FRAME,bytes);if(f.format!=="U2")throw new Error("geen U2");var l1=f.level2SignedData.level1Data,sig=f.level2SignedData.level1Signature;
+  var d=l1.data.filter(function(x){return x.format==="FCB3"})[0];if(!d)throw new Error("geen FCB3");var fc=D(FCB,d.data),is=fc.issuingDetail,doc=(fc.transportDocument||[])[0],op=doc&&doc.ticket.openTicket;
+  if(!op)throw new Error("geen open ticket");var tr=((fc.travelerDetail||{}).traveler||[])[0]||{};
+  var issD=new Date(Date.UTC(is.issuingYear,0,is.issuingDay)),dd=new Date(issD.getTime()+op.validFromDay*864e5);
+  return{l1:l1,sig:sig,provider:l1.securityProviderIA5,keyId:l1.keyId,sigAlg:l1.level1SigningAlg,
+   t:{id:op.referenceIA5||is.issuerPNR||"",n:[tr.firstName,tr.lastName].filter(Boolean).join(" "),f:op.fromStationNameUTF8||"",t:op.toStationNameUTF8||"",d:iso(dd),tr:op.infoText||"",c:op.classCode==="first"?1:2,issuer:is.issuerName||is.issuerIA5||""}}}
+ return{buildLevel1:buildLevel1,level1Bytes:level1Bytes,frame:frame,read:read,derToRaw:derToRaw,rawToDer:rawToDer,KEYALG:KEYALG,SIGALG:SIGALG};
+})();
+
 var HSAztec=(function(){
  var WS=[4,6,6,8,8,8,8,8,8,10,10,10,10,10,10,10,10,10,10,10,10,10,10,12,12,12,12,12,12,12,12,12,12];
  var GFP={4:0x13,6:0x43,8:0x12D,10:0x409,12:0x1069};
@@ -355,24 +482,24 @@ $("fd").value=today();
 $("swp").onclick=function(){var a=$("ff").value;$("ff").value=$("ft").value;$("ft").value=a};
 function newId(){var a=crypto.getRandomValues(new Uint8Array(4)),n=((a[0]<<16)|(a[1]<<8)|a[2])%1000000;return"HS-"+new Date().getFullYear()+"-"+String(n).padStart(6,"0")}
 var PUB=ls("hs_tkpub");
-function getPub(force){if(PUB&&!force)return Promise.resolve(PUB);return fetch(API+"?tpub=1",{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};PUB={kid:j.kid,jwk:j.jwk};ls("hs_tkpub",PUB);return PUB})}
+function getPub(force){if(PUB&&PUB.num&&!force)return Promise.resolve(PUB);return fetch(API+"?tpub=1",{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};PUB={kid:j.kid,num:j.num,jwk:j.jwk};ls("hs_tkpub",PUB);return PUB})}
 function errText(e){var w=e&&e.w;if(w==="nokv")return T("De Worker mist nog de KV-koppeling HS_KV.","Il manque la liaison KV HS_KV dans le Worker.");if(w==="token")return T("Je toegang is verlopen. Ontgrendel opnieuw.","Votre accès a expiré. Déverrouillez à nouveau.");return T("Kan de Worker nu niet bereiken. Probeer het later opnieuw.","Impossible de joindre le Worker. Réessayez plus tard.")}
 var CUR=null;
-$("tf").onsubmit=function(e){e.preventDefault();var b=$("mkb");b.disabled=true;$("mke").className="msg ok";$("mke").innerHTML=T("Kaartje ondertekenen…","Signature du billet…");
- getPub(true).then(function(k){var t={v:1,k:k.kid,id:newId(),n:$("fn").value.trim(),f:$("ff").value.trim(),t:$("ft").value.trim(),d:$("fd").value,tr:$("ftr").value.trim(),c:CL,i:Date.now()};var p=enc(t);
-  return fetch(API+"?tsign=1",{method:"POST",body:JSON.stringify({token:TOK,p:p}),cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};return{t:t,p:p,s:j.s}})})
- .then(function(x){b.disabled=false;$("mke").textContent="";CUR=x;showTicket(x);var h=ls("hs_tickets_az")||[];h.unshift({p:x.p,s:x.s});ls("hs_tickets_az",h.slice(0,12));drawHist()})
- .catch(function(e){b.disabled=false;$("mke").className="msg";$("mke").innerHTML=errText(e);if(e&&e.w==="token")relock()})};
+$("tf").onsubmit=function(e){e.preventDefault();var b=$("mkb");b.disabled=true;$("mke").className="msg ok";$("mke").innerHTML=T("UIC-kaartje ondertekenen…","Signature du billet UIC…");
+ var t={n:$("fn").value.trim(),f:$("ff").value.trim(),t:$("ft").value.trim(),d:$("fd").value,tr:$("ftr").value.trim(),c:CL,lg:L.nl?"nl":"fr"};
+ fetch(API+"?tuic=1",{method:"POST",body:JSON.stringify({token:TOK,t:t}),cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};return{b:j.b,t:HSUIC.read(ub64u(j.b)).t}})
+ .then(function(x){b.disabled=false;$("mke").textContent="";showTicket(x);var h=ls("hs_tickets_az")||[];h.unshift({b:x.b});ls("hs_tickets_az",h.filter(function(y){return y.b}).slice(0,12));drawHist()})
+ .catch(function(e){b.disabled=false;$("mke").className="msg";$("mke").innerHTML=e&&e.w==="date"?T("Kies een reisdatum vanaf vandaag (tot een jaar vooruit).","Choisissez une date à partir d’aujourd’hui (jusqu’à un an)."):errText(e);if(e&&e.w==="token")relock()})};
 
-function qrImg(text){var z=HSAztec.encode(new TextEncoder().encode(text)),n=z.size,sc=8,c=document.createElement("canvas");c.width=c.height=n*sc;var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.fillStyle="#0a1330";
+function azImg(bytes){var z=HSAztec.encode(bytes),n=z.size,sc=8,c=document.createElement("canvas");c.width=c.height=n*sc;var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.fillStyle="#0a1330";
  for(var r=0;r<n;r++)for(var k=0;k<n;k++)if(z.get(k,r))x.fillRect(k*sc,r*sc,sc,sc);return c}
 function ticketHTML(t){return'<div class="tkh"><span class="blk"></span><b class="il">'+T("Hoggynesische Spoorwegen","Chemin de Fer Hoggynesiéns")+'</b><span class="cl il">'+cls(t.c)+'</span></div>'+
  '<div class="tkr"><div class="rt"><span>'+esc(t.f)+'</span><i>→</i><span>'+esc(t.t)+'</span></div></div>'+
  '<div class="tkd"><div><small class="il">'+T("Reiziger","Voyageur")+'</small><span>'+esc(t.n)+'</span></div><div><small class="il">'+T("Datum","Date")+'</small><span>'+esc(fdate(t.d))+'</span></div><div><small class="il">'+T("Trein","Train")+'</small><span>'+(t.tr?esc(t.tr):"—")+'</span></div></div>'}
-function showTicket(x){var c=qrImg(ticketURL(x.p,x.s));$("tkout").innerHTML='<article class="tk">'+ticketHTML(x.t)+'<div class="tkq"><img alt="Aztec" src="'+c.toDataURL()+'"></div><div class="tkf"><span class="mono">'+esc(x.t.id)+'</span><span class="sig il">'+CHK+T("Ondertekend","Signé")+'</span></div></article>';$("tka").hidden=false;CUR=x;
+function showTicket(x){var c=azImg(ub64u(x.b));$("tkout").innerHTML='<article class="tk">'+ticketHTML(x.t)+'<div class="tkq"><img alt="Aztec" src="'+c.toDataURL()+'"></div><div class="tkf"><span class="mono">'+esc(x.t.id)+'</span><span class="sig il">'+CHK+T("UIC 918.9 · ondertekend","UIC 918.9 · signé")+'</span></div></article>';$("tka").hidden=false;CUR=x;
  $("shr").hidden=!(navigator.share);}
-function drawHist(){var h=ls("hs_tickets_az")||[];$("hist").hidden=!h.length;$("hl").innerHTML=h.map(function(x,i){var t;try{t=dec(x.p)}catch(e){return""}return'<button class="hr" data-i="'+i+'"><b>'+esc(t.f)+' → '+esc(t.t)+'</b><span>'+esc(t.n)+' · '+esc(fdate(t.d))+'</span></button>'}).join("")}
-$("hl").onclick=function(e){var b=e.target.closest("[data-i]");if(!b)return;var x=(ls("hs_tickets_az")||[])[+b.dataset.i];if(x){x.t=dec(x.p);showTicket(x);if(innerWidth<820)$("tkout").scrollIntoView({behavior:"smooth"})}};
+function drawHist(){var h=ls("hs_tickets_az")||[];$("hist").hidden=!h.length;$("hl").innerHTML=h.map(function(x,i){var t;try{t=HSUIC.read(ub64u(x.b)).t}catch(e){return""}return'<button class="hr" data-i="'+i+'"><b>'+esc(t.f)+' → '+esc(t.t)+'</b><span>'+esc(t.n)+' · '+esc(fdate(t.d))+'</span></button>'}).join("")}
+$("hl").onclick=function(e){var b=e.target.closest("[data-i]");if(!b)return;var x=(ls("hs_tickets_az")||[])[+b.dataset.i];if(x&&x.b){x.t=HSUIC.read(ub64u(x.b)).t;showTicket(x);if(innerWidth<820)$("tkout").scrollIntoView({behavior:"smooth"})}};
 drawHist();
 
 /* Kaartje als afbeelding (delen of opslaan) */
@@ -383,8 +510,8 @@ function ticketPNG(x){return document.fonts.ready.then(function(){var W=720,H=10
  g.fillStyle="#ffc917";g.font="800 26px Outfit";g.textAlign="right";g.fillText(x.t.c==1?(L.nl?"1e klas":"1re classe"):(L.nl?"2e klas":"2e classe"),W-40,62);g.textAlign="left";
  g.font="800 52px Outfit";g.fillStyle="#eef3fc";var r=x.t.f+"  →  "+x.t.t;while(g.measureText(r).width>W-80&&parseInt(g.font.split(" ")[1])>26)g.font="800 "+(parseInt(g.font.split(" ")[1])-2)+"px Outfit";g.fillText(r,40,150);
  g.font="500 22px Outfit";g.fillStyle="#9aaec8";[[L.nl?"Reiziger":"Voyageur",x.t.n],[L.nl?"Datum":"Date",fdate(x.t.d)],[L.nl?"Trein":"Train",x.t.tr||"—"]].forEach(function(a,i){g.fillStyle="#9aaec8";g.font="500 21px Outfit";g.fillText(a[0],40+i*215,210);g.fillStyle="#eef3fc";g.font="700 25px Outfit";g.fillText(String(a[1]).slice(0,18),40+i*215,244)});
- g.fillStyle="#fff";g.beginPath();g.roundRect(40,286,W-80,W-80,28);g.fill();var q=qrImg(ticketURL(x.p,x.s));g.imageSmoothingEnabled=false;g.drawImage(q,72,318,W-144,W-144);
- g.fillStyle="#9aaec8";g.font="600 22px 'IBM Plex Mono'";g.fillText(x.t.id,40,H-46);g.fillStyle="#1fd38a";g.font="700 22px Outfit";g.textAlign="right";g.fillText("✓ "+(L.nl?"Ondertekend":"Signé"),W-40,H-46);
+ g.fillStyle="#fff";g.beginPath();g.roundRect(40,286,W-80,W-80,28);g.fill();var q=azImg(ub64u(x.b));g.imageSmoothingEnabled=false;g.drawImage(q,72,318,W-144,W-144);
+ g.fillStyle="#9aaec8";g.font="600 22px 'IBM Plex Mono'";g.fillText(x.t.id,40,H-46);g.fillStyle="#1fd38a";g.font="700 22px Outfit";g.textAlign="right";g.fillText("✓ UIC 918.9",W-40,H-46);
  return new Promise(function(res){c.toBlob(res,"image/png")})})}
 $("dl").onclick=function(){if(!CUR)return;ticketPNG(CUR).then(function(b){var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=CUR.t.id+".png";a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},4000)})};
 $("shr").onclick=function(){if(!CUR)return;ticketPNG(CUR).then(function(b){var f=new File([b],CUR.t.id+".png",{type:"image/png"});var d={title:"HS "+CUR.t.id,files:[f]};if(navigator.canShare&&navigator.canShare(d))return navigator.share(d);return navigator.share({title:"HS "+CUR.t.id,text:CUR.t.f+" → "+CUR.t.t})}).catch(function(){})};
@@ -392,6 +519,13 @@ $("shr").onclick=function(){if(!CUR)return;ticketPNG(CUR).then(function(b){var f
 /* ---------- Controleren ---------- */
 function verify(q){return getPub(false).then(function(k){var t=dec(q.p);if(t.k!==k.kid)return getPub(true).then(function(k2){return check(k2,t)});return check(k,t)});
  function check(k,t){return crypto.subtle.importKey("jwk",k.jwk,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]).then(function(key){return crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,ub64u(q.s),new TextEncoder().encode(q.p))}).then(function(ok){return{ok:ok&&t.k===k.kid,t:t}})}}
+function verifyUIC(u){function chk(k){return crypto.subtle.importKey("jwk",k.jwk,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]).then(function(key){return crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,HSUIC.derToRaw(u.sig),HSUIC.level1Bytes(u.l1))}).then(function(ok){return ok&&u.keyId===k.num})}
+ if(u.provider!=="HS"||u.sigAlg!==HSUIC.SIGALG||!u.sig)return Promise.resolve(false);
+ return getPub(false).then(function(k){return u.keyId===k.num?chk(k):getPub(true).then(chk)})}
+function judge(t){var d=today();if(t.d<d)return result("warn",T("Verlopen","Expiré"),T("Dit kaartje gold op "+esc(fdate(t.d))+".","Ce billet était valable le "+esc(fdate(t.d))+"."),t);
+ if(t.d>d)return result("warn",T("Nog niet geldig","Pas encore valable"),T("Dit kaartje geldt op "+esc(fdate(t.d))+".","Ce billet est valable le "+esc(fdate(t.d))+"."),t);
+ result("ok",T("Geldig","Valable"),T("Echt HS-kaartje (UIC 918.9), geldig vandaag.","Billet CFH authentique (UIC 918.9), valable aujourd’hui."),t)}
+function keyMissing(){result("warn",T("Kan niet controleren","Contrôle impossible"),T("De sleutel om de handtekening te controleren is nog niet geladen. Maak één keer verbinding met internet.","La clé de vérification n’est pas encore chargée. Connectez-vous une fois à Internet."))}
 function beep(ok){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.value=ok?880:220;o.type=ok?"sine":"square";g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+(ok?.18:.45));o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.5)}catch(e){}
  try{navigator.vibrate&&navigator.vibrate(ok?60:[120,80,120])}catch(e){}}
 function result(kind,title,sub,t){var ic=kind==="ok"?CHK:kind==="bad"?XX:WW;
@@ -401,7 +535,10 @@ function result(kind,title,sub,t){var ic=kind==="ok"?CHK:kind==="bad"?XX:WW;
  $("nxt").onclick=function(){$("sres").innerHTML='<div class="res idle"><p>'+T("Klaar voor het volgende kaartje.","Prêt pour le billet suivant.")+'</p></div>';if(stream)scanning=true,loop()};
  beep(kind==="ok");if(innerWidth<820)$("sres").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
 function handle(txt){var q=parseQR(txt);
- if(!q)return result("bad",T("Geen HS-kaartje","Pas un billet CFH"),T("Deze QR-code is geen kaartje van HS Ticketing.","Ce code QR n’est pas un billet de la Billetterie CFH."));
+ if(!q){ /* UIC-kaartje: de lezer geeft de bytes als tekens 0..255 (ISO-8859-1) */
+  var s=String(txt||""),u=null;if(/^[\u0000-ÿ]+$/.test(s)){var by=new Uint8Array(s.length);for(var i=0;i<s.length;i++)by[i]=s.charCodeAt(i);try{u=HSUIC.read(by)}catch(e){}}
+  if(!u)return result("bad",T("Geen HS-kaartje","Pas un billet CFH"),T("Deze code is geen kaartje van de HS.","Ce code n’est pas un billet de la CFH."));
+  return verifyUIC(u).then(function(ok){if(!ok)return result("bad",T("Ongeldig","Invalide"),T("De handtekening klopt niet: dit kaartje is nagemaakt, aangepast of niet van de HS.","La signature ne correspond pas : ce billet est falsifié, modifié ou n’est pas de la CFH."));judge(u.t)}).catch(keyMissing)}
  if(q.old)return result("bad",T("Ongeldig","Invalide"),T("Oud kaartje zonder handtekening. Maak een nieuw kaartje.","Ancien billet sans signature. Créez un nouveau billet."));
  var t;try{t=dec(q.p)}catch(e){return result("bad",T("Ongeldig","Invalide"),T("Het kaartje is beschadigd.","Le billet est endommagé."))}
  verify(q).then(function(r){if(!r.ok)return result("bad",T("Ongeldig","Invalide"),T("De handtekening klopt niet: dit kaartje is nagemaakt of aangepast.","La signature ne correspond pas : ce billet est falsifié ou modifié."));
