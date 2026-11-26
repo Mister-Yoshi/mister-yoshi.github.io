@@ -230,6 +230,7 @@ body:not(.only-nl):not(.only-fr) #p-plan form .nl+.fr::before,body:not(.only-nl)
 @media(max-width:700px){.mapc{height:calc(100svh - 470px);min-height:320px}.mst{flex-basis:100%;order:9}}
 @media(max-width:760px){#nv{flex:1;min-width:0;width:100%}#nv button{min-width:0;padding:6px 1px;font-size:9.5px;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#nv svg{width:22px;height:22px}#nv button .fr{display:none}}
 @media(max-width:420px){#nv button>span{display:none!important}#nv button[aria-current=page]>span.nl,body.only-fr #nv button[aria-current=page]>span.fr{display:block!important;font-size:9.5px}#nv svg{width:24px;height:24px}#nv button{padding:8px 1px}}
+.stv{font-size:11px;padding:3px 10px;margin-left:6px;vertical-align:middle}
 /* storingen */
 .bgrp.sto{margin-top:28px}
 .stw{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -665,26 +666,36 @@ $("lk").onsubmit=function(e){e.preventDefault();var c=$("lkc").value.trim();if(!
 $("lkx").onclick=function(){unl=false;TOK="";try{sessionStorage.removeItem("hs_tok")}catch(e){}$("g-diensten").innerHTML="";lockUI()};
 /* ---------- NS-storingen en werkzaamheden ---------- */
 var sdata=null,sAll=false;
-function stoUp(){fetch(TRAIN_API+"?disruptions=1").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){sdata=j.disruptions||[];stoDraw();nsAlert()}).catch(function(){if(!sdata){sdata=null;stoDraw(1);nsAlert()}})}
+/* storingen: snel tonen uit de laatste bekende stand, met time-out en automatisch opnieuw proberen */
+var sT=0,sBusy=0,sTry=0,sRetry=0,sErr=0;
+try{var _sc=JSON.parse(localStorage.getItem("hs_sto")||"null");if(_sc&&Date.now()-_sc.t<36e5){sdata=_sc.d;sT=_sc.t}}catch(e){}
+function stoUp(force){if(sBusy)return;if(!force&&sT&&Date.now()-sT<6e4)return;sBusy=1;clearTimeout(sRetry);
+ var ac=window.AbortController?new AbortController():null,to=setTimeout(function(){if(ac)ac.abort()},12e3);
+ fetch(TRAIN_API+"?disruptions=1",ac?{signal:ac.signal}:{}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+  sdata=j.disruptions||[];sT=Date.now();sTry=0;sErr=0;try{localStorage.setItem("hs_sto",JSON.stringify({t:sT,d:sdata}))}catch(e){}})
+ .catch(function(){sErr=1;sTry++;sRetry=setTimeout(function(){stoUp(true)},Math.min(6e4,3e3*Math.pow(2,sTry-1)))})
+ .then(function(){clearTimeout(to);sBusy=0;stoDraw();nsAlert()})}
+document.addEventListener("visibilitychange",function(){if(!document.hidden)stoUp()});
+addEventListener("online",function(){stoUp(true)});
 function nsAlert(){var el=$("nst"),bx=$("nsa");if(!el)return;var c,t;
- if(!sdata){c="#a5a8ab";t=T("NS · storingsinformatie niet beschikbaar","NS · informations indisponibles")}
+ if(!sdata){c="#a5a8ab";t=sErr?T("NS · storingen laden lukt nog niet, nieuwe poging…","NS · chargement impossible, nouvel essai…"):T("NS · storingen laden…","NS · chargement des perturbations…")}
  else{var A=sdata.filter(function(d){return d.type!=="MAINTENANCE"}),W=sdata.length-A.length,K=A.filter(function(d){return d.type==="CALAMITY"}),near=A.filter(function(d){return d.st.indexOf("ASN")>-1});
   var top=K[0]||near[0]||A.slice().sort(function(a,b){return(b.impact||0)-(a.impact||0)})[0];
   c=K.length?"#ff4136":A.length?"#f5941f":"#1fd38a";
   var wN=W?" · "+W+" "+(W>1?"werkzaamheden":"werkzaamheid"):"",wF=W?" · "+W+" "+(W>1?"chantiers":"chantier"):"";
   t=!A.length?T("NS · geen actuele storingen"+wN,"NS · aucune perturbation en cours"+wF):T("NS · "+A.length+(A.length>1?" storingen":" storing")+" · "+esc(top.title||"")+(top.sit?" · "+esc(top.sit):""),"NS · "+A.length+(A.length>1?" perturbations":" perturbation")+" · "+esc(top.title||"")+(top.sit?" · "+esc(top.sit):""))}
  bx.style.setProperty("--nc",c);el.innerHTML=t}
-$("nsa").onclick=function(){go("vertrek");if(typeof vtSet==="function")vtSet("sto")};
+$("nsa").onclick=function(){go("vertrek");if(typeof vtSet==="function")vtSet("sto");stoUp()};
 function dt(x){if(!x)return"";var d=new Date(x);return isNaN(d)?"":d.toLocaleDateString(L.nl?"nl-NL":"fr-FR",{day:"numeric",month:"short"})+" "+hm(x)}
 function stoItem(d){var w=d.type==="MAINTENANCE",near=d.st.indexOf("ASN")>-1,when=d.period||(d.start||d.end?(dt(d.start)+(d.end?" – "+dt(d.end):"")):"");
  var meta=[d.cause,d.dur||(!w?"":"")].filter(Boolean).join(" · ");
  var det=[d.extra?'<p><b>'+T("Extra reistijd","Temps de trajet supplémentaire")+'</b> '+esc(d.extra)+'</p>':"",d.alt?'<p><b>'+T("Vervangend vervoer","Transport de remplacement")+'</b> '+esc(d.alt)+'</p>':"",when?'<p><b>'+T("Wanneer","Quand")+'</b> '+esc(when)+'</p>':"",d.desc?'<p>'+esc(d.desc)+'</p>':"",(d.advice||[]).length?'<ul>'+d.advice.map(function(a){return '<li>'+esc(a)+'</li>'}).join("")+'</ul>':""].join("");
  return '<details class="si '+(w?"w":d.type==="CALAMITY"?"c":"x")+(near?" near":"")+'"><summary><span class="sti">'+esc(d.title||T("Melding","Avis"))+(near?'<i class="asn">Assen</i>':'')+'</span>'+(d.sit?'<span class="sts">'+esc(d.sit)+'</span>':'')+(meta?'<span class="stm">'+esc(meta)+'</span>':'')+'</summary><div class="sdd">'+(det||'<p>'+T("Geen extra informatie.","Pas d’informations supplémentaires.")+'</p>')+(d.url?'<p><a href="'+esc(d.url)+'" target="_blank" rel="noopener">ns.nl ↗</a></p>':'')+'</div></details>'}
-function stoDraw(err){if(!$("sto"))return;if(!sdata){setH("sto",'<div class="card pms">'+T("Storingsinformatie is nu niet beschikbaar. Is de Worker bijgewerkt?","Les informations sur les perturbations ne sont pas disponibles. Le Worker est-il à jour ?")+'</div>');return}
+function stoDraw(err){if(!$("sto"))return;if(!sdata){setH("sto",'<div class="card pms">'+(sErr?T("Storingsinformatie laden lukt nog niet. Ik probeer het automatisch opnieuw…","Chargement des perturbations impossible pour l’instant. Nouvel essai automatique…"):T("Storingen ophalen…","Chargement des perturbations…"))+' <button class="pbt" data-sto="1">'+T("Nu opnieuw","Réessayer")+'</button></div>');return}
  var srt=function(a,b){return(b.type==="CALAMITY")-(a.type==="CALAMITY")||(b.st.indexOf("ASN")>-1)-(a.st.indexOf("ASN")>-1)||(b.impact||0)-(a.impact||0)};
  var A=sdata.filter(function(d){return d.type!=="MAINTENANCE"}).sort(srt),W=sdata.filter(function(d){return d.type==="MAINTENANCE"}).sort(srt),MAX=8;
  var col=function(t,l,emp,more){return '<div class="stc"><div class="sth"><b>'+t+'</b><span class="stn">'+l.length+'</span></div>'+(l.length?l.slice(0,more?l.length:MAX).map(stoItem).join(""):'<p class="ste">'+emp+'</p>')+(!more&&l.length>MAX?'<button class="pbt stx" id="stx">'+T("Toon alle "+l.length,"Afficher les "+l.length)+'</button>':'')+'</div>'};
- setH("sto",'<div class="stw">'+col(T("Storingen","Perturbations"),A,T("Geen actuele storingen.","Aucune perturbation en cours."),true)+col(T("Werkzaamheden","Travaux"),W,T("Geen werkzaamheden op dit moment.","Aucuns travaux en ce moment."),sAll)+'</div><p class="stf">'+T("Bron: NS · meldingen rond Assen staan bovenaan · ververst elke 2 minuten","Source : NS · les avis autour d’Assen sont en tête · actualisé toutes les 2 minutes")+'</p>');
+ setH("sto",'<div class="stw">'+col(T("Storingen","Perturbations"),A,T("Geen actuele storingen.","Aucune perturbation en cours."),true)+col(T("Werkzaamheden","Travaux"),W,T("Geen werkzaamheden op dit moment.","Aucuns travaux en ce moment."),sAll)+'</div><p class="stf">'+T("Bron: NS · bijgewerkt "+hm(sT)+(sErr?" · verversen mislukt, nieuwe poging volgt":"")+" · meldingen rond Assen staan bovenaan","Source : NS · mis à jour "+hm(sT)+(sErr?" · échec, nouvel essai en cours":"")+" · les avis autour d’Assen sont en tête")+' <button class="pbt stv" data-sto="1">'+T("Vernieuwen","Actualiser")+'</button>'+'</p>');
  var b=$("stx");if(b)b.onclick=function(){sAll=true;stoDraw()}
  var n=$("vtn");if(n)n.textContent=A.length?A.length:"";
  var near=A.filter(function(d){return d.st.indexOf("ASN")>-1||d.type==="CALAMITY"}),al=$("vtal");
@@ -759,7 +770,7 @@ var vtCur="trn";try{vtCur=localStorage.getItem("hs_vt")||"trn"}catch(e){}
 function vtSet(v){vtCur=v;try{localStorage.setItem("hs_vt",v)}catch(e){}
  document.querySelectorAll("#bd .vtab button").forEach(function(b){var on=b.dataset.v===v;b.setAttribute("aria-selected",on);b.classList.toggle("on",on)});
  document.querySelectorAll("#bd>.bgrp").forEach(function(g){g.hidden=(g.dataset.v||"trn")!==v});var al=$("vtal");if(al)al.classList.toggle("off",v==="sto")}
-document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("#bd .vtab button,#vtal button");if(b)vtSet(b.dataset.v)});
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("#bd .vtab button,#vtal button");if(b){vtSet(b.dataset.v);if(b.dataset.v==="sto")stoUp()}var r=e.target.closest&&e.target.closest("[data-sto]");if(r){sTry=0;stoUp(true);stoDraw()}});
 /* ---------- Live kaart (eigen lichte kaartweergave, tegels van CARTO/OSM) ---------- */
 var MAP=null,mapOn=false;
 function mapInit(){if(MAP){mapSize();return}
@@ -838,5 +849,5 @@ function vstGps(){if(!navigator.geolocation){vstMsg=T("GPS niet beschikbaar","GP
   .catch(function(){vstMsg=T("Stationslijst niet beschikbaar","Liste des gares indisponible");trainDraw()})},
  function(){vstMsg=T("Geen toestemming voor locatie","Accès à la position refusé");trainDraw()},{enableHighAccuracy:true,timeout:12000,maximumAge:60000})}
 document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("#vstaat [data-gps],#vstaat [data-asn]");if(!b)return;if(b.dataset.gps)vstGps();else vstSet({c:"ASN",n:"Assen"})});
-setInterval(tick,1000);trainUp();setInterval(trainUp,6e4);setInterval(function(){if(!$("p-vertrek").classList.contains("on"))trainDraw()},3e4);applyStatus();apply();stoUp();setInterval(stoUp,12e4);weather();setInterval(weather,6e5);go(location.hash.slice(1)||"home");
+setInterval(tick,1000);trainUp();setInterval(trainUp,6e4);setInterval(function(){if(!$("p-vertrek").classList.contains("on"))trainDraw()},3e4);applyStatus();apply();stoDraw();nsAlert();stoUp(true);setInterval(function(){if(!document.hidden)stoUp(true)},12e4);weather();setInterval(weather,6e5);go(location.hash.slice(1)||"home");
 </script></body></html>
