@@ -112,6 +112,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 - De scanner stelt de camera af waar de telefoon dat toestaat: hij kiest een achtercamera met autofocus, stelt continu scherp en toont een **zaklampknop**, een **zoomschuif** en een knop voor een andere camera (vooral Chrome op Android; op een iPhone meestal alleen de zaklamp). Bij grote camerabeelden leest hij om en om het hele beeld en een uitsnede rond de code.
 - Bij UIC-kaartjes met alleen een gedrukte layout (**RCT2**, zoals NS en NMBS internationaal) leest de scanner van, naar, geldigheid, klasse, naam en prijs uit die layout (vaste plaatsen zoals KDE Itinerary ze gebruikt), en toont hij **Geldig op datum / Verlopen / Nog niet geldig**. Het kaartnummer van NS en NMBS wordt getoond zoals op het kaartje (zonder `_0`).
 - **SNCF**-codes (132 tekens, Carte Avantage, Secutix) en printcodes in **PDF417** worden ook gelezen. Ze hebben geen openbare handtekening: de scanner meldt dan *Alleen inhoud gelezen*.
+- **Duitse OV-kaartjes (VDV-KA)**, zoals DB-dagkaarten (bv. 24hTicket NRW) en het Deutschlandticket: de scanner herstelt de inhoud met de openbare sleutels van de VDV-PKI (ISO 9796-2, RSA met SHA-1) en controleert zo meteen de echtheid. De CA-sleutels zitten in `uic-lezer.js` (verzameld door KDE Itinerary, CC0).
 
 ---
 
