@@ -247,7 +247,7 @@ var HSUIC=(function(){
  R.prototype.bits=function(n){var v=0;for(var i=0;i<n;i++)v=v*2+this.bit();return v};
  R.prototype.len=function(){if(this.bit()===0)return this.bits(7);if(this.bit()===0)return this.bits(14);throw new Error("fragmentatie niet ondersteund")};
  function nb(r){return r<=1?0:Math.ceil(Math.log2(r))}
- var te=new TextEncoder(),td=new TextDecoder("utf-8",{fatal:true});
+ var te=new TextEncoder(),td=new TextDecoder("utf-8",{fatal:true,ignoreBOM:false});
 
  /* typen */
  function seq(ext,f){return{t:"seq",ext:ext,f:f}}
