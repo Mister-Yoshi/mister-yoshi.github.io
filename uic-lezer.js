@@ -188,10 +188,52 @@ var UICSUM=(function(){
   if(d.group)out.travelers.push(d.group);out.docs.push(doc)}
  function grid(L){var rows=[];L.fields.forEach(function(f){String(f.text).replace(/\\n/g,"\n").split("\n").forEach(function(t,i){var r=f.line+i;if(r>40)return;while(rows.length<=r)rows.push("");var line=rows[r];if(f.w)t=t.slice(0,f.w);while(line.length<f.col)line+=" ";rows[r]=line.slice(0,f.col)+t+line.slice(f.col+t.length)})});
   while(rows.length&&!rows[rows.length-1].trim())rows.pop();return rows.join("\n")}
+ function rows(L){var R=[];L.fields.forEach(function(f){String(f.text).replace(/\\n/g,"\n").split("\n").forEach(function(t,i){var r=f.line+i;if(r>40)return;while(R.length<=r)R.push("");var line=R[r];if(f.w)t=t.slice(0,f.w);while(line.length<f.col)line+=" ";R[r]=line.slice(0,f.col)+t+line.slice(f.col+t.length)})});return R}
+ /* RCT2 (gedrukte layout van NS, NMBS, DB e.a.): vaste plaatsen volgens UIC/ERA, zoals KDE Itinerary ze leest */
+ function fromRCT2(L,out){var R=rows(L);function tx(r,c,w){return((R[r]||"").slice(c,c+w)).replace(/\*+/g," ").replace(/\s+/g," ").trim()}
+  var v=tx(3,0,72),ds=[],re=/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4}|\d{2})/g,m;while((m=re.exec(v)))ds.push(m);
+  function D(m,end){var y=+m[3];if(y<100)y+=2000;var d=new Date(Date.UTC(y,+m[2]-1,+m[1],end?23:0,end?59:0));return isNaN(d)?null:d}
+  var doc={kind:["Kaartje","Billet"],from:tx(6,12,18),to:tx(6,34,17),cls:"",info:"",product:""};
+  var c=tx(6,66,5);if(/^[12]$/.test(c))doc.cls=+c;else if(c)doc.cls=c;
+  if(ds.length){doc.validFrom=D(ds[0]);doc.validUntil=D(ds[ds.length-1],1)}
+  var y0=ds.length?(+ds[0][3]<100?2000+ +ds[0][3]:+ds[0][3]):new Date().getUTCFullYear(),dd=tx(6,1,5).match(/^(\d{1,2})[.\/-](\d{1,2})$/),tt=tx(6,7,5).match(/^(\d{1,2})[.:](\d{2})$/);
+  if(dd&&tt){var dt=new Date(Date.UTC(y0,+dd[2]-1,+dd[1],+tt[1],+tt[2]));if(!isNaN(dt)){doc.date=dt;doc.time=true}}
+  else if(dd&&!ds.length){doc.validFrom=new Date(Date.UTC(y0,+dd[2]-1,+dd[1]));doc.validUntil=new Date(Date.UTC(y0,+dd[2]-1,+dd[1],23,59))}
+  var ret={from:tx(7,12,18),to:tx(7,34,17)};if(ret.from&&ret.to&&!/\d{3}/.test(ret.from))doc.ret=ret.from+" → "+ret.to;
+  var nm=tx(0,52,19);if(nm&&!/\d/.test(nm)&&!out.travelers.length)out.travelers.push(nm);
+  doc.product=tx(1,52,19)||"";var ti=tx(1,18,33)||tx(0,18,33);if(ti&&ti.length>3&&!/^(billet|ticket|fahrkarte|vervoerbewijs)$/i.test(ti))doc.product=[ti,doc.product].filter(Boolean).join(" · ");
+  var tr=tx(8,0,72);if(tr)doc.info=tr;
+  var pr=(R[13]||"").slice(52,72).replace(/\*/g," ").match(/([A-Z]{3}|€)\s*([\d]+[.,]\d{2})/);if(pr)doc.price=(pr[1]==="€"?"EUR":pr[1])+" "+pr[2].replace(",",".");
+  if(doc.from||doc.to||doc.validFrom)out.docs.push(doc)}
  function sum(t,regName){var out={format:t.kind==="918.3"?"UIC 918.3 v"+t.version:t.kind==="SSB"?"ERA/UIC SSB v"+t.version:"UIC 918.9 ("+t.format+")",rics:t.rics,keyId:t.keyId,issuerCode:t.rics,issuerName:regName||RICS[t.rics]||RICS[("000"+t.rics).slice(-4)]||"",pnr:"",travelers:[],docs:[],layout:"",extra:[]};
   t.records.forEach(function(r){if(r.head){out.pnr=n0(r.head.pnr);out.lang=r.head.lang}if(r.ssb)fromSSB(r.ssb,out);
-   if(r.fcb)fromFCB(r.fcb,out);else if(r.sblocks)fromBL(r.sblocks,out);else if(r.layout)out.layout=grid(r.layout);else if(r.err)out.extra.push((r.tag||r.format)+": "+r.err);else if(r.tag&&!/^U_/.test(r.tag)&&r.tag!=="SSB")out.extra.push(r.tag)});
+   if(r.fcb)fromFCB(r.fcb,out);else if(r.sblocks)fromBL(r.sblocks,out);else if(r.layout){out.layout=grid(r.layout);out._lay=r.layout}else if(r.err)out.extra.push((r.tag||r.format)+": "+r.err);else if(r.tag&&!/^U_/.test(r.tag)&&r.tag!=="SSB")out.extra.push(r.tag)});
+  if(out._lay&&!out.docs.length&&out._lay.standard==="RCT2")try{fromRCT2(out._lay,out)}catch(e){}delete out._lay;
+  /* kaartnummer zoals op het kaartje: NMBS/NS zetten er "_0" achter */
+  if((/^0*1088$|^0*1184$/.test(String(t.rics)))&&/^[A-Z0-9]{7}_\d$/.test(out.pnr))out.pnr=out.pnr.slice(0,7);
   if(!out.issuerName)out.issuerName=RICS[out.issuerCode]||"";return out}
  return sum})();
 /* de pagina kan stationsnamen bij UIC-codes leveren */
 UICSUM.station=function(code){return ""};
+
+/* SNCF: eigen Aztec-formaat zonder openbare handtekening (opbouw volgens KDE Itinerary) */
+UICSUM.sncf=function(by){function A(a,b){var t="";for(var i=a;i<b&&i<by.length;i++)t+=String.fromCharCode(by[i]);return t}
+ function near(d,m){var n=new Date(),y=n.getUTCFullYear(),best=null;[y-1,y,y+1].forEach(function(Y){var x=new Date(Date.UTC(Y,m-1,d));if(!best||Math.abs(x-n)<Math.abs(best-n))best=x});return best}
+ function day(dt){return new Date(Date.UTC(dt.getUTCFullYear(),dt.getUTCMonth(),dt.getUTCDate(),23,59))}
+ function cl(c){return c==="1"?1:c==="2"?2:""}
+ var out={format:"SNCF",rics:"0087",issuerCode:"0087",issuerName:"SNCF",pnr:"",travelers:[],docs:[],layout:"",extra:[],nosig:true};
+ /* 132 tekens (reiskaartje) of Carte Avantage */
+ if(by.length>=131&&by.length<=140&&/^[ -~]+$/.test(A(0,by.length))&&A(20,21)==="2"){var tp=A(2,4);
+  out.pnr=A(4,10).trim()+" / "+A(10,19);if(A(19,20)==="0")out.specimen=true;
+  var nm=(A(91,110).trim()+" "+A(72,91).trim()).trim();if(nm&&!/^X+ X+$/.test(nm))out.travelers.push(nm);
+  if(/^\d{2}\/\d{2}\/\d{4}$/.test(A(33,43))&&/^\d{2}\/\d{2}\/\d{4}$/.test(A(43,53))){var a=A(33,43).split("/"),b=A(43,53).split("/");
+   out.docs.push({kind:["Kortingskaart","Carte de réduction"],product:"Carte Avantage",cls:cl(A(110,111)),validFrom:new Date(Date.UTC(+a[2],a[1]-1,+a[0])),validUntil:new Date(Date.UTC(+b[2],b[1]-1,+b[0],23,59)),info:A(53,70).trim()});return out}
+  var dm=A(48,53).match(/^(\d{2})\/(\d{2})$/);if(!dm)return null;var d=near(+dm[1],+dm[2]);
+  function leg(f,t,tr,c){var o={kind:["Reis","Trajet"],from:A(f,f+5).trim(),to:A(t,t+5).trim(),train:+A(tr,tr+5)?String(+A(tr,tr+5)):"",cls:cl(c),validFrom:d,validUntil:day(d),product:A(111,115).trim()};return o}
+  out.docs.push(leg(33,38,43,A(110,111)));if(A(116,121).trim())out.docs.push(leg(116,121,126,A(115,116)));
+  if(tp)out.format="SNCF ("+tp+")";return out}
+ /* Secutix (686 bytes) */
+ if(by.length>=496&&A(0,4)==="2200"&&A(260,264)==="00T1"){out.issuerCode=A(264,268);out.pnr=A(268,277).trim();var nm2=(A(395,414).trim()+" "+A(376,395).trim()).trim();if(nm2)out.travelers.push(nm2);
+  var td=A(343,351),dt=/^\d{8}$/.test(td)?new Date(Date.UTC(+td.slice(4),+td.slice(2,4)-1,+td.slice(0,2))):null,pr=A(486,496);
+  out.docs.push({kind:["Kaartje","Billet"],from:A(277,282).trim(),to:A(282,287).trim(),info:A(287,292).trim()?"via "+A(287,292).trim():"",cls:cl(A(351,352)),product:A(356,376).trim(),validFrom:dt,validUntil:dt&&day(dt),price:/^\d+$/.test(pr)?"EUR "+(+pr/100).toFixed(2):""});out.format="SNCF (Secutix)";return out}
+ return null};

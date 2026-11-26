@@ -109,6 +109,9 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 - **Diensten** kan ook met een passkey (vingerafdruk, gezicht of schermvergrendeling). De Worker controleert de handtekening en bewaart alleen de publieke sleutels, in een KV-namespace met de koppelnaam `HS_KV`. De code blijft werken als reserve
 - **HS Ticketing** laat kaartjes ondertekenen door de Worker (`?tsign`, ECDSA P-256). De privé-sleutel maakt de Worker zelf aan en bewaart hem in `HS_KV`; de pagina haalt alleen de publieke sleutel op (`?tpub`) en controleert daarmee, ook offline
 - Voor kaartjes van **andere vervoerders** haalt de Worker de publieke sleutel uit het UIC-sleutelregister (`?uickey=RICS:sleutel`, register een dag in de cache). De scanner controleert daarmee de handtekening; dat zegt alleen iets over de echtheid, niet of het kaartje al gebruikt is
+- De scanner stelt de camera af waar de telefoon dat toestaat: hij kiest een achtercamera met autofocus, stelt continu scherp en toont een **zaklampknop**, een **zoomschuif** en een knop voor een andere camera (vooral Chrome op Android; op een iPhone meestal alleen de zaklamp). Bij grote camerabeelden leest hij om en om het hele beeld en een uitsnede rond de code.
+- Bij UIC-kaartjes met alleen een gedrukte layout (**RCT2**, zoals NS en NMBS internationaal) leest de scanner van, naar, geldigheid, klasse, naam en prijs uit die layout (vaste plaatsen zoals KDE Itinerary ze gebruikt), en toont hij **Geldig op datum / Verlopen / Nog niet geldig**. Het kaartnummer van NS en NMBS wordt getoond zoals op het kaartje (zonder `_0`).
+- **SNCF**-codes (132 tekens, Carte Avantage, Secutix) en printcodes in **PDF417** worden ook gelezen. Ze hebben geen openbare handtekening: de scanner meldt dan *Alleen inhoud gelezen*.
 
 ---
 
