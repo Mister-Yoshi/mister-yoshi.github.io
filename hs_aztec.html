@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#060b18">
+<title>HS Ticketing Aztec · Billetterie CFH Aztec</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="images/icon-192.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--red:#ff4136;--blue:#4d7cff;--grey:#a5a8ab;--yel:#ffc917;--grn:#1fd38a;--bg:#060b18;--ink:#eef3fc;--dim:#9aaec8;--line:rgba(255,255,255,.09);--card:rgba(14,20,38,.82)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:Outfit,system-ui,sans-serif;overflow-x:hidden;
+ background-image:radial-gradient(900px 500px at 110% -10%,rgba(77,124,255,.16),transparent 60%),radial-gradient(700px 420px at -10% 110%,rgba(255,65,54,.12),transparent 60%);background-attachment:scroll}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.nl,.fr{display:block}
+.fr{opacity:.72;font-size:.82em}
+body.only-nl .fr,body.only-fr .nl{display:none}
+.il .nl,.il .fr{display:inline}
+.il .fr{font-size:.85em}
+body:not(.only-nl):not(.only-fr) .il .nl+.fr::before{content:" / ";opacity:.6}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom))}
+
+/* kop */
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.back{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-weight:600}
+.back:hover{background:rgba(255,255,255,.1)}
+.lang{margin-left:auto;display:flex;gap:8px}
+.lang button{min-width:52px;height:42px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);font-weight:700;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:#0a1330;border-color:var(--ink)}
+.rail{height:10px;margin:16px 0 6px;background:linear-gradient(var(--red),var(--red)) 0 0/100% 2px no-repeat,linear-gradient(var(--blue),var(--blue)) 0 4px/100% 2px no-repeat,linear-gradient(var(--grey),var(--grey)) 0 8px/100% 2px no-repeat}
+.ph{margin:18px 0 22px}
+.ph h1{position:relative;margin:0;padding-left:1.18em;font-size:clamp(34px,6vw,60px);letter-spacing:-.04em;line-height:1;font-weight:800}
+.ph h1::before{content:"";position:absolute;left:0;top:.14em;width:.92em;height:.62em;background:linear-gradient(90deg,var(--red) 0 33.3%,var(--blue) 33.3% 66.6%,var(--grey) 66.6%);clip-path:polygon(22% 0,100% 0,78% 100%,0 100%)}
+.ph h1 em{font-style:normal;background:linear-gradient(90deg,var(--red),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+body:not(.only-nl):not(.only-fr) .ph h1 .fr{font-size:.5em;margin-top:8px;letter-spacing:-.02em}
+.ph p{color:var(--dim);margin:10px 0 0}
+
+/* tabs */
+.seg{display:inline-flex;gap:6px;padding:6px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line);margin-bottom:18px}
+.seg button{border:0;background:none;border-radius:11px;padding:10px 18px;font-weight:700;cursor:pointer;color:var(--dim)}
+.seg button[aria-selected=true]{background:var(--ink);color:#0a1330}
+.seg svg{width:18px;height:18px;vertical-align:-3px;margin-right:6px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+[hidden]{display:none!important}
+
+.card{border-radius:24px;background:var(--card);border:1px solid var(--line);backdrop-filter:blur(8px);padding:24px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+
+/* formulier */
+.f{display:grid;grid-template-columns:1fr 1fr;gap:14px 14px}
+.f .w{grid-column:1/-1}
+.f label{display:block;font-size:13px;color:var(--dim);margin-bottom:6px;font-weight:600}
+.f input,.f select{width:100%;min-height:50px;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px;color-scheme:dark}
+.f input:focus,.f select:focus{outline:2px solid var(--yel);outline-offset:1px}
+.sw{display:flex;align-items:end}
+.swb{width:50px;height:50px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);cursor:pointer;font-size:20px}
+.route{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end}
+.cls{display:flex;gap:8px}
+.cls button{flex:1;min-height:50px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.35);cursor:pointer;font-weight:700}
+.cls button[aria-pressed=true]{background:rgba(77,124,255,.28);border-color:var(--blue)}
+.go{width:100%;min-height:54px;margin-top:18px;border:0;border-radius:14px;background:var(--red);color:#fff;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 10px 30px rgba(255,65,54,.25)}
+.go:disabled{opacity:.6;cursor:default}
+.ghost{min-height:46px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);padding:10px 16px;font-weight:700;cursor:pointer}
+.ghost:hover{background:rgba(255,255,255,.1)}
+.msg{min-height:1.3em;margin:10px 0 0;color:var(--red)}
+.msg.ok{color:var(--dim)}
+.hint{color:var(--dim);font-size:14px;margin:12px 0 0}
+
+/* slot */
+.lock{display:grid;grid-template-columns:auto 1fr;gap:14px 18px;align-items:center}
+.lki{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:rgba(255,65,54,.15);color:var(--red)}
+.lki svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.lock b{font-size:19px}
+.lock p{margin:4px 0 0;color:var(--dim)}
+.lkr{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap}
+.lkr input{flex:1 1 160px;min-width:0;min-height:50px;font-size:22px;letter-spacing:.3em;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:12px;padding:10px 16px}
+.lkr .go{flex:1 1 160px;width:auto;margin:0}
+.lock .msg,.lock .hint{grid-column:1/-1;margin:0}
+.lock a{color:var(--ink)}
+.pkb{flex:1;display:flex;align-items:center;justify-content:center;gap:10px}
+.pkb svg{width:22px;height:22px;flex:none;fill:none;stroke:var(--yel);stroke-width:1.8;stroke-linecap:round}
+#lk{max-width:620px}
+
+/* kaartje */
+.tk{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(160deg,#0f1a3f,#0a1230 55%,#0b0f22);border:1px solid rgba(255,255,255,.12);box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.tkh{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px dashed rgba(255,255,255,.16)}
+.blk{display:inline-block;width:46px;height:20px;flex:none;background:linear-gradient(90deg,var(--red) 0 33.3%,var(--blue) 33.3% 66.6%,var(--grey) 66.6%);clip-path:polygon(16% 0,100% 0,84% 100%,0 100%)}
+.tkh b{font-size:15px;letter-spacing:.02em;min-width:0}
+body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
+.tkh .cl{margin-left:auto;white-space:nowrap;flex:none;font-weight:800;border-radius:9px;padding:5px 10px;background:rgba(255,201,23,.15);color:var(--yel);font-size:14px}
+.tkr{padding:18px 20px 6px}
+.tkr .rt{display:flex;align-items:center;gap:10px;font-size:clamp(22px,4.4vw,30px);font-weight:800;letter-spacing:-.02em;line-height:1.1;flex-wrap:wrap}
+.tkr .rt i{font-style:normal;color:var(--yel)}
+.tkd{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:12px 20px 18px}
+.tkd div{min-width:0}
+.tkd small{display:block;color:var(--dim);font-size:12px;margin-bottom:2px}
+.tkd span{font-weight:700;overflow-wrap:anywhere}
+.tkq{background:#fff;margin:0 20px;border-radius:18px;padding:16px;display:grid;place-items:center}
+.tkq img{width:100%;max-width:280px;height:auto;image-rendering:pixelated;display:block}
+.tkf{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:14px 20px 18px;color:var(--dim);font-size:12.5px}
+.sig{display:inline-flex;align-items:center;gap:6px;color:var(--grn);font-weight:700}
+.sig svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.acts{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.acts .ghost{flex:1 1 140px}
+.empty{display:grid;place-items:center;text-align:center;min-height:360px;color:var(--dim);border:1px dashed rgba(255,255,255,.14);border-radius:24px;padding:24px}
+.empty .blk{width:70px;height:30px;margin-bottom:14px;opacity:.7}
+.hist{margin-top:18px}
+.hist h3{margin:0 0 8px;font-size:15px;color:var(--dim);font-weight:600}
+.hr{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);cursor:pointer;margin-bottom:8px}
+.hr:hover{background:rgba(255,255,255,.08)}
+.hr b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr span{color:var(--dim);font-size:13px}
+
+/* scanner */
+.cam{position:relative;aspect-ratio:4/3;border-radius:24px;overflow:hidden;background:#02050d;border:1px solid var(--line)}
+.cam video{width:100%;height:100%;object-fit:cover;display:block}
+.cam .vf{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.cam .vf i{width:min(62%,300px);aspect-ratio:1;border-radius:22px;box-shadow:0 0 0 9999px rgba(2,5,13,.45);
+ background:linear-gradient(var(--yel),var(--yel)) 0 0/34px 4px,linear-gradient(var(--yel),var(--yel)) 0 0/4px 34px,linear-gradient(var(--yel),var(--yel)) 100% 0/34px 4px,linear-gradient(var(--yel),var(--yel)) 100% 0/4px 34px,
+ linear-gradient(var(--yel),var(--yel)) 0 100%/34px 4px,linear-gradient(var(--yel),var(--yel)) 0 100%/4px 34px,linear-gradient(var(--yel),var(--yel)) 100% 100%/34px 4px,linear-gradient(var(--yel),var(--yel)) 100% 100%/4px 34px;background-repeat:no-repeat}
+.cam .off{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--dim);padding:20px}
+.cam .off svg{width:46px;height:46px;fill:none;stroke:currentColor;stroke-width:1.6;margin-bottom:8px}
+.res{border-radius:24px;padding:22px;border:1px solid var(--line);background:var(--card)}
+.res .st{display:flex;align-items:center;gap:14px}
+.res .ic{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;flex:none}
+.res .ic svg{width:32px;height:32px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.res h2{margin:0;font-size:26px;letter-spacing:-.02em;line-height:1.1}
+.res p{margin:4px 0 0;color:var(--dim)}
+.res.ok{border-color:rgba(31,211,138,.5);background:linear-gradient(160deg,rgba(31,211,138,.16),var(--card) 60%)}
+.res.ok .ic{background:var(--grn)}
+.res.bad{border-color:rgba(255,65,54,.55);background:linear-gradient(160deg,rgba(255,65,54,.18),var(--card) 60%)}
+.res.bad .ic{background:var(--red)}
+.res.warn{border-color:rgba(255,201,23,.55);background:linear-gradient(160deg,rgba(255,201,23,.14),var(--card) 60%)}
+.res.warn .ic{background:#c99400}
+.res .tkd{padding:16px 0 0;grid-template-columns:repeat(2,minmax(0,1fr))}
+.res .rt{font-size:22px;font-weight:800;margin-top:16px}
+.res .rt i{font-style:normal;color:var(--yel)}
+.scanacts{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.scanacts>*{flex:1 1 150px}
+.idle{color:var(--dim);text-align:center;padding:30px 10px}
+
+/* buiten de app */
+.out{max-width:560px;margin:8vh auto 0;text-align:center}
+.out .ic{width:84px;height:84px;margin:0 auto 18px;border-radius:24px;display:grid;place-items:center;background:var(--red);box-shadow:0 16px 40px rgba(255,65,54,.35)}
+.out .ic svg{width:44px;height:44px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round}
+.out h1{margin:0 0 10px;font-size:clamp(28px,6vw,40px);letter-spacing:-.03em}
+.out p{color:var(--dim);margin:0 0 8px;line-height:1.5}
+.out .code{display:inline-block;margin-top:10px;padding:6px 12px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:13px;color:var(--dim)}
+.out .go{display:inline-block;width:auto;padding:16px 26px;text-decoration:none;margin-top:22px}
+@media (prefers-reduced-motion:no-preference){.res,.tk{animation:pop .28s ease-out}@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}}
+@media (max-width:520px){.wrap{padding-left:14px;padding-right:14px}.card{padding:18px}.f{grid-template-columns:1fr}.route{grid-template-columns:1fr}.sw{justify-content:center}.swb{transform:rotate(90deg)}.tkd{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header class="top">
+  <a class="back il" href="index.html#diensten">← <span class="nl">Startpagina</span><span class="fr">Accueil</span></a>
+  <div class="lang"><button id="lnl" aria-pressed="true">NL</button><button id="lfr" aria-pressed="false">FR</button></div>
+ </header>
+ <div class="rail" aria-hidden="true"></div>
+
+ <main id="app">
+  <div class="ph">
+   <h1><span class="nl">HS <em>Aztec</em></span><span class="fr">Billetterie <em>Aztec</em></span></h1>
+   <p><span class="nl">Maak ondertekende kaartjes met een Aztec-code, zoals op echte treinkaartjes, en controleer ze met de scanner.</span><span class="fr">Créez des billets signés avec un code Aztec, comme sur les vrais billets de train, et contrôlez-les avec le scanner.</span></p>
+  </div>
+  <div id="chk" class="hint il"><span class="nl">Toegang controleren…</span><span class="fr">Vérification de l’accès…</span></div>
+  <form class="card lock" id="lk" autocomplete="off">
+    <div class="lki" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg></div>
+    <div><b><span class="nl">Alleen voor HS-personeel</span><span class="fr">Réservé au personnel CFH</span></b><p><span class="nl">Kaartjes maken en controleren kan pas na ontgrendelen. Gebruik de Diensten-code of je passkey.</span><span class="fr">Créer et contrôler des billets n’est possible qu’après déverrouillage. Utilisez le code des services ou votre clé d’accès.</span></p></div>
+    <div class="lkr"><input id="lkc" type="password" inputmode="numeric" aria-label="Code" placeholder="••••"><button class="go il"><span class="nl">Ontgrendel</span><span class="fr">Déverrouiller</span></button></div>
+    <div class="lkr" id="lkpw" hidden><button type="button" class="ghost il pkb" id="lkp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 18.5c1-1.8 1.5-3.9 1.5-6.5a3 3 0 016 0c0 1.2-.1 2.4-.4 3.5M12 12c0 3.4-.8 6.2-2.4 8.4M17.6 17.8c.3-1.8.4-3.8.4-5.8a6 6 0 00-10.4-4.1M4.6 15.5c.3-1.1.4-2.3.4-3.5 0-1.1.2-2.1.6-3"/></svg><span><span class="nl">Passkey gebruiken</span><span class="fr">Utiliser une clé d’accès</span></span></button></div>
+    <p class="msg" id="lke" role="alert"></p>
+    
+   </form>
+  <div id="in" hidden>
+  <div class="seg il" role="tablist">
+   <button role="tab" id="tb-make" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a2 2 0 000-4z"/></svg><span class="nl">Kaartje maken</span><span class="fr">Créer un billet</span></button>
+   <button role="tab" id="tb-scan" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3M7 12h10"/></svg><span class="nl">Controleren</span><span class="fr">Contrôler</span></button>
+  </div>
+
+  <!-- MAKEN -->
+  <section id="p-make">
+
+   <div class="grid2" id="mk">
+    <form class="card" id="tf" autocomplete="off">
+     <div class="f">
+      <div class="w"><label for="fn" class="il"><span class="nl">Naam reiziger</span><span class="fr">Nom du voyageur</span></label><input id="fn" required maxlength="40" placeholder="Anna de Vries"></div>
+      <div class="w route">
+       <div><label for="ff" class="il"><span class="nl">Van</span><span class="fr">De</span></label><input id="ff" list="stl" required maxlength="40" placeholder="Assen"></div>
+       <div class="sw"><button type="button" class="swb" id="swp" aria-label="Wissel / Inverser">⇄</button></div>
+       <div><label for="ft" class="il"><span class="nl">Naar</span><span class="fr">À</span></label><input id="ft" list="stl" required maxlength="40" placeholder="Groningen"></div>
+      </div>
+      <div><label for="fd" class="il"><span class="nl">Reisdatum</span><span class="fr">Date du voyage</span></label><input id="fd" type="date" required></div>
+      <div><label for="ftr" class="il"><span class="nl">Trein (optioneel)</span><span class="fr">Train (facultatif)</span></label><input id="ftr" maxlength="12" placeholder="IC 512"></div>
+      <div class="w"><label class="il"><span class="nl">Klasse</span><span class="fr">Classe</span></label><div class="cls il"><button type="button" data-c="1" aria-pressed="false"><span class="nl">1e klas</span><span class="fr">1re classe</span></button><button type="button" data-c="2" aria-pressed="true"><span class="nl">2e klas</span><span class="fr">2e classe</span></button></div></div>
+     </div>
+     <datalist id="stl"></datalist>
+     <button class="go il" id="mkb"><span class="nl">Kaartje maken</span><span class="fr">Créer le billet</span></button>
+     <p class="msg" id="mke" role="alert"></p>
+    </form>
+    <div>
+     <div id="tkout"><div class="empty"><div><span class="blk"></span><p><span class="nl">Je kaartje verschijnt hier, met een ondertekende Aztec-code.</span><span class="fr">Votre billet apparaîtra ici, avec un code Aztec signé.</span></p></div></div></div>
+     <div class="acts il" id="tka" hidden><button class="ghost" id="shr"><span class="nl">Delen</span><span class="fr">Partager</span></button><button class="ghost" id="dl"><span class="nl">Opslaan als afbeelding</span><span class="fr">Enregistrer l’image</span></button></div>
+     <div class="hist" id="hist" hidden><h3><span class="nl">Laatst gemaakt</span><span class="fr">Créés récemment</span></h3><div id="hl"></div></div>
+    </div>
+   </div>
+  </section>
+
+  <!-- CONTROLEREN -->
+  <section id="p-scan" hidden>
+   <div class="grid2">
+    <div>
+     <div class="cam"><video id="vid" playsinline muted></video><div class="vf" id="vf" hidden><i></i></div>
+      <div class="off" id="camoff"><div><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/></svg><p><span class="nl">Start de camera en houd de Aztec-code van het kaartje in het kader. QR-kaartjes worden ook gelezen.</span><span class="fr">Démarrez la caméra et placez le code Aztec du billet dans le cadre. Les billets QR sont aussi lus.</span></p></div></div>
+     </div>
+     <div class="scanacts il"><button class="go" id="cst" style="margin:0"><span class="nl">Camera starten</span><span class="fr">Démarrer la caméra</span></button></div>
+     <p class="msg" id="azw" style="color:var(--yel)" hidden><span class="nl">Deze browser kan geen Aztec-codes lezen, alleen QR. Gebruik Chrome op Android om Aztec-kaartjes te controleren.</span><span class="fr">Ce navigateur ne peut pas lire les codes Aztec, seulement les QR. Utilisez Chrome sur Android pour contrôler les billets Aztec.</span></p>
+     <p class="msg" id="sce" role="alert"></p>
+    </div>
+    <div id="sres"><div class="res idle"><p><span class="nl">Nog niets gescand.</span><span class="fr">Rien n’a encore été scanné.</span></p></div></div>
+   </div>
+  </section>
+ </div>
+ </main>
+</div>
+<script>
+/* Aztec-codegenerator (ISO/IEC 24778), zonder externe bibliotheek.
+   Gegevens als bytes via "binary shift"; foutcorrectie standaard 33 % + 3 woorden.
+   HSAztec.encode(bytes) -> {size, get(x,y)} met x = kolom, y = rij. */
+var HSAztec=(function(){
+ var WS=[4,6,6,8,8,8,8,8,8,10,10,10,10,10,10,10,10,10,10,10,10,10,10,12,12,12,12,12,12,12,12,12,12];
+ var GFP={4:0x13,6:0x43,8:0x12D,10:0x409,12:0x1069};
+ function Bits(){this.b=[]}
+ Bits.prototype.add=function(v,n){for(var i=n-1;i>=0;i--)this.b.push((v>>>i)&1)};
+ // Reed-Solomon over GF(2^m), generatorbasis 1
+ function rs(words,ecCount,m){var size=1<<m,poly=GFP[m],exp=new Array(size*2),log=new Array(size),x=1;
+  for(var i=0;i<size;i++){exp[i]=x;log[x]=i;x<<=1;if(x>=size)x^=poly}for(i=size;i<size*2;i++)exp[i]=exp[i-(size-1)];
+  function mul(a,b){return a&&b?exp[log[a]+log[b]]:0}
+  var gen=[1];for(i=1;i<=ecCount;i++){var ng=new Array(gen.length+1).fill(0),r=exp[i];for(var j=0;j<gen.length;j++){ng[j]^=gen[j];ng[j+1]^=mul(gen[j],r)}gen=ng}
+  var rem=new Array(ecCount).fill(0);
+  for(i=0;i<words.length;i++){var f=words[i]^rem[0];rem.shift();rem.push(0);if(f)for(j=0;j<ecCount;j++)rem[j]^=mul(gen[j+1],f)}
+  return rem}
+ function checkWords(bits,totalBits,ws){var n=bits.length/ws,total=Math.floor(totalBits/ws),w=[];
+  for(var i=0;i<n;i++){var v=0;for(var j=0;j<ws;j++)v=(v<<1)|bits[i*ws+j];w.push(v)}
+  var ec=rs(w,total-n,ws),out=new Bits();out.add(0,totalBits%ws);w.concat(ec).forEach(function(v){out.add(v,ws)});return out.b}
+ function stuff(bits,ws){var out=new Bits(),n=bits.length,mask=(1<<ws)-2;
+  for(var i=0;i<n;i+=ws){var word=0;for(var j=0;j<ws;j++)if(i+j>=n||bits[i+j])word|=1<<(ws-1-j);
+   if((word&mask)===mask){out.add(word&mask,ws);i--}else if((word&mask)===0){out.add(word|1,ws);i--}else out.add(word,ws)}
+  return out.b}
+ function totalBitsInLayer(l,c){return((c?88:112)+16*l)*l}
+ function encode(data){
+  // tekst: UPPER-modus, B/S (31), lengte, daarna de bytes
+  var b=new Bits(),n=data.length;if(n>2078)throw new Error("Aztec: te veel gegevens");
+  if(n<=31){b.add(31,5);b.add(n,5);for(var i=0;i<n;i++)b.add(data[i],8)}
+  else if(n<=62){b.add(31,5);b.add(31,5);for(i=0;i<31;i++)b.add(data[i],8);b.add(31,5);b.add(n-31,5);for(;i<n;i++)b.add(data[i],8)}
+  else{b.add(31,5);b.add(0,5);b.add(n-31,11);for(i=0;i<n;i++)b.add(data[i],8)}
+  var bits=b.b,ecc=Math.floor(bits.length*33/100)+11,need=bits.length+ecc,compact,layers,ws=0,st=null,tbl;
+  for(i=0;;i++){if(i>32)throw new Error("Aztec: te veel gegevens");compact=i<=3;layers=compact?i+1:i;tbl=totalBitsInLayer(layers,compact);if(need>tbl)continue;
+   if(!st||ws!==WS[layers]){ws=WS[layers];st=stuff(bits,ws)}
+   var usable=tbl-tbl%ws;if(compact&&st.length>ws*64)continue;if(st.length+ecc<=usable)break}
+  var msg=checkWords(st,tbl,ws),words=st.length/ws,mb=new Bits();
+  if(compact){mb.add(layers-1,2);mb.add(words-1,6);mb=checkWords(mb.b,28,4)}else{mb.add(layers-1,5);mb.add(words-1,11);mb=checkWords(mb.b,40,4)}
+  var base=(compact?11:14)+layers*4,map=new Array(base),size;
+  if(compact){size=base;for(i=0;i<base;i++)map[i]=i}
+  else{size=base+1+2*Math.floor((Math.floor(base/2)-1)/15);var oc=Math.floor(base/2),ce=Math.floor(size/2);
+   for(i=0;i<oc;i++){var off=i+Math.floor(i/15);map[oc-i-1]=ce-off-1;map[oc+i]=ce+off+1}}
+  var M=new Uint8Array(size*size);function set(x,y){M[y*size+x]=1}
+  for(var L=0,ro=0;L<layers;L++){var rs_=(layers-L)*4+(compact?9:12);
+   for(var j=0;j<rs_;j++){var co=j*2;for(var k=0;k<2;k++){
+    if(msg[ro+co+k])set(map[L*2+k],map[L*2+j]);
+    if(msg[ro+rs_*2+co+k])set(map[L*2+j],map[base-1-L*2-k]);
+    if(msg[ro+rs_*4+co+k])set(map[base-1-L*2-k],map[base-1-L*2-j]);
+    if(msg[ro+rs_*6+co+k])set(map[base-1-L*2-j],map[L*2+k])}}
+   ro+=rs_*8}
+  var c=Math.floor(size/2);
+  if(compact){for(i=0;i<7;i++){var o=c-3+i;if(mb[i])set(o,c-5);if(mb[i+7])set(c+5,o);if(mb[20-i])set(o,c+5);if(mb[27-i])set(c-5,o)}}
+  else{for(i=0;i<10;i++){o=c-5+i+Math.floor(i/5);if(mb[i])set(o,c-7);if(mb[i+10])set(c+7,o);if(mb[29-i])set(o,c+7);if(mb[39-i])set(c-7,o)}}
+  var be=compact?5:7;
+  for(i=0;i<be;i+=2)for(j=c-i;j<=c+i;j++){set(j,c-i);set(j,c+i);set(c-i,j);set(c+i,j)}
+  set(c-be,c-be);set(c-be+1,c-be);set(c-be,c-be+1);set(c+be,c-be);set(c+be,c-be+1);set(c+be,c+be-1);
+  if(!compact)for(i=0,j=0;i<Math.floor(base/2)-1;i+=15,j+=16)for(k=c&1;k<size;k+=2){set(c-j,k);set(c+j,k);set(k,c-j);set(k,c+j)}
+  return{size:size,compact:compact,layers:layers,get:function(x,y){return M[y*size+x]===1}}}
+ return{encode:encode}})();
+</script>
+<script>
+var API="https://hs-trein.mitchell-middelbosch.workers.dev/";
+var $=function(i){return document.getElementById(i)},L={nl:true,fr:false};
+function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k));v===null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]})}
+function T(nl,fr){return'<span class="nl">'+nl+'</span><span class="fr">'+fr+'</span>'}
+function b64u(b){var a=new Uint8Array(b),t="";for(var i=0;i<a.length;i++)t+=String.fromCharCode(a[i]);return btoa(t).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function ub64u(s){s=String(s).replace(/-/g,"+").replace(/_/g,"/");return Uint8Array.from(atob(s+"===".slice((s.length+3)%4)),function(c){return c.charCodeAt(0)})}
+function enc(o){return b64u(new TextEncoder().encode(JSON.stringify(o)))}
+function dec(p){return JSON.parse(new TextDecoder().decode(ub64u(p)))}
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function fdate(d){try{var x=new Date(d+"T12:00:00");return x.toLocaleDateString(L.nl?"nl-NL":"fr-FR",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}catch(e){return d}}
+function cls(c){return c==1?T("1e klas","1re classe"):T("2e klas","2e classe")}
+var CHK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',XX='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',WW='<svg viewBox="0 0 24 24"><path d="M12 7v6M12 17h.01"/></svg>';
+
+/* taal: zelfde instelling als de startpagina */
+var s0=ls("hsstart4");if(s0&&(s0.nl||s0.fr))L=s0;
+function applyLang(){document.body.classList.toggle("only-nl",L.nl&&!L.fr);document.body.classList.toggle("only-fr",L.fr&&!L.nl);$("lnl").setAttribute("aria-pressed",L.nl);$("lfr").setAttribute("aria-pressed",L.fr);document.documentElement.lang=L.nl?"nl":"fr";var s=ls("hsstart4")||{};s.nl=L.nl;s.fr=L.fr;ls("hsstart4",s)}
+$("lnl").onclick=function(){if(L.nl&&!L.fr)return;L.nl=!L.nl;applyLang()};$("lfr").onclick=function(){if(L.fr&&!L.nl)return;L.fr=!L.fr;applyLang()};
+applyLang();
+
+/* QR-inhoud: link naar deze pagina met het kaartje in de #. Gescand met een gewone camera opent die link de foutmelding. */
+var BASE=location.origin+location.pathname.replace(/[^/]*$/,"")+"kaartje.html";
+function ticketURL(p,s){return BASE+"#T="+p+"."+s}
+function parseQR(txt){txt=String(txt||"").trim();var m=txt.match(/#T=([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/);if(m)return{p:m[1],s:m[2]};
+ try{var j=JSON.parse(txt);if(j&&j.ticketID)return{old:j}}catch(e){}return null}
+
+/* Oude kaartjes (link naar deze pagina) door naar de foutpagina */
+if(/^#T=/.test(location.hash))location.replace("kaartje.html"+location.hash);
+
+/* tabs */
+function tab(t){var m=t==="make";$("tb-make").setAttribute("aria-selected",m);$("tb-scan").setAttribute("aria-selected",!m);$("p-make").hidden=!m;$("p-scan").hidden=m;if(m)camStop();try{history.replaceState(null,"",m?location.pathname:"#controle")}catch(e){}}
+$("tb-make").onclick=function(){tab("make")};$("tb-scan").onclick=function(){tab("scan")};
+if(location.hash==="#controle")tab("scan");
+
+/* ---------- Toegang: de hele pagina zit achter het Diensten-slot (code of passkey) ---------- */
+var TOK="";try{TOK=sessionStorage.getItem("hs_tok")||""}catch(e){}
+function lockUI(on){$("chk").hidden=true;$("lk").hidden=on;$("in").hidden=!on;if(on)loadStations();else camStop()}
+function relock(){TOK="";try{sessionStorage.removeItem("hs_tok")}catch(e){}lockUI(false)}
+function unlockWith(t){TOK=t;try{sessionStorage.setItem("hs_tok",TOK)}catch(e){}$("lkc").value="";$("lke").textContent="";lockUI(true)}
+$("lk").hidden=true;
+if(TOK)fetch(API+"?check="+encodeURIComponent(TOK),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){j.ok?lockUI(true):relock()})
+ .catch(function(){lockUI(true)}); /* geen verbinding: toegang van deze sessie blijft geldig, controleren werkt offline */
+else lockUI(false);
+$("lk").onsubmit=function(e){e.preventDefault();var c=$("lkc").value.trim();if(!c)return;$("lke").innerHTML=T("Code controleren…","Vérification du code…");
+ fetch(API+"?unlock=1",{method:"POST",body:c,cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(j.ok&&j.token)unlockWith(j.token);else{$("lke").innerHTML=T("Onjuiste code.","Code incorrect.");$("lkc").value=""}})
+ .catch(function(){$("lke").innerHTML=T("Kan de code nu niet controleren.","Impossible de vérifier le code.")})};
+/* passkey (zelfde als op de startpagina, controle in de Worker) */
+$("lkpw").hidden=!(window.PublicKeyCredential&&navigator.credentials&&window.isSecureContext);
+$("lkp").onclick=function(){var b=this;b.disabled=true;$("lke").innerHTML=T("Passkey controleren…","Vérification de la clé d’accès…");
+ fetch(API+"?pk=opts",{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};return navigator.credentials.get({publicKey:{challenge:new TextEncoder().encode(j.challenge),rpId:j.rpId,userVerification:"required",timeout:60000}})})
+ .then(function(c){var r=c.response;return fetch(API+"?pk=auth",{method:"POST",cache:"no-store",body:JSON.stringify({id:c.id,clientDataJSON:b64u(r.clientDataJSON),authenticatorData:b64u(r.authenticatorData),signature:b64u(r.signature)})}).then(function(x){return x.json()})})
+ .then(function(j){b.disabled=false;if(j.ok&&j.token)unlockWith(j.token);else throw{w:j.error}})
+ .catch(function(e){b.disabled=false;var n=e&&(e.w||e.name);$("lke").innerHTML=n==="NotAllowedError"||n==="AbortError"?T("Geannuleerd of geen passkey gekozen.","Annulé ou aucune clé d’accès choisie."):n==="unknown"?T("Deze passkey is niet bekend. Voeg hem toe op de startpagina onder Diensten.","Cette clé d’accès n’est pas connue. Ajoutez-la sur l’accueil, dans Services."):n==="nokv"?T("Passkeys zijn nog niet ingesteld in de Worker.","Les clés d’accès ne sont pas encore configurées dans le Worker."):T("Passkey lukte niet.","La clé d’accès a échoué.")})};
+
+/* ---------- Stations (suggesties) ---------- */
+var stLoaded=0;function loadStations(){if(stLoaded)return;stLoaded=1;
+ fetch(API+"?stations=1").then(function(r){return r.json()}).then(function(j){var seen={};$("stl").innerHTML=(j.stations||[]).filter(function(s){if(seen[s.n])return false;seen[s.n]=1;return true}).sort(function(a,b){return(a.l==="NL"?0:1)-(b.l==="NL"?0:1)||a.n.localeCompare(b.n)}).map(function(s){return'<option value="'+esc(s.n)+'">'}).join("")}).catch(function(){})}
+
+/* ---------- Kaartje maken ---------- */
+var CL=2;document.querySelectorAll(".cls button").forEach(function(b){b.onclick=function(){CL=+b.dataset.c;document.querySelectorAll(".cls button").forEach(function(x){x.setAttribute("aria-pressed",x===b)})}});
+$("fd").value=today();
+$("swp").onclick=function(){var a=$("ff").value;$("ff").value=$("ft").value;$("ft").value=a};
+function newId(){var a=crypto.getRandomValues(new Uint8Array(4)),n=((a[0]<<16)|(a[1]<<8)|a[2])%1000000;return"HS-"+new Date().getFullYear()+"-"+String(n).padStart(6,"0")}
+var PUB=ls("hs_tkpub");
+function getPub(force){if(PUB&&!force)return Promise.resolve(PUB);return fetch(API+"?tpub=1",{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};PUB={kid:j.kid,jwk:j.jwk};ls("hs_tkpub",PUB);return PUB})}
+function errText(e){var w=e&&e.w;if(w==="nokv")return T("De Worker mist nog de KV-koppeling HS_KV.","Il manque la liaison KV HS_KV dans le Worker.");if(w==="token")return T("Je toegang is verlopen. Ontgrendel opnieuw.","Votre accès a expiré. Déverrouillez à nouveau.");return T("Kan de Worker nu niet bereiken. Probeer het later opnieuw.","Impossible de joindre le Worker. Réessayez plus tard.")}
+var CUR=null;
+$("tf").onsubmit=function(e){e.preventDefault();var b=$("mkb");b.disabled=true;$("mke").className="msg ok";$("mke").innerHTML=T("Kaartje ondertekenen…","Signature du billet…");
+ getPub(true).then(function(k){var t={v:1,k:k.kid,id:newId(),n:$("fn").value.trim(),f:$("ff").value.trim(),t:$("ft").value.trim(),d:$("fd").value,tr:$("ftr").value.trim(),c:CL,i:Date.now()};var p=enc(t);
+  return fetch(API+"?tsign=1",{method:"POST",body:JSON.stringify({token:TOK,p:p}),cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};return{t:t,p:p,s:j.s}})})
+ .then(function(x){b.disabled=false;$("mke").textContent="";CUR=x;showTicket(x);var h=ls("hs_tickets_az")||[];h.unshift({p:x.p,s:x.s});ls("hs_tickets_az",h.slice(0,12));drawHist()})
+ .catch(function(e){b.disabled=false;$("mke").className="msg";$("mke").innerHTML=errText(e);if(e&&e.w==="token")relock()})};
+
+function qrImg(text){var z=HSAztec.encode(new TextEncoder().encode(text)),n=z.size,sc=8,c=document.createElement("canvas");c.width=c.height=n*sc;var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.fillStyle="#0a1330";
+ for(var r=0;r<n;r++)for(var k=0;k<n;k++)if(z.get(k,r))x.fillRect(k*sc,r*sc,sc,sc);return c}
+function ticketHTML(t){return'<div class="tkh"><span class="blk"></span><b class="il">'+T("Hoggynesische Spoorwegen","Chemin de Fer Hoggynesiéns")+'</b><span class="cl il">'+cls(t.c)+'</span></div>'+
+ '<div class="tkr"><div class="rt"><span>'+esc(t.f)+'</span><i>→</i><span>'+esc(t.t)+'</span></div></div>'+
+ '<div class="tkd"><div><small class="il">'+T("Reiziger","Voyageur")+'</small><span>'+esc(t.n)+'</span></div><div><small class="il">'+T("Datum","Date")+'</small><span>'+esc(fdate(t.d))+'</span></div><div><small class="il">'+T("Trein","Train")+'</small><span>'+(t.tr?esc(t.tr):"—")+'</span></div></div>'}
+function showTicket(x){var c=qrImg(ticketURL(x.p,x.s));$("tkout").innerHTML='<article class="tk">'+ticketHTML(x.t)+'<div class="tkq"><img alt="Aztec" src="'+c.toDataURL()+'"></div><div class="tkf"><span class="mono">'+esc(x.t.id)+'</span><span class="sig il">'+CHK+T("Ondertekend","Signé")+'</span></div></article>';$("tka").hidden=false;CUR=x;
+ $("shr").hidden=!(navigator.share);}
+function drawHist(){var h=ls("hs_tickets_az")||[];$("hist").hidden=!h.length;$("hl").innerHTML=h.map(function(x,i){var t;try{t=dec(x.p)}catch(e){return""}return'<button class="hr" data-i="'+i+'"><b>'+esc(t.f)+' → '+esc(t.t)+'</b><span>'+esc(t.n)+' · '+esc(fdate(t.d))+'</span></button>'}).join("")}
+$("hl").onclick=function(e){var b=e.target.closest("[data-i]");if(!b)return;var x=(ls("hs_tickets_az")||[])[+b.dataset.i];if(x){x.t=dec(x.p);showTicket(x);if(innerWidth<820)$("tkout").scrollIntoView({behavior:"smooth"})}};
+drawHist();
+
+/* Kaartje als afbeelding (delen of opslaan) */
+function ticketPNG(x){return document.fonts.ready.then(function(){var W=720,H=1040,c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
+ var gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,"#0f1a3f");gr.addColorStop(1,"#0b0f22");g.fillStyle=gr;g.beginPath();g.roundRect(0,0,W,H,36);g.fill();
+ [["#ff4136",0],["#4d7cff",30],["#a5a8ab",60]].forEach(function(a){g.fillStyle=a[0];g.beginPath();g.moveTo(40+a[1]+8,40);g.lineTo(40+a[1]+30,40);g.lineTo(40+a[1]+22,66);g.lineTo(40+a[1],66);g.fill()});
+ g.fillStyle="#eef3fc";g.font="700 26px Outfit";g.fillText(L.nl?"Hoggynesische Spoorwegen":"Chemin de Fer Hoggynesiéns",146,62);
+ g.fillStyle="#ffc917";g.font="800 26px Outfit";g.textAlign="right";g.fillText(x.t.c==1?(L.nl?"1e klas":"1re classe"):(L.nl?"2e klas":"2e classe"),W-40,62);g.textAlign="left";
+ g.font="800 52px Outfit";g.fillStyle="#eef3fc";var r=x.t.f+"  →  "+x.t.t;while(g.measureText(r).width>W-80&&parseInt(g.font.split(" ")[1])>26)g.font="800 "+(parseInt(g.font.split(" ")[1])-2)+"px Outfit";g.fillText(r,40,150);
+ g.font="500 22px Outfit";g.fillStyle="#9aaec8";[[L.nl?"Reiziger":"Voyageur",x.t.n],[L.nl?"Datum":"Date",fdate(x.t.d)],[L.nl?"Trein":"Train",x.t.tr||"—"]].forEach(function(a,i){g.fillStyle="#9aaec8";g.font="500 21px Outfit";g.fillText(a[0],40+i*215,210);g.fillStyle="#eef3fc";g.font="700 25px Outfit";g.fillText(String(a[1]).slice(0,18),40+i*215,244)});
+ g.fillStyle="#fff";g.beginPath();g.roundRect(40,286,W-80,W-80,28);g.fill();var q=qrImg(ticketURL(x.p,x.s));g.imageSmoothingEnabled=false;g.drawImage(q,72,318,W-144,W-144);
+ g.fillStyle="#9aaec8";g.font="600 22px 'IBM Plex Mono'";g.fillText(x.t.id,40,H-46);g.fillStyle="#1fd38a";g.font="700 22px Outfit";g.textAlign="right";g.fillText("✓ "+(L.nl?"Ondertekend":"Signé"),W-40,H-46);
+ return new Promise(function(res){c.toBlob(res,"image/png")})})}
+$("dl").onclick=function(){if(!CUR)return;ticketPNG(CUR).then(function(b){var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=CUR.t.id+".png";a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},4000)})};
+$("shr").onclick=function(){if(!CUR)return;ticketPNG(CUR).then(function(b){var f=new File([b],CUR.t.id+".png",{type:"image/png"});var d={title:"HS "+CUR.t.id,files:[f]};if(navigator.canShare&&navigator.canShare(d))return navigator.share(d);return navigator.share({title:"HS "+CUR.t.id,text:CUR.t.f+" → "+CUR.t.t})}).catch(function(){})};
+
+/* ---------- Controleren ---------- */
+function verify(q){return getPub(false).then(function(k){var t=dec(q.p);if(t.k!==k.kid)return getPub(true).then(function(k2){return check(k2,t)});return check(k,t)});
+ function check(k,t){return crypto.subtle.importKey("jwk",k.jwk,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]).then(function(key){return crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,ub64u(q.s),new TextEncoder().encode(q.p))}).then(function(ok){return{ok:ok&&t.k===k.kid,t:t}})}}
+function beep(ok){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.value=ok?880:220;o.type=ok?"sine":"square";g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+(ok?.18:.45));o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.5)}catch(e){}
+ try{navigator.vibrate&&navigator.vibrate(ok?60:[120,80,120])}catch(e){}}
+function result(kind,title,sub,t){var ic=kind==="ok"?CHK:kind==="bad"?XX:WW;
+ $("sres").innerHTML='<div class="res '+kind+'" role="status"><div class="st"><div class="ic">'+ic+'</div><div><h2 class="il">'+title+'</h2><p>'+sub+'</p></div></div>'+
+ (t?'<div class="rt">'+esc(t.f)+' <i>→</i> '+esc(t.t)+'</div><div class="tkd"><div><small class="il">'+T("Reiziger","Voyageur")+'</small><span>'+esc(t.n)+'</span></div><div><small class="il">'+T("Datum","Date")+'</small><span>'+esc(fdate(t.d))+'</span></div><div><small class="il">'+T("Klasse","Classe")+'</small><span class="il">'+cls(t.c)+'</span></div><div><small class="il">'+T("Trein","Train")+'</small><span>'+(t.tr?esc(t.tr):"—")+'</span></div><div><small>Ticket</small><span class="mono">'+esc(t.id)+'</span></div></div>':'')+
+ '<div class="scanacts il"><button class="ghost" id="nxt">'+T("Volgende scannen","Scanner le suivant")+'</button></div></div>';
+ $("nxt").onclick=function(){$("sres").innerHTML='<div class="res idle"><p>'+T("Klaar voor het volgende kaartje.","Prêt pour le billet suivant.")+'</p></div>';if(stream)scanning=true,loop()};
+ beep(kind==="ok");if(innerWidth<820)$("sres").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
+function handle(txt){var q=parseQR(txt);
+ if(!q)return result("bad",T("Geen HS-kaartje","Pas un billet CFH"),T("Deze QR-code is geen kaartje van HS Ticketing.","Ce code QR n’est pas un billet de la Billetterie CFH."));
+ if(q.old)return result("bad",T("Ongeldig","Invalide"),T("Oud kaartje zonder handtekening. Maak een nieuw kaartje.","Ancien billet sans signature. Créez un nouveau billet."));
+ var t;try{t=dec(q.p)}catch(e){return result("bad",T("Ongeldig","Invalide"),T("Het kaartje is beschadigd.","Le billet est endommagé."))}
+ verify(q).then(function(r){if(!r.ok)return result("bad",T("Ongeldig","Invalide"),T("De handtekening klopt niet: dit kaartje is nagemaakt of aangepast.","La signature ne correspond pas : ce billet est falsifié ou modifié."));
+  var d=today();if(t.d<d)return result("warn",T("Verlopen","Expiré"),T("Dit kaartje gold op "+esc(fdate(t.d))+".","Ce billet était valable le "+esc(fdate(t.d))+"."),t);
+  if(t.d>d)return result("warn",T("Nog niet geldig","Pas encore valable"),T("Dit kaartje geldt op "+esc(fdate(t.d))+".","Ce billet est valable le "+esc(fdate(t.d))+"."),t);
+  result("ok",T("Geldig","Valable"),T("Echt kaartje, geldig vandaag.","Billet authentique, valable aujourd’hui."),t)})
+ .catch(function(){result("warn",T("Kan niet controleren","Contrôle impossible"),T("De sleutel om de handtekening te controleren is nog niet geladen. Maak één keer verbinding met internet.","La clé de vérification n’est pas encore chargée. Connectez-vous une fois à Internet."))})}
+
+/* QR lezen: ingebouwde lezer (BarcodeDetector) of anders jsQR, alleen geladen als het nodig is */
+var DET=null,JSQR=null,AZOK=false;
+/* Aztec lezen kan alleen met de ingebouwde lezer van de browser (Chrome op Android); jsQR is alleen een terugval voor QR */
+var DETP=("BarcodeDetector"in window&&BarcodeDetector.getSupportedFormats?BarcodeDetector.getSupportedFormats():Promise.resolve([])).then(function(f){
+ AZOK=f.indexOf("aztec")>=0;var use=f.filter(function(x){return x==="aztec"||x==="qr_code"});try{if(use.length)DET=new BarcodeDetector({formats:use})}catch(e){}
+ if(!AZOK)$("azw").hidden=false}).catch(function(){$("azw").hidden=false});
+function needJsQR(){return DETP.then(needJsQR2)}
+function needJsQR2(){if(DET||window.jsQR)return Promise.resolve();if(JSQR)return JSQR;JSQR=new Promise(function(res,rej){var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";s.onload=res;s.onerror=function(){JSQR=null;rej()};document.head.appendChild(s)});return JSQR}
+var cvs=document.createElement("canvas"),cx=cvs.getContext("2d",{willReadFrequently:true});
+function read(src,w,h){if(DET)return DET.detect(src).then(function(r){return r.length?r[0].rawValue:null});
+ var sc=Math.min(1,900/Math.max(w,h));cvs.width=Math.round(w*sc);cvs.height=Math.round(h*sc);cx.drawImage(src,0,0,cvs.width,cvs.height);var d=cx.getImageData(0,0,cvs.width,cvs.height),r=window.jsQR(d.data,d.width,d.height,{inversionAttempts:"dontInvert"});return Promise.resolve(r?r.data:null)}
+var stream=null,scanning=false,busy=false;
+function scanErr(h){$("sce").innerHTML=h}
+$("cst").onclick=function(){if(stream){camStop();return}scanErr("");
+ needJsQR().then(function(){return navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1280},height:{ideal:720}},audio:false})})
+ .then(function(s){stream=s;var v=$("vid");v.srcObject=s;return v.play()}).then(function(){$("camoff").hidden=true;$("vf").hidden=false;$("cst").innerHTML=T("Camera stoppen","Arrêter la caméra");scanning=true;loop()})
+ .catch(function(e){camStop();scanErr(e&&e.name==="NotAllowedError"?T("Geen toegang tot de camera. Sta het toe in de browser.","Pas d’accès à la caméra. Autorisez-le dans le navigateur."):!stream&&!DET&&!window.jsQR?T("De QR-lezer kon niet laden. Controleer je verbinding.","Le lecteur QR n’a pas pu se charger. Vérifiez votre connexion."):T("Camera niet beschikbaar.","Caméra non disponible."))})};
+function camStop(){scanning=false;if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}$("vid").srcObject=null;$("camoff").hidden=false;$("vf").hidden=true;$("cst").innerHTML=T("Camera starten","Démarrer la caméra")}
+function loop(){if(!scanning||busy)return;var v=$("vid");if(v.readyState<2){setTimeout(loop,150);return}busy=true;
+ read(v,v.videoWidth,v.videoHeight).then(function(txt){busy=false;if(txt&&scanning){scanning=false;handle(txt)}else if(scanning)setTimeout(loop,140)}).catch(function(){busy=false;if(scanning)setTimeout(loop,300)})}
+document.addEventListener("visibilitychange",function(){if(document.hidden&&stream)camStop()});
+if("serviceWorker"in navigator&&isSecureContext)navigator.serviceWorker.register("sw.js").catch(function(){});
+</script>
+</body>
+</html>
