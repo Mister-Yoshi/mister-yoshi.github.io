@@ -83,9 +83,20 @@ var UICR=(function(){
   return{kind:"ec",spki:u.slice(spki.start,spki.end)}}
  function modpow(b,e,m){var r=1n;b%=m;while(e>0n){if(e&1n)r=r*b%m;b=b*b%m;e>>=1n}return r}
  function modinv(a,m){var t=0n,nt=1n,r=m,nr=((a%m)+m)%m;while(nr){var q=r/nr;var x=t-q*nt;t=nt;nt=x;x=r-q*nr;r=nr;nr=x}return t<0n?t+m:t}
- function hashName(n){return n==="SHA-1"?"SHA-1":n==="SHA-256"?"SHA-256":n==="SHA-384"?"SHA-384":null}
+ function hashName(n){return n==="SHA-1"||n==="SHA-224"||n==="SHA-256"||n==="SHA-384"?n:null}
+ /* SHA-224 in JS (zelfde rekenwerk als SHA-256, andere beginwaarden, 28 bytes uitvoer) */
+ function sha224(data){var K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  var H=[0xc1059ed8,0x367cd507,0x3070dd17,0xf70e5939,0xffc00b31,0x68581511,0x64f98fa7,0xbefa4fa4],l=data.length,n=((l+9+63)>>6)<<6,m=new Uint8Array(n);m.set(data);m[l]=128;var bl=l*8;for(var i=0;i<4;i++)m[n-1-i]=(bl>>>(8*i))&255;m[n-5]=Math.floor(bl/4294967296)&255;
+  var w=new Array(64);function r(x,c){return(x>>>c)|(x<<(32-c))}
+  for(var o=0;o<n;o+=64){for(i=0;i<16;i++)w[i]=(m[o+4*i]<<24)|(m[o+4*i+1]<<16)|(m[o+4*i+2]<<8)|m[o+4*i+3];
+   for(i=16;i<64;i++){var s0=r(w[i-15],7)^r(w[i-15],18)^(w[i-15]>>>3),s1=r(w[i-2],17)^r(w[i-2],19)^(w[i-2]>>>10);w[i]=(w[i-16]+s0+w[i-7]+s1)|0}
+   var a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+   for(i=0;i<64;i++){var S1=r(e,6)^r(e,11)^r(e,25),ch=(e&f)^(~e&g),t1=(h+S1+ch+K[i]+w[i])|0,S0=r(a,2)^r(a,13)^r(a,22),mj=(a&b)^(a&c)^(b&c),t2=(S0+mj)|0;h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0}
+   H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0}
+  var out=new Uint8Array(28);for(i=0;i<7;i++){out[4*i]=H[i]>>>24;out[4*i+1]=(H[i]>>>16)&255;out[4*i+2]=(H[i]>>>8)&255;out[4*i+3]=H[i]&255}return out}
+ function digest(hash,data){return hash==="SHA-224"?Promise.resolve(sha224(data).buffer):crypto.subtle.digest(hash,data)}
  function dsaVerify(key,data,sigDer,hash){var sp=dsaSigParts(sigDer),r=sp.r,s=sp.s,q=key.q;if(r<=0n||r>=q||s<=0n||s>=q)return Promise.resolve(false);
-  return crypto.subtle.digest(hash,data).then(function(hb){var h=new Uint8Array(hb),N=q.toString(2).length,z=bigOf(h,{hs:0,end:h.length});if(h.length*8>N)z>>=BigInt(h.length*8-N);
+  return digest(hash,data).then(function(hb){var h=new Uint8Array(hb),N=q.toString(2).length,z=bigOf(h,{hs:0,end:h.length});if(h.length*8>N)z>>=BigInt(h.length*8-N);
    var w=modinv(s,q),u1=z*w%q,u2=r*w%q,v=(modpow(key.g,u1,key.p)*modpow(key.y,u2,key.p))%key.p%q;return v===r})}
  function dsaHashFor(sigDer){var p=dsaSigParts(sigDer),n=Math.max(p.r.toString(2).length,p.s.toString(2).length);return n>224?"SHA-256":n>160?"SHA-224":"SHA-1"}
  function derToRaw(d,len){var p=dsaSigParts(d);function pad(x){var h=x.toString(16);while(h.length<len*2)h="0"+h;return h.match(/../g).map(function(z){return parseInt(z,16)})}return new Uint8Array(pad(p.r).concat(pad(p.s)))}
@@ -125,8 +136,19 @@ var UICR=(function(){
   var alg=SIGOID[l1.level1SigningAlg]||null;
   return{kind:"918.9",format:hdr.format,rics:l1.securityProviderNum!==undefined?String(l1.securityProviderNum):(l1.securityProviderIA5||""),keyId:l1.keyId!==undefined?String(l1.keyId):"",
    signed:E(mod,"Level1DataType",l1),sig:l2.level1Signature,hash:alg?alg[1]:null,sigKind:alg?alg[0]:null,l1:l1,records:docs}}
+ /* ---------- ERA/UIC SSB (Small Structured Barcode, 114 bytes, o.a. NMBS en Thalys) ---------- */
+ function parseSSB(u){function I(o,n){var v=0;for(var i=0;i<n;i++)v=v*2+((u[(o+i)>>3]>>(7-((o+i)&7)))&1);return v}
+  function C6(o,n){var s="";for(var i=0;i<n/6;i++)s+=String.fromCharCode(I(o+6*i,6)+32);return s.replace(/\s+$/,"")}
+  var v=I(0,4),type=I(22,5),o=27,d={version:v,issuer:I(4,14),keyId:I(18,4),type:type};if(v<1||v>3||u.length!==114)throw new Error("geen SSB");
+  function common(){d.adults=I(o,7);o+=7;d.children=I(o,7);o+=7;d.specimen=!!I(o,1);o+=1;d.cls=I(o,6);o+=6;d.ticketNumber=C6(o,84).trim();o+=84;d.year=I(o,4);o+=4;d.day=I(o,9);o+=9}
+  function stations(){var an=I(o,1);o+=1;if(an){d.fromTxt=C6(o,30);d.fromNum=I(o,30);o+=30;d.toTxt=C6(o,30);d.toNum=I(o,30);o+=30}else{d.codeTable=I(o,4);o+=4;d.fromNum=I(o,28);o+=28;d.toNum=I(o,28);o+=28}d.alpha=!!an}
+  if(type>=1&&type<=4)common();
+  if(type===1){d.sub=I(o,2);o+=2;stations();d.depDay=I(o,9);o+=9;d.depTime=I(o,11);o+=11;d.train=C6(o,30).trim();o+=30;d.coach=I(o,10);o+=10;d.place=C6(o,18).trim();o+=18;o+=1;d.info=I(o,14);o+=14;d.text=C6(o,162).trim()}
+  else if(type===2||type===3){d.ret=!!I(o,1);o+=1;d.first=I(o,9);o+=9;d.last=I(o,9);o+=9;stations();if(type===3){d.group=C6(o,72).trim();o+=72;o+=9}d.info=I(o,14);o+=14;d.text=C6(o,type===3?144:222).trim()}
+  else if(type===4){d.sub=I(o,2);o+=2;d.first=I(o,9);o+=9;d.maxDays=I(o,9);o+=9;d.travels=I(o,7);o+=7;o+=35;o+=1;d.info=I(o,14);o+=14;d.text=C6(o,240).trim()}
+  return{kind:"SSB",version:v,rics:String(d.issuer),keyId:String(d.keyId),signed:u.slice(0,58),sig:sealToDer(u.slice(58,114)),hash:null,records:[{tag:"SSB",ssb:d}]}}
  /* hoofdingang: bytes -> Promise<geparseerd kaartje> */
- function parse(u8,inflate){if(u8.length>14&&u8[0]===35&&u8[1]===85&&u8[2]===84)return parse9183(u8,inflate);return Promise.resolve(parseDosipas(u8))}
+ function parse(u8,inflate){try{if(u8.length>14&&u8[0]===35&&u8[1]===85&&u8[2]===84)return parse9183(u8,inflate);try{return Promise.resolve(parseDosipas(u8))}catch(e){if(u8.length===114)return Promise.resolve(parseSSB(u8));throw e}}catch(e){return Promise.reject(e)}}
  function check(t,certB64){var key=certKey(certB64),hash=t.hash;if(!t.sig||!t.sig.length)return Promise.resolve(false);
   if(!hash)hash=key.kind==="dsa"?dsaHashFor(t.sig):"SHA-256";return verify(key,t.signed,t.sig,hash)}
  return{parse:parse,check:check,certKey:certKey,D:D,E:E,dsaVerify:dsaVerify,latin:latin}})();
@@ -155,9 +177,21 @@ var UICSUM=(function(){
  function fromBL(f,out){var nm=n0(f[28]||f[23]).replace("#",", ");if(nm){var p=nm.split(", ");out.travelers.push(p.length===2?p[1]+" "+p[0]:nm)}
   out.docs.push({kind:["Kaartje","Billet"],from:n0(f[15]).replace(/\+/g," "),to:n0(f[16]).replace(/\+/g," "),cls:/2/.test(f[14]||"")?2:/1/.test(f[14]||"")?1:"",product:n0(f[1]),
    validFromTxt:n0(f[31]),validUntilTxt:n0(f[32]),info:n0(f[21])})}
+ /* SSB: stations als UIC-code (laatste 7 cijfers); NMBS zet nummers in een veld dat als tekst gemarkeerd is */
+ function ssbSt(txt,num){if(txt&&/^[A-Z0-9 -]{3,5}$/.test(txt))return UICSUM.station(txt)||txt;if(num){var c=String(num).slice(-7);return UICSUM.station(c)||("UIC "+c)}return""}
+ var SSBT={1:["Reservering","Réservation"],2:["Kaartje zonder reservering","Billet sans réservation"],3:["Groepskaartje","Billet de groupe"],4:["Pass","Pass"]};
+ function fromSSB(d,out){var now=new Date().getUTCFullYear(),y=now-((now-d.year)%10+10)%10;if(y>now)y-=10;var iss=day(y,d.day||1,0);out.issued=iss;out.pnr=d.ticketNumber;
+  var doc={kind:SSBT[d.type]||["Kaartje","Billet"],from:ssbSt(d.fromTxt,d.fromNum),to:ssbSt(d.toTxt,d.toNum),cls:d.cls===1?1:d.cls===2?2:"",info:d.text||""};
+  var pax=[];if(d.adults)pax.push(d.adults+(d.adults===1?" volwassene":" volwassenen"));if(d.children)pax.push(d.children+(d.children===1?" kind":" kinderen"));doc.product=pax.join(", ");
+  if(d.type===1){doc.date=add(iss,d.depDay,d.depTime);doc.time=true;doc.train=d.train;doc.seat=[d.coach?"rijtuig "+d.coach:"",d.place].filter(Boolean).join(" · ")}
+  else if(d.first!=null){doc.validFrom=add(iss,d.first);doc.validUntil=add(iss,d.type===4?d.first+(d.maxDays||0):(d.last||d.first),1439)}
+  if(d.group)out.travelers.push(d.group);out.docs.push(doc)}
  function grid(L){var rows=[];L.fields.forEach(function(f){String(f.text).replace(/\\n/g,"\n").split("\n").forEach(function(t,i){var r=f.line+i;if(r>40)return;while(rows.length<=r)rows.push("");var line=rows[r];if(f.w)t=t.slice(0,f.w);while(line.length<f.col)line+=" ";rows[r]=line.slice(0,f.col)+t+line.slice(f.col+t.length)})});
   while(rows.length&&!rows[rows.length-1].trim())rows.pop();return rows.join("\n")}
- return function(t,regName){var out={format:t.kind==="918.3"?"UIC 918.3 v"+t.version:"UIC 918.9 ("+t.format+")",rics:t.rics,keyId:t.keyId,issuerCode:t.rics,issuerName:regName||RICS[t.rics]||RICS[("000"+t.rics).slice(-4)]||"",pnr:"",travelers:[],docs:[],layout:"",extra:[]};
-  t.records.forEach(function(r){if(r.head){out.pnr=n0(r.head.pnr);out.lang=r.head.lang}
-   if(r.fcb)fromFCB(r.fcb,out);else if(r.sblocks)fromBL(r.sblocks,out);else if(r.layout)out.layout=grid(r.layout);else if(r.err)out.extra.push((r.tag||r.format)+": "+r.err);else if(r.tag&&!/^U_/.test(r.tag))out.extra.push(r.tag)});
-  if(!out.issuerName)out.issuerName=RICS[out.issuerCode]||"";return out}})();
+ function sum(t,regName){var out={format:t.kind==="918.3"?"UIC 918.3 v"+t.version:t.kind==="SSB"?"ERA/UIC SSB v"+t.version:"UIC 918.9 ("+t.format+")",rics:t.rics,keyId:t.keyId,issuerCode:t.rics,issuerName:regName||RICS[t.rics]||RICS[("000"+t.rics).slice(-4)]||"",pnr:"",travelers:[],docs:[],layout:"",extra:[]};
+  t.records.forEach(function(r){if(r.head){out.pnr=n0(r.head.pnr);out.lang=r.head.lang}if(r.ssb)fromSSB(r.ssb,out);
+   if(r.fcb)fromFCB(r.fcb,out);else if(r.sblocks)fromBL(r.sblocks,out);else if(r.layout)out.layout=grid(r.layout);else if(r.err)out.extra.push((r.tag||r.format)+": "+r.err);else if(r.tag&&!/^U_/.test(r.tag)&&r.tag!=="SSB")out.extra.push(r.tag)});
+  if(!out.issuerName)out.issuerName=RICS[out.issuerCode]||"";return out}
+ return sum})();
+/* de pagina kan stationsnamen bij UIC-codes leveren */
+UICSUM.station=function(code){return ""};

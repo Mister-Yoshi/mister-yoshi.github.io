@@ -1712,8 +1712,9 @@ $("lkp").onclick=function(){var b=this;b.disabled=true;$("lke").innerHTML=T("Pas
  .catch(function(e){b.disabled=false;var n=e&&(e.w||e.name);$("lke").innerHTML=n==="NotAllowedError"||n==="AbortError"?T("Geannuleerd of geen passkey gekozen.","Annulé ou aucune clé d’accès choisie."):n==="unknown"?T("Deze passkey is niet bekend. Voeg hem toe op de startpagina onder Diensten.","Cette clé d’accès n’est pas connue. Ajoutez-la sur l’accueil, dans Services."):n==="nokv"?T("Passkeys zijn nog niet ingesteld in de Worker.","Les clés d’accès ne sont pas encore configurées dans le Worker."):T("Passkey lukte niet.","La clé d’accès a échoué.")})};
 
 /* ---------- Stations (suggesties) ---------- */
+var STU={};try{STU=JSON.parse(localStorage.getItem("hs_stu")||"{}")||{}}catch(e){}
 var stLoaded=0;function loadStations(){if(stLoaded)return;stLoaded=1;
- fetch(API+"?stations=1").then(function(r){return r.json()}).then(function(j){var seen={};$("stl").innerHTML=(j.stations||[]).filter(function(s){if(seen[s.n])return false;seen[s.n]=1;return true}).sort(function(a,b){return(a.l==="NL"?0:1)-(b.l==="NL"?0:1)||a.n.localeCompare(b.n)}).map(function(s){return'<option value="'+esc(s.n)+'">'}).join("")}).catch(function(){})}
+ fetch(API+"?stations=1").then(function(r){return r.json()}).then(function(j){var seen={};(j.stations||[]).forEach(function(x){if(x.u)STU[String(x.u)]=x.n});try{localStorage.setItem("hs_stu",JSON.stringify(STU))}catch(e){}$("stl").innerHTML=(j.stations||[]).filter(function(s){if(seen[s.n])return false;seen[s.n]=1;return true}).sort(function(a,b){return(a.l==="NL"?0:1)-(b.l==="NL"?0:1)||a.n.localeCompare(b.n)}).map(function(s){return'<option value="'+esc(s.n)+'">'}).join("")}).catch(function(){})}
 
 /* ---------- Kaartje maken ---------- */
 var CL=2;document.querySelectorAll(".cls:not(.fmt) button").forEach(function(b){b.onclick=function(){CL=+b.dataset.c;document.querySelectorAll(".cls:not(.fmt) button").forEach(function(x){x.setAttribute("aria-pressed",x===b)})}});
@@ -1787,11 +1788,11 @@ function uicKey(rics,id){var c=ls("hs_uickeys")||{},k=rics+":"+id;
  return fetch(API+"?uickey="+encodeURIComponent(k),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw 0;c[k]={f:j.found,k:j.k||"",n:j.name||""};ls("hs_uickeys",c);return c[k]})
  .catch(function(){if(c[k])return c[k];return null})}
 function foreign(by){$("sres").innerHTML='<div class="res idle"><p>'+T("Kaartje lezen…","Lecture du billet…")+'</p></div>';
- needUIC().then(function(){return UICR.parse(by,inflateZ)}).then(function(t){
+ needUIC().then(function(){UICSUM.station=function(c){return STU[String(c)]||""};return UICR.parse(by,inflateZ)}).then(function(t){
   return uicKey(t.rics,t.keyId).then(function(k){if(!k)return{t:t,k:null,st:"offline"};if(!k.f||!k.k)return{t:t,k:k,st:"nokey"};
    return UICR.check(t,k.k).then(function(ok){return{t:t,k:k,st:ok?"ok":"bad"}},function(){return{t:t,k:k,st:"unsup"}})})})
  .then(foreignResult).catch(function(){if(by.length>20&&by[0]===35&&by[1]===85&&by[2]===84)return result("bad",T("Ongeldig","Invalide"),T("Dit lijkt een UIC-kaartje (918.3), maar de inhoud is beschadigd of aangepast.","Ce billet semble être un billet UIC (918.3), mais son contenu est endommagé ou modifié."));result("bad",T("Geen kaartje","Pas un billet"),T("Deze code is geen HS-kaartje en geen UIC-treinkaartje dat de scanner kan lezen.","Ce code n’est ni un billet CFH ni un billet UIC lisible par le scanner."))})}
-function fdt(d,time){try{return d.toLocaleString(L.nl?"nl-NL":"fr-FR",time?{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}:{day:"numeric",month:"short",year:"numeric"})}catch(e){return""}}
+function fdt(d,time){try{return d.toLocaleString(L.nl?"nl-NL":"fr-FR",time?{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"UTC"}:{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"})}catch(e){return""}}
 function foreignResult(x){var s=UICSUM(x.t,x.k&&x.k.n),C=s.issuerName?esc(s.issuerName):(L.nl?"deze vervoerder":"ce transporteur");
  var st={ok:["ok",T("Echt kaartje","Billet authentique"),T("De handtekening van "+C+" klopt. Alleen de echtheid is gecontroleerd, niet of het kaartje al gebruikt of geannuleerd is.","La signature de "+C+" est valable. Seule l’authenticité est contrôlée, pas l’utilisation ou l’annulation.")],
   bad:["bad",T("Handtekening klopt niet","Signature invalide"),T("Dit kaartje is aangepast of nagemaakt, of hoort niet bij de sleutel van "+C+".","Ce billet est modifié ou falsifié, ou ne correspond pas à la clé de "+C+".")],
@@ -1812,7 +1813,8 @@ function foreignResult(x){var s=UICSUM(x.t,x.k&&x.k.n),C=s.issuerName?esc(s.issu
  h+='<p class="note il">'+T("Gegevens van dit kaartje worden niet bewaard.","Les données de ce billet ne sont pas conservées.")+'</p><div class="scanacts il"><button class="ghost" id="nxt">'+T("Volgende scannen","Scanner le suivant")+'</button></div></div>';
  $("sres").innerHTML=h;$("nxt").onclick=function(){$("sres").innerHTML='<div class="res idle"><p>'+T("Klaar voor het volgende kaartje.","Prêt pour le billet suivant.")+'</p></div>';if(stream)scanning=true,loop()};
  beep(x.st==="ok");if(innerWidth<820)$("sres").scrollIntoView({behavior:"smooth",block:"start"})}
-function beep(ok){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.value=ok?880:220;o.type=ok?"sine":"square";g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+(ok?.18:.45));o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.5)}catch(e){}
+var ACX=null;
+function beep(ok){try{var a=ACX||(ACX=new(window.AudioContext||window.webkitAudioContext)());if(a.state==="suspended")a.resume();var o=a.createOscillator(),g=a.createGain();o.frequency.value=ok?880:220;o.type=ok?"sine":"square";g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+(ok?.18:.45));o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.5)}catch(e){}
  try{navigator.vibrate&&navigator.vibrate(ok?60:[120,80,120])}catch(e){}}
 function result(kind,title,sub,t){var ic=kind==="ok"?CHK:kind==="bad"?XX:WW;
  $("sres").innerHTML='<div class="res '+kind+'" role="status"><div class="st"><div class="ic">'+ic+'</div><div><h2 class="il">'+title+'</h2><p>'+sub+'</p></div></div>'+
@@ -1820,7 +1822,8 @@ function result(kind,title,sub,t){var ic=kind==="ok"?CHK:kind==="bad"?XX:WW;
  '<div class="scanacts il"><button class="ghost" id="nxt">'+T("Volgende scannen","Scanner le suivant")+'</button></div></div>';
  $("nxt").onclick=function(){$("sres").innerHTML='<div class="res idle"><p>'+T("Klaar voor het volgende kaartje.","Prêt pour le billet suivant.")+'</p></div>';if(stream)scanning=true,loop()};
  beep(kind==="ok");if(innerWidth<820)$("sres").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
-function handle(txt){var q=parseQR(txt);
+function handle(txt){try{return handle2(txt)}catch(e){result("bad",T("Kan dit kaartje niet lezen","Lecture impossible"),T("Er ging iets mis bij het lezen. Probeer het opnieuw.","Une erreur est survenue. Réessayez."))}}
+function handle2(txt){var q=parseQR(txt);
  if(!q){ /* UIC-kaartje: de lezer geeft de bytes als tekens 0..255 (ISO-8859-1) */
   var s=String(txt||""),u=null;var by=null;if(/^[\u0000-ÿ]+$/.test(s)){by=new Uint8Array(s.length);for(var i=0;i<s.length;i++)by[i]=s.charCodeAt(i);try{u=HSUIC.read(by)}catch(e){}}
   if(!u||u.provider!=="HS"){if(by)return foreign(by);return result("bad",T("Geen kaartje","Pas un billet"),T("Deze code is geen treinkaartje dat de scanner kan lezen.","Ce code n’est pas un billet de train lisible par le scanner."))}
