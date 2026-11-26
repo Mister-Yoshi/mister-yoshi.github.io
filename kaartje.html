@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#160609">
+<meta name="robots" content="noindex">
+<title>HS-kaartje · Billet CFH</title>
+<link rel="icon" type="image/png" sizes="192x192" href="images/icon-192.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--red:#ff4136;--blue:#4d7cff;--grey:#a5a8ab;--ink:#f6f2f2;--dim:#c9b4b6}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;font-family:Outfit,system-ui,sans-serif;color:var(--ink);
+ background:#160609;background-image:repeating-linear-gradient(-55deg,rgba(255,65,54,.07) 0 22px,transparent 22px 44px),radial-gradient(120% 70% at 50% 0%,rgba(255,65,54,.28),transparent 70%)}
+.nl,.fr{display:block}
+.fr{opacity:.75;font-size:.84em;margin-top:4px}
+main{flex:1;display:flex;flex-direction:column;justify-content:center;width:100%;max-width:520px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top)) 22px 24px}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:34px;padding-right:96px}
+.logo i{width:64px;height:26px;background:linear-gradient(90deg,var(--red) 0 33.3%,var(--blue) 33.3% 66.6%,var(--grey) 66.6%);clip-path:polygon(16% 0,100% 0,84% 100%,0 100%)}
+.logo b{font-size:15px;line-height:1.2;letter-spacing:.01em}
+.logo b span{font-weight:600}
+.stop{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;background:var(--red);box-shadow:0 0 0 10px rgba(255,65,54,.18),0 0 0 22px rgba(255,65,54,.08)}
+.stop svg{width:52px;height:52px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round}
+h1{margin:30px 0 8px;font-size:clamp(34px,9vw,48px);line-height:1.02;letter-spacing:-.035em;font-weight:800}
+h1 .fr{font-size:.55em;letter-spacing:-.02em;margin-top:8px}
+.lead{margin:0;font-size:18px;line-height:1.5;color:var(--dim)}
+.card{margin-top:26px;border-radius:20px;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.1);overflow:hidden}
+.row{display:flex;gap:14px;padding:16px 18px;align-items:flex-start}
+.row+.row{border-top:1px solid rgba(255,255,255,.08)}
+.row svg{width:24px;height:24px;flex:none;margin-top:2px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.row p{margin:0;line-height:1.45}
+.id{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 18px;background:rgba(255,65,54,.12);font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--dim)}
+.id b{color:var(--ink);font-weight:600}
+footer{text-align:center;padding:16px 22px calc(18px + env(safe-area-inset-bottom));font-size:12.5px;color:var(--dim)}
+footer a{color:var(--ink)}
+body.only-nl .fr,body.only-fr .nl{display:none}
+body.only-fr .fr{opacity:1;font-size:1em;margin-top:0}
+body.only-fr h1 .fr{font-size:1em;margin-top:0}
+.lang{position:absolute;top:calc(16px + env(safe-area-inset-top));right:16px;display:flex;gap:6px}
+.lang button{font:inherit;font-weight:700;font-size:13px;color:var(--ink);background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:7px 11px;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:#160609}
+</style>
+</head>
+<body>
+<div class="lang"><button id="lnl" aria-pressed="false">NL</button><button id="lfr" aria-pressed="false">FR</button></div>
+<main>
+ <div class="logo"><i aria-hidden="true"></i><b><span class="nl">Hoggynesische Spoorwegen</span><span class="fr">Chemin de Fer Hoggynesiéns</span></b></div>
+ <div class="stop" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+ <h1><span class="nl">Geen geldige controle</span><span class="fr">Contrôle non valable</span></h1>
+ <p class="lead"><span class="nl">Je hebt een HS-kaartje gescand met een gewone camera of QR-app. Zo kan een kaartje niet gecontroleerd worden.</span><span class="fr">Vous avez scanné un billet CFH avec un appareil photo ou une application QR ordinaire. Un billet ne peut pas être contrôlé de cette façon.</span></p>
+ <div class="card">
+  <div class="row"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/></svg><p><span class="nl">Alleen HS-personeel kan kaartjes controleren, met de HS Ticketing-scanner.</span><span class="fr">Seul le personnel CFH peut contrôler les billets, avec le scanner Billetterie CFH.</span></p></div>
+  <div class="row"><svg viewBox="0 0 24 24"><path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a2 2 0 000-4z"/></svg><p><span class="nl">Reis je met dit kaartje? Laat de QR-code zien aan de conducteur.</span><span class="fr">Vous voyagez avec ce billet ? Montrez le code QR au contrôleur.</span></p></div>
+  <div class="id"><span>HS-T01</span><b id="tid">—</b></div>
+ </div>
+</main>
+<footer><span class="nl" style="display:inline">© Hoggynesische Spoorwegen</span> · <a href="index.html"><span class="nl" style="display:inline">Naar de startpagina</span></a></footer>
+<script>
+(function(){
+ // ticketnummer tonen, de rest van het kaartje niet; daarna de gegevens uit de adresbalk halen
+ var m=location.hash.match(/^#T=([A-Za-z0-9_-]+)\./),id="—";
+ if(m){try{var s=m[1].replace(/-/g,"+").replace(/_/g,"/");s+="===".slice((s.length+3)%4);var t=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(s),function(c){return c.charCodeAt(0)})));if(t&&typeof t.id==="string")id=t.id.slice(0,24)}catch(e){}}
+ document.getElementById("tid").textContent=id;
+ try{history.replaceState(null,"",location.pathname)}catch(e){}
+ // taal: zoals op de startpagina, anders die van de telefoon
+ var L=null;try{L=JSON.parse(localStorage.getItem("hsstart4"))}catch(e){}
+ if(!L||!(L.nl||L.fr)){var fr=/^fr/i.test(navigator.language||"");L={nl:!fr,fr:fr}}
+ function ap(){document.body.classList.toggle("only-nl",L.nl&&!L.fr);document.body.classList.toggle("only-fr",L.fr&&!L.nl);document.documentElement.lang=L.nl?"nl":"fr";
+  document.getElementById("lnl").setAttribute("aria-pressed",L.nl);document.getElementById("lfr").setAttribute("aria-pressed",L.fr);
+  var bo=L.nl&&L.fr;document.querySelector("footer a").textContent=bo?"Naar de startpagina / Vers l’accueil":L.nl?"Naar de startpagina":"Vers l’accueil";document.querySelector("footer span").textContent=L.nl?"© Hoggynesische Spoorwegen":"© Chemin de Fer Hoggynesiéns";document.title=L.nl?"HS-kaartje":"Billet CFH"}
+ document.getElementById("lnl").onclick=function(){if(L.nl&&!L.fr)return;L.nl=!L.nl;ap()};
+ document.getElementById("lfr").onclick=function(){if(L.fr&&!L.nl)return;L.fr=!L.fr;ap()};
+ ap();
+})();
+</script>
+</body>
+</html>

@@ -84,6 +84,9 @@ body:not(.only-nl):not(.only-fr) .ph h1 .fr{font-size:.5em;margin-top:8px;letter
 .lkr .go{flex:1 1 160px;width:auto;margin:0}
 .lock .msg,.lock .hint{grid-column:1/-1;margin:0}
 .lock a{color:var(--ink)}
+.pkb{flex:1;display:flex;align-items:center;justify-content:center;gap:10px}
+.pkb svg{width:22px;height:22px;flex:none;fill:none;stroke:var(--yel);stroke-width:1.8;stroke-linecap:round}
+#lk{max-width:620px}
 
 /* kaartje */
 .tk{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(160deg,#0f1a3f,#0a1230 55%,#0b0f22);border:1px solid rgba(255,255,255,.12);box-shadow:0 24px 60px rgba(0,0,0,.45)}
@@ -163,22 +166,21 @@ body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
  </header>
  <div class="rail" aria-hidden="true"></div>
 
- <!-- Kaartje gescand buiten de HS-scanner -->
- <main id="outside" hidden>
-  <div class="out">
-   <div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 7v6M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>
-   <h1><span class="nl">Ongeldige controle</span><span class="fr">Contrôle invalide</span></h1>
-   <p><span class="nl">Dit HS-kaartje is gescand met een gewone camera of QR-app. Een kaartje kan alleen gecontroleerd worden met de HS Ticketing-scanner.</span><span class="fr">Ce billet CFH a été scanné avec un appareil photo ou une application QR ordinaire. Un billet ne peut être contrôlé qu’avec le scanner Billetterie CFH.</span></p>
-   <span class="code mono">HS-T01 · <span id="outid"></span></span><br>
-   <a class="go il" href="hs_qr_ticketing_styled.html"><span class="nl">Open HS Ticketing</span><span class="fr">Ouvrir Billetterie CFH</span></a>
-  </div>
- </main>
-
  <main id="app">
   <div class="ph">
    <h1><span class="nl">HS <em>Ticketing</em></span><span class="fr">Billetterie <em>CFH</em></span></h1>
    <p><span class="nl">Maak ondertekende kaartjes met QR-code en controleer ze met de scanner.</span><span class="fr">Créez des billets signés avec code QR et contrôlez-les avec le scanner.</span></p>
   </div>
+  <div id="chk" class="hint il"><span class="nl">Toegang controleren…</span><span class="fr">Vérification de l’accès…</span></div>
+  <form class="card lock" id="lk" autocomplete="off">
+    <div class="lki" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg></div>
+    <div><b><span class="nl">Alleen voor HS-personeel</span><span class="fr">Réservé au personnel CFH</span></b><p><span class="nl">Kaartjes maken en controleren kan pas na ontgrendelen. Gebruik de Diensten-code of je passkey.</span><span class="fr">Créer et contrôler des billets n’est possible qu’après déverrouillage. Utilisez le code des services ou votre clé d’accès.</span></p></div>
+    <div class="lkr"><input id="lkc" type="password" inputmode="numeric" aria-label="Code" placeholder="••••"><button class="go il"><span class="nl">Ontgrendel</span><span class="fr">Déverrouiller</span></button></div>
+    <div class="lkr" id="lkpw" hidden><button type="button" class="ghost il pkb" id="lkp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 18.5c1-1.8 1.5-3.9 1.5-6.5a3 3 0 016 0c0 1.2-.1 2.4-.4 3.5M12 12c0 3.4-.8 6.2-2.4 8.4M17.6 17.8c.3-1.8.4-3.8.4-5.8a6 6 0 00-10.4-4.1M4.6 15.5c.3-1.1.4-2.3.4-3.5 0-1.1.2-2.1.6-3"/></svg><span><span class="nl">Passkey gebruiken</span><span class="fr">Utiliser une clé d’accès</span></span></button></div>
+    <p class="msg" id="lke" role="alert"></p>
+    
+   </form>
+  <div id="in" hidden>
   <div class="seg il" role="tablist">
    <button role="tab" id="tb-make" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a2 2 0 000-4z"/></svg><span class="nl">Kaartje maken</span><span class="fr">Créer un billet</span></button>
    <button role="tab" id="tb-scan" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3M7 12h10"/></svg><span class="nl">Controleren</span><span class="fr">Contrôler</span></button>
@@ -186,15 +188,8 @@ body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
 
   <!-- MAKEN -->
   <section id="p-make">
-   <form class="card lock" id="lk" hidden autocomplete="off">
-    <div class="lki" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg></div>
-    <div><b><span class="nl">Kaartjes maken is beveiligd</span><span class="fr">La création de billets est protégée</span></b><p><span class="nl">Voer de Diensten-code in. Controleren kan iedereen.</span><span class="fr">Saisissez le code des services. Tout le monde peut contrôler.</span></p></div>
-    <div class="lkr"><input id="lkc" type="password" inputmode="numeric" aria-label="Code" placeholder="••••"><button class="go il"><span class="nl">Ontgrendel</span><span class="fr">Déverrouiller</span></button></div>
-    <p class="msg" id="lke" role="alert"></p>
-    <p class="hint il"><a href="index.html#diensten"><span class="nl">Of ontgrendel op de startpagina met je passkey</span><span class="fr">Ou déverrouillez sur l’accueil avec votre clé d’accès</span></a></p>
-   </form>
 
-   <div class="grid2" id="mk" hidden>
+   <div class="grid2" id="mk">
     <form class="card" id="tf" autocomplete="off">
      <div class="f">
       <div class="w"><label for="fn" class="il"><span class="nl">Naam reiziger</span><span class="fr">Nom du voyageur</span></label><input id="fn" required maxlength="40" placeholder="Anna de Vries"></div>
@@ -233,6 +228,7 @@ body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
     <div id="sres"><div class="res idle"><p><span class="nl">Nog niets gescand.</span><span class="fr">Rien n’a encore été scanné.</span></p></div></div>
    </div>
   </section>
+ </div>
  </main>
 </div>
 <script>
@@ -1488,26 +1484,38 @@ $("lnl").onclick=function(){if(L.nl&&!L.fr)return;L.nl=!L.nl;applyLang()};$("lfr
 applyLang();
 
 /* QR-inhoud: link naar deze pagina met het kaartje in de #. Gescand met een gewone camera opent die link de foutmelding. */
-var BASE=location.origin+location.pathname;
+var BASE=location.origin+location.pathname.replace(/[^/]*$/,"")+"kaartje.html";
 function ticketURL(p,s){return BASE+"#T="+p+"."+s}
 function parseQR(txt){txt=String(txt||"").trim();var m=txt.match(/#T=([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/);if(m)return{p:m[1],s:m[2]};
  try{var j=JSON.parse(txt);if(j&&j.ticketID)return{old:j}}catch(e){}return null}
 
-/* Geopend via de QR-code (buiten de scanner): alleen een foutmelding */
-if(/^#T=/.test(location.hash)){$("app").hidden=true;$("outside").hidden=false;var pq=parseQR(location.href);try{$("outid").textContent=pq?dec(pq.p).id:"?"}catch(e){$("outid").textContent="?"}history.replaceState(null,"",location.pathname)}
+/* Oude kaartjes (link naar deze pagina) door naar de foutpagina */
+if(/^#T=/.test(location.hash))location.replace("kaartje.html"+location.hash);
 
 /* tabs */
 function tab(t){var m=t==="make";$("tb-make").setAttribute("aria-selected",m);$("tb-scan").setAttribute("aria-selected",!m);$("p-make").hidden=!m;$("p-scan").hidden=m;if(m)camStop();try{history.replaceState(null,"",m?location.pathname:"#controle")}catch(e){}}
 $("tb-make").onclick=function(){tab("make")};$("tb-scan").onclick=function(){tab("scan")};
 if(location.hash==="#controle")tab("scan");
 
-/* ---------- Toegang (zelfde Diensten-slot als de startpagina) ---------- */
+/* ---------- Toegang: de hele pagina zit achter het Diensten-slot (code of passkey) ---------- */
 var TOK="";try{TOK=sessionStorage.getItem("hs_tok")||""}catch(e){}
-function lockUI(on){$("lk").hidden=on;$("mk").hidden=!on;if(on)loadStations()}
-if(TOK){lockUI(true);fetch(API+"?check="+encodeURIComponent(TOK),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok){TOK="";try{sessionStorage.removeItem("hs_tok")}catch(e){}lockUI(false)}}).catch(function(){})}else lockUI(false);
+function lockUI(on){$("chk").hidden=true;$("lk").hidden=on;$("in").hidden=!on;if(on)loadStations();else camStop()}
+function relock(){TOK="";try{sessionStorage.removeItem("hs_tok")}catch(e){}lockUI(false)}
+function unlockWith(t){TOK=t;try{sessionStorage.setItem("hs_tok",TOK)}catch(e){}$("lkc").value="";$("lke").textContent="";lockUI(true)}
+$("lk").hidden=true;
+if(TOK)fetch(API+"?check="+encodeURIComponent(TOK),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){j.ok?lockUI(true):relock()})
+ .catch(function(){lockUI(true)}); /* geen verbinding: toegang van deze sessie blijft geldig, controleren werkt offline */
+else lockUI(false);
 $("lk").onsubmit=function(e){e.preventDefault();var c=$("lkc").value.trim();if(!c)return;$("lke").innerHTML=T("Code controleren…","Vérification du code…");
- fetch(API+"?unlock=1",{method:"POST",body:c,cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(j.ok&&j.token){TOK=j.token;try{sessionStorage.setItem("hs_tok",TOK)}catch(e){}$("lkc").value="";$("lke").textContent="";lockUI(true)}else{$("lke").innerHTML=T("Onjuiste code.","Code incorrect.");$("lkc").value=""}})
+ fetch(API+"?unlock=1",{method:"POST",body:c,cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(j.ok&&j.token)unlockWith(j.token);else{$("lke").innerHTML=T("Onjuiste code.","Code incorrect.");$("lkc").value=""}})
  .catch(function(){$("lke").innerHTML=T("Kan de code nu niet controleren.","Impossible de vérifier le code.")})};
+/* passkey (zelfde als op de startpagina, controle in de Worker) */
+$("lkpw").hidden=!(window.PublicKeyCredential&&navigator.credentials&&window.isSecureContext);
+$("lkp").onclick=function(){var b=this;b.disabled=true;$("lke").innerHTML=T("Passkey controleren…","Vérification de la clé d’accès…");
+ fetch(API+"?pk=opts",{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};return navigator.credentials.get({publicKey:{challenge:new TextEncoder().encode(j.challenge),rpId:j.rpId,userVerification:"required",timeout:60000}})})
+ .then(function(c){var r=c.response;return fetch(API+"?pk=auth",{method:"POST",cache:"no-store",body:JSON.stringify({id:c.id,clientDataJSON:b64u(r.clientDataJSON),authenticatorData:b64u(r.authenticatorData),signature:b64u(r.signature)})}).then(function(x){return x.json()})})
+ .then(function(j){b.disabled=false;if(j.ok&&j.token)unlockWith(j.token);else throw{w:j.error}})
+ .catch(function(e){b.disabled=false;var n=e&&(e.w||e.name);$("lke").innerHTML=n==="NotAllowedError"||n==="AbortError"?T("Geannuleerd of geen passkey gekozen.","Annulé ou aucune clé d’accès choisie."):n==="unknown"?T("Deze passkey is niet bekend. Voeg hem toe op de startpagina onder Diensten.","Cette clé d’accès n’est pas connue. Ajoutez-la sur l’accueil, dans Services."):n==="nokv"?T("Passkeys zijn nog niet ingesteld in de Worker.","Les clés d’accès ne sont pas encore configurées dans le Worker."):T("Passkey lukte niet.","La clé d’accès a échoué.")})};
 
 /* ---------- Stations (suggesties) ---------- */
 var stLoaded=0;function loadStations(){if(stLoaded)return;stLoaded=1;
@@ -1526,7 +1534,7 @@ $("tf").onsubmit=function(e){e.preventDefault();var b=$("mkb");b.disabled=true;$
  getPub(true).then(function(k){var t={v:1,k:k.kid,id:newId(),n:$("fn").value.trim(),f:$("ff").value.trim(),t:$("ft").value.trim(),d:$("fd").value,tr:$("ftr").value.trim(),c:CL,i:Date.now()};var p=enc(t);
   return fetch(API+"?tsign=1",{method:"POST",body:JSON.stringify({token:TOK,p:p}),cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};return{t:t,p:p,s:j.s}})})
  .then(function(x){b.disabled=false;$("mke").textContent="";CUR=x;showTicket(x);var h=ls("hs_tickets")||[];h.unshift({p:x.p,s:x.s});ls("hs_tickets",h.slice(0,12));drawHist()})
- .catch(function(e){b.disabled=false;$("mke").className="msg";$("mke").innerHTML=errText(e);if(e&&e.w==="token"){TOK="";try{sessionStorage.removeItem("hs_tok")}catch(_){}lockUI(false)}})};
+ .catch(function(e){b.disabled=false;$("mke").className="msg";$("mke").innerHTML=errText(e);if(e&&e.w==="token")relock()})};
 
 function qrImg(text){var q=new HSQR.Model(-1,HSQR.Level.M);q.addData(unescape(encodeURIComponent(text)));q.make();var n=q.getModuleCount(),sc=8,c=document.createElement("canvas");c.width=c.height=n*sc;var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.fillStyle="#0a1330";
  for(var r=0;r<n;r++)for(var k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(k*sc,r*sc,sc,sc);return c}
