@@ -1657,6 +1657,198 @@ var HSAztec=(function(){
  return{encode:encode}})();
 </script>
 <script>
+/* Aztec-lezer voor camerabeelden (eigen code, geen externe bibliotheek). Gebaseerd op de werkwijze van ZXing (Apache-2.0):
+   bullseye zoeken, oriëntatie en modusbericht lezen, perspectief corrigeren, Reed-Solomon, bits naar bytes.
+   HSAZR.decode(gray, w, h) -> Uint8Array met de ruwe bytes, of null. gray = Uint8Array met grijswaarden 0..255. */
+function HSAZR_MAKE(){
+ /* ---------- Galois-veld en Reed-Solomon (wortels a^1..a^2t) ---------- */
+ var GF={};
+ function field(m){if(GF[m])return GF[m];var poly={4:0x13,6:0x43,8:0x12D,10:0x409,12:0x1069}[m],size=1<<m,exp=new Int32Array(size*2),log=new Int32Array(size),x=1;
+  for(var i=0;i<size-1;i++){exp[i]=x;log[x]=i;x<<=1;if(x>=size)x^=poly}for(i=size-1;i<size*2;i++)exp[i]=exp[i-(size-1)];
+  var f={size:size,n:size-1,exp:exp,log:log,mul:function(a,b){return a&&b?exp[log[a]+log[b]]:0},inv:function(a){return exp[(size-1)-log[a]]},pow:function(i){return exp[((i%(size-1))+(size-1))%(size-1)]}};return GF[m]=f}
+ /* corrigeert w (hoogste macht eerst) in place; geeft false als het niet lukt */
+ function rsDecode(w,ec,m){var f=field(m),n=w.length,S=[],err=false;
+  for(var j=1;j<=ec;j++){var s=0,a=f.pow(j);for(var i=0;i<n;i++)s=f.mul(s,a)^w[i];S.push(s);if(s)err=true}
+  if(!err)return true;
+  /* Berlekamp-Massey */
+  var C=[1],B=[1],L=0,mm=1,b=1;
+  for(var k=0;k<ec;k++){var d=S[k];for(i=1;i<=L;i++)if(C[i])d^=f.mul(C[i],S[k-i]);
+   if(d===0){mm++;continue}var T=C.slice(),coef=f.mul(d,f.inv(b));while(C.length<B.length+mm)C.push(0);for(i=0;i<B.length;i++)C[i+mm]^=f.mul(coef,B[i]);
+   if(2*L<=k){L=k+1-L;B=T;b=d;mm=1}else mm++}
+  while(C.length>1&&C[C.length-1]===0)C.pop();if(C.length-1!==L||L*2>ec)return false;
+  /* foutposities (Chien) */
+  var pos=[];for(var p=0;p<n;p++){var xi=f.pow(-p),v=0,xp=1;for(i=0;i<C.length;i++){v^=f.mul(C[i],xp);xp=f.mul(xp,xi)}if(v===0)pos.push(p)}
+  if(pos.length!==L)return false;
+  /* Omega = S(x)*Lambda(x) mod x^ec, Forney */
+  var Om=new Array(ec).fill(0);for(i=0;i<ec;i++)for(j=0;j<C.length&&i+j<ec;j++)Om[i+j]^=f.mul(S[i],C[j]);
+  for(var q=0;q<pos.length;q++){var X=f.pow(pos[q]),Xi=f.inv(X),num=0;xp=1;for(i=0;i<ec;i++){num^=f.mul(Om[i],xp);xp=f.mul(xp,Xi)}
+   var den=0;xp=1;for(i=1;i<C.length;i+=2){den^=f.mul(C[i],xp);xp=f.mul(xp,f.mul(Xi,Xi))}if(!den)return false;
+   var e=f.mul(num,f.inv(den)),idx=n-1-pos[q];if(idx<0)return false;w[idx]^=e}
+  return true}
+
+ /* ---------- zwart-wit maken: lokale drempel met integraalbeeld ---------- */
+ function binarize(g,w,h){var I=new Float64Array((w+1)*(h+1));for(var y=0;y<h;y++){var row=0;for(var x=0;x<w;x++){row+=g[y*w+x];I[(y+1)*(w+1)+x+1]=I[y*(w+1)+x+1]+row}}
+  var r=Math.max(8,Math.round(Math.min(w,h)/16)),B=new Uint8Array(w*h),TH=new Float32Array(w*h);
+  for(y=0;y<h;y++){var y0=Math.max(0,y-r),y1=Math.min(h,y+r+1);for(x=0;x<w;x++){var x0=Math.max(0,x-r),x1=Math.min(w,x+r+1),s=I[y1*(w+1)+x1]-I[y0*(w+1)+x1]-I[y1*(w+1)+x0]+I[y0*(w+1)+x0],mean=s/((y1-y0)*(x1-x0));
+   TH[y*w+x]=mean*0.92-2;B[y*w+x]=g[y*w+x]<TH[y*w+x]?1:0}}return{B:B,TH:TH}}
+
+ function decodeImage(BT,G,w,h){var B=BT.B,TH=BT.TH;
+  /* grijswaarde en drempel op een niet-geheel punt (bilineair) */
+  function dark(x,y){var x0=Math.floor(x-0.5),y0=Math.floor(y-0.5),fx=x-0.5-x0,fy=y-0.5-y0;if(x0<0||y0<0||x0+1>=w||y0+1>=h){var xi=Math.round(x-0.5),yi=Math.round(y-0.5);return xi>=0&&yi>=0&&xi<w&&yi<h&&B[yi*w+xi]===1?1:0}
+   var i=y0*w+x0,gv=(G[i]*(1-fx)+G[i+1]*fx)*(1-fy)+(G[i+w]*(1-fx)+G[i+w+1]*fx)*fy,tv=(TH[i]*(1-fx)+TH[i+1]*fx)*(1-fy)+(TH[i+w]*(1-fx)+TH[i+w+1]*fx)*fy;return gv<tv?1:0}
+  function get(x,y){return B[y*w+x]===1}
+  function valid(x,y){return x>=0&&x<w&&y>=0&&y<h}
+  /* kandidaten voor het midden: in rijen het patroon Z W Z W Z W Z W Z met gelijke breedtes */
+  function runs(get1,len){var out=[],c=get1(0),start=0;for(var i=1;i<=len;i++){var v=i<len?get1(i):!c;if(v!==c){out.push([c,start,i-start]);c=v;start=i}}return out}
+  function bulls(rs){var found=[];for(var i=0;i+8<rs.length;i++){if(!rs[i][0])continue;var sum=0;for(var k=1;k<=7;k++)sum+=rs[i+k][2];var avg=sum/7;if(avg<1.5)continue;var ok=true;
+    for(k=1;k<=7&&ok;k++)if(rs[i+k][2]<avg*0.5||rs[i+k][2]>avg*1.6)ok=false;if(ok&&rs[i][2]>=avg*0.5&&rs[i+8][2]>=avg*0.5)found.push([rs[i+4][1]+rs[i+4][2]/2,avg])}return found}
+  var cand=[],step=Math.max(1,Math.round(h/300));
+  for(var y=0;y<h;y+=step){bulls(runs(function(x){return get(x,y)},w)).forEach(function(c){var cx=Math.round(c[0]);
+    var col=bulls(runs(function(yy){return get(cx,yy)},h)).filter(function(v){return Math.abs(v[0]-y)<c[1]*1.5});if(col.length)cand.push([cx,Math.round(col[0][0]),c[1]])})}
+  /* dubbele kandidaten samenvoegen */
+  var uniq=[];cand.forEach(function(c){var u=uniq.find(function(u){return Math.abs(u[0]-c[0])<u[2]*2&&Math.abs(u[1]-c[1])<u[2]*2});if(u){u[3]++;u[4]+=c[0];u[5]+=c[1]}else uniq.push([c[0],c[1],c[2],1,c[0],c[1]])});
+  uniq.forEach(function(u){u[0]=Math.round(u[4]/u[3]);u[1]=Math.round(u[5]/u[3])});uniq.sort(function(a,b){return b[3]-a[3]});
+  
+  uniq=uniq.slice(0,250);uniq.forEach(function(u){u[6]=score(u[0],u[1],u[2])});uniq.sort(function(a,b){return b[6]-a[6]});
+  uniq.slice(0,12).forEach(function(u){var best=u[6],bx=u[0],by=u[1];for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;var sc=score(u[0]+dx,u[1]+dy,u[2]);if(sc>best){best=sc;bx=u[0]+dx;by=u[1]+dy}}u[6]=best;u[0]=bx;u[1]=by});
+  uniq=uniq.filter(function(u){return u[6]>=12}).sort(function(a,b){return b[6]-a[6]||b[3]-a[3]});
+  
+  if(uniq.length)SEEN=true;
+  for(var t=0;t<uniq.length&&t<8;t++){var r=tryCenter(uniq[t][0],uniq[t][1],uniq[t][2]);if(r)return r}
+  return null;
+
+  function firstDiff(p,color,dx,dy){var x=p[0]+dx,y=p[1]+dy;while(valid(x,y)&&get(x,y)===color){x+=dx;y+=dy}x-=dx;y-=dy;while(valid(x,y)&&get(x,y)===color)x+=dx;x-=dx;while(valid(x,y)&&get(x,y)===color)y+=dy;y-=dy;return[x,y]}
+  function dist(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1])}
+  function colorLine(p1,p2){var d=dist(p1,p2);if(!d)return 0;var dx=(p2[0]-p1[0])/d,dy=(p2[1]-p1[1])/d,err=0,px=p1[0],py=p1[1],cm=get(p1[0],p1[1]),n=Math.floor(d);
+   for(var i=0;i<n;i++){var x=Math.round(px),y=Math.round(py);if(valid(x,y)&&get(x,y)!==cm)err++;px+=dx;py+=dy}var er=err/d;if(er>0.25&&er<0.75)return 0;return(er<=0.25)===cm?1:-1}
+  function wbRect(a,b,c,d){var k=KC;a=[Math.max(0,a[0]-k),Math.min(h-1,a[1]+k)];b=[Math.max(0,b[0]-k),Math.max(0,b[1]-k)];c=[Math.min(w-1,c[0]+k),Math.max(0,c[1]-k)];d=[Math.min(w-1,d[0]+k),Math.min(h-1,d[1]+k)];
+   var ci=colorLine(d,a);if(!ci)return false;return colorLine(a,b)===ci&&colorLine(b,c)===ci&&colorLine(c,d)===ci}
+  function sampleLine(p1,p2,size){var r=0,d=dist(p1,p2),ms=d/size,dx=ms*(p2[0]-p1[0])/d,dy=ms*(p2[1]-p1[1])/d;
+   for(var i=0;i<size;i++){var x=Math.round(p1[0]+i*dx),y=Math.round(p1[1]+i*dy);if(valid(x,y)&&get(x,y))r|=1<<(size-i-1)}return r}
+  var KC=3;
+  function tryCenter(cx,cy,ms){
+   /* stralen vanuit het midden: k-de kleurwissel = binnenrand van de buitenste zwarte ring van het doelwit */
+   if(!valid(cx,cy))return null;if(!get(cx,cy)){var fixed=false;for(var dy=-2;dy<=2&&!fixed;dy++)for(var dx=-2;dx<=2&&!fixed;dx++)if(valid(cx+dx,cy+dy)&&get(cx+dx,cy+dy)){cx+=dx;cy+=dy;fixed=true}if(!fixed)return null}
+   var NR=96,trans=rays(cx,cy,NR,ms);
+   for(var hyp=0;hyp<2;hyp++){var compact=hyp===0,K=compact?4:6,rings=[];
+    for(var j=2;j<=K;j++){var pts=[];trans.forEach(function(q){if(q.t.length>=K){var r=q.t[j-1]-0.25;pts.push({th:q.th,r:r,x:cx+q.ux*r,y:cy+q.uy*r})}});rings.push({j:j,pts:pts})}
+    var outer=rings[rings.length-1].pts;if(outer.length<NR*0.6)continue;
+    var sr=0,si=0;outer.forEach(function(p){sr+=p.r*Math.cos(4*p.th);si+=p.r*Math.sin(4*p.th)});var phi=Math.atan2(si,sr)/4;
+    var src=[],dst=[];rings.forEach(function(rg){if(rg.j<3)return;var cs=fitSquare(rg.pts,phi);if(!cs)return;var R=rg.j-0.5;
+     [[-R,-R],[R,-R],[R,R],[-R,R]].forEach(function(m,i){src.push(m);dst.push(cs[i])})});
+    if(src.length<8)continue;var H=homography(src,dst);if(!H)continue;
+    var res=readWith(H,compact);if(res)return res}
+   return null}
+  function rays(cx,cy,NR,ms){var out=[],maxr=(ms||6)*12,hold=Math.max(1,Math.min(3,(ms||6)/4));
+   for(var k=0;k<NR;k++){var th=2*Math.PI*k/NR,ux=Math.cos(th),uy=Math.sin(th),prev=true,list=[];
+    for(var r=0.5;r<maxr&&list.length<8;r+=0.5){var x=Math.round(cx+ux*r),y=Math.round(cy+uy*r);if(!valid(x,y))break;var v=get(x,y);
+     if(v!==prev){var x2=Math.round(cx+ux*(r+hold)),y2=Math.round(cy+uy*(r+hold));if(valid(x2,y2)&&get(x2,y2)===v){list.push(r);prev=v}}}
+    out.push({th:th,ux:ux,uy:uy,t:list})}return out}
+  /* hoe sterk lijkt dit punt op het midden van een doelwit: stralen met 4 gelijk verdeelde wissels */
+  function score(cx,cy,ms){if(!valid(cx,cy)||!get(cx,cy))return 0;var R=rays(cx,cy,24,ms),n=0;
+   R.forEach(function(q){var t=q.t;if(t.length<4)return;var a=t[1]-t[0],b=t[2]-t[1],c=t[3]-t[2],m=(a+b+c)/3;if(m<1)return;if(Math.abs(a-m)<0.35*m&&Math.abs(b-m)<0.35*m&&Math.abs(c-m)<0.35*m&&t[0]<0.9*m)n++});return n}
+  function fitSquare(pts,phi){
+   var sides=[[],[],[],[]],D=Math.PI/2;
+   pts.forEach(function(p){var a=p.th-phi;a=((a%(2*Math.PI))+2*Math.PI)%(2*Math.PI);var k=Math.floor(a/D),f=(a-k*D)/D;if(f>0.18&&f<0.82)sides[k].push(p)});
+   var lines=[];for(var k=0;k<4;k++){if(sides[k].length<4)return null;var L=fitLine(sides[k]);if(!L)return null;
+    var keep=sides[k].filter(function(p){return Math.abs(L.a*p.x+L.b*p.y-L.c)<1.6});if(keep.length>=4)L=fitLine(keep)||L;lines.push(L)}
+   var cs=[];for(k=0;k<4;k++){var A=lines[(k+3)%4],B=lines[k],det=A.a*B.b-A.b*B.a;if(Math.abs(det)<1e-9)return null;cs.push([(A.c*B.b-A.b*B.c)/det,(A.a*B.c-A.c*B.a)/det])}
+   return cs}
+  function fitLine(P){var mx=0,my=0;P.forEach(function(p){mx+=p.x;my+=p.y});mx/=P.length;my/=P.length;var sxx=0,sxy=0,syy=0;
+   P.forEach(function(p){var dx=p.x-mx,dy=p.y-my;sxx+=dx*dx;sxy+=dx*dy;syy+=dy*dy});var ang=0.5*Math.atan2(2*sxy,sxx-syy),nx=-Math.sin(ang),ny=Math.cos(ang);return{a:nx,b:ny,c:nx*mx+ny*my}}
+  function homography(src,dst){var ox=0,oy=0;dst.forEach(function(d){ox+=d[0];oy+=d[1]});ox/=dst.length;oy/=dst.length;var sc=100;
+   var A=[],bb=[];for(var i=0;i<src.length;i++){var u=src[i][0],v=src[i][1],x=(dst[i][0]-ox)/sc,y=(dst[i][1]-oy)/sc;A.push([u,v,1,0,0,0,-u*x,-v*x]);bb.push(x);A.push([0,0,0,u,v,1,-u*y,-v*y]);bb.push(y)}
+   var N=[],r=[];for(i=0;i<8;i++){N.push(new Array(8).fill(0));r.push(0)}
+   for(var k=0;k<A.length;k++)for(i=0;i<8;i++){r[i]+=A[k][i]*bb[k];for(var j=0;j<8;j++)N[i][j]+=A[k][i]*A[k][j]}
+   for(i=0;i<8;i++){var p=i;for(j=i+1;j<8;j++)if(Math.abs(N[j][i])>Math.abs(N[p][i]))p=j;if(Math.abs(N[p][i])<1e-12)return null;var t=N[i];N[i]=N[p];N[p]=t;t=r[i];r[i]=r[p];r[p]=t;
+    for(j=i+1;j<8;j++){var f=N[j][i]/N[i][i];for(var c=i;c<8;c++)N[j][c]-=f*N[i][c];r[j]-=f*r[i]}}
+   var h=new Array(8);for(i=7;i>=0;i--){var s2=r[i];for(j=i+1;j<8;j++)s2-=N[i][j]*h[j];h[i]=s2/N[i][i]}
+   return function(u,v){var den=h[6]*u+h[7]*v+1;return[(h[0]*u+h[1]*v+h[2])/den*sc+ox,(h[3]*u+h[4]*v+h[5])/den*sc+oy]}}
+  /* referentieraster (grote codes): kruispunten om de 16 modules lokaal zoeken en het perspectief opnieuw berekenen */
+  function refineGrid(g,compact,dim,mir,rot){if(compact)return null;var half=Math.floor(dim/2);if(half<17)return null;
+   var P=function(u,v){if(mir)u=-u;for(var i=0;i<rot;i++){var t=u;u=-v;v=t}return T0cur(u,v)};
+   var src=[],dst=[],lim=Math.floor((half-2)/16)*16;
+   for(var bj=-lim;bj<=lim;bj+=16)for(var bi=-lim;bi<=lim;bi+=16){
+    var best=-1,bo=null;for(var oy=-0.75;oy<=0.751;oy+=0.25)for(var ox=-0.75;ox<=0.751;ox+=0.25){var sc=0;
+     for(var k=-4;k<=4;k++){var want=(k&1)===0?1:0;if(g(bi+k+ox,bj+oy)===want)sc++;if(k&&g(bi+ox,bj+k+oy)===want)sc++}
+     if(sc>best){best=sc;bo=[ox,oy]}}
+    if(best>=15){src.push([bi,bj]);dst.push(P(bi+bo[0],bj+bo[1]))}}
+   if(src.length<6)return null;
+   /* ook de doelwitringen als ankerpunten */
+   for(var j=3;j<=6;j++){var R=j-0.5;[[-R,-R],[R,-R],[R,R],[-R,R]].forEach(function(m){src.push(m);dst.push(P(m[0],m[1]))})}
+   var H2=homography(src,dst);if(!H2)return null;
+   return function(u,v){var p=H2(u,v);return dark(p[0]+0.5,p[1]+0.5)}}
+  var T0cur=null;
+  function readWith(T0,compact){T0cur=T0;
+   var be=compact?5:7;
+   for(var mir=0;mir<2;mir++)for(var rot=0;rot<4;rot++){
+    var g=function(u,v){if(mir)u=-u;for(var i=0;i<rot;i++){var t=u;u=-v;v=t}var p=T0(u,v);return dark(p[0]+0.5,p[1]+0.5)};
+    var o=[[-be,-be,1],[-be+1,-be,1],[-be,-be+1,1],[be,-be,1],[be,-be+1,1],[be-1,-be,0],[be,be-1,1],[be,be,0],[be-1,be,0],[-be,be,0],[-be+1,be,0],[-be,be-1,0]],bad=0;
+    o.forEach(function(q){if(g(q[0],q[1])!==q[2])bad++});if(bad>2)continue;
+    var mb=[],i;if(compact){for(i=0;i<7;i++){var of=-3+i;mb[i]=g(of,-5);mb[i+7]=g(5,of);mb[20-i]=g(of,5);mb[27-i]=g(-5,of)}}
+    else{for(i=0;i<10;i++){of=-5+i+Math.floor(i/5);mb[i]=g(of,-7);mb[i+10]=g(7,of);mb[29-i]=g(of,7);mb[39-i]=g(-7,of)}}
+    var ncw=compact?7:10,ndw=compact?2:4,pw=[];for(i=0;i<ncw;i++){var v=0;for(var j=0;j<4;j++)v=v*2+mb[i*4+j];pw.push(v)}
+    if(!rsDecode(pw,ncw-ndw,4))continue;var cd=0;for(i=0;i<ndw;i++)cd=cd*16+pw[i];
+    var layers,blocks;if(compact){layers=(cd>>6)+1;blocks=(cd&0x3F)+1}else{layers=(cd>>11)+1;blocks=(cd&0x7FF)+1}
+    
+    var dim=compact?4*layers+11:(layers<=4?4*layers+15:4*layers+2*(Math.floor((layers-4)/8)+1)+15),c=Math.floor(dim/2),M=new Uint8Array(dim*dim);
+    var gg=refineGrid(g,compact,dim,mir,rot);if(gg){for(var yy2=0;yy2<dim;yy2++)for(var xx2=0;xx2<dim;xx2++)M[yy2*dim+xx2]=gg(xx2-c,yy2-c);var o2=readMatrix(M,dim,compact,layers,blocks);if(o2)return o2}
+    /* kleine schaalcorrecties: de Reed-Solomon-controle beslist welke klopt */
+    var SC=[1,0.985,1.015,0.97,1.03,0.955,1.045,0.94,1.06];
+    for(var si=0;si<SC.length;si++){var f=SC[si];for(var yy=0;yy<dim;yy++)for(var xx=0;xx<dim;xx++)M[yy*dim+xx]=g((xx-c)*f,(yy-c)*f);
+     var out=readMatrix(M,dim,compact,layers,blocks);if(out){return out}}}
+   return null}}
+
+ /* perspectief: vierhoek src -> vierhoek dst (zoals ZXing PerspectiveTransform) */
+ function sq2q(p){var x0=p[0][0],y0=p[0][1],x1=p[1][0],y1=p[1][1],x2=p[2][0],y2=p[2][1],x3=p[3][0],y3=p[3][1],dx3=x0-x1+x2-x3,dy3=y0-y1+y2-y3;
+  if(dx3===0&&dy3===0)return[x1-x0,x2-x1,x0,y1-y0,y2-y1,y0,0,0,1];
+  var dx1=x1-x2,dx2=x3-x2,dy1=y1-y2,dy2=y3-y2,den=dx1*dy2-dx2*dy1,a13=(dx3*dy2-dx2*dy3)/den,a23=(dx1*dy3-dx3*dy1)/den;
+  return[x1-x0+a13*x1,x3-x0+a23*x3,x0,y1-y0+a13*y1,y3-y0+a23*y3,y0,a13,a23,1]}
+ function adj(m){var a11=m[0],a21=m[1],a31=m[2],a12=m[3],a22=m[4],a32=m[5],a13=m[6],a23=m[7],a33=m[8];
+  return[a22*a33-a23*a32,a23*a31-a21*a33,a21*a32-a22*a31,a13*a32-a12*a33,a11*a33-a13*a31,a12*a31-a11*a32,a12*a23-a13*a22,a13*a21-a11*a23,a11*a22-a12*a21]}
+ function mul(a,b){/* a.times(b) volgens ZXing-opslag [a11,a21,a31,a12,a22,a32,a13,a23,a33] */
+  var a11=a[0],a21=a[1],a31=a[2],a12=a[3],a22=a[4],a32=a[5],a13=a[6],a23=a[7],a33=a[8],b11=b[0],b21=b[1],b31=b[2],b12=b[3],b22=b[4],b32=b[5],b13=b[6],b23=b[7],b33=b[8];
+  return[a11*b11+a21*b12+a31*b13,a11*b21+a21*b22+a31*b23,a11*b31+a21*b32+a31*b33,a12*b11+a22*b12+a32*b13,a12*b21+a22*b22+a32*b23,a12*b31+a22*b32+a32*b33,a13*b11+a23*b12+a33*b13,a13*b21+a23*b22+a33*b23,a13*b31+a23*b32+a33*b33]}
+ function persp(src,dst){var q2s=adj(sq2q(src)),s2q=sq2q(dst),m=mul(s2q,q2s);
+  return function(x,y){var den=m[6]*x+m[7]*y+m[8];return[(m[0]*x+m[1]*y+m[2])/den,(m[3]*x+m[4]*y+m[5])/den]}}
+
+ /* ---------- matrix -> bits -> bytes ---------- */
+ function readMatrix(M,dim,compact,layers,blocks){function get(x,y){return M[y*dim+x]===1}
+  var base=(compact?11:14)+layers*4,map=new Array(base),total=((compact?88:112)+16*layers)*layers,raw=new Uint8Array(total),i;
+  if(compact)for(i=0;i<base;i++)map[i]=i;else{var ms=base+1+2*Math.floor((Math.floor(base/2)-1)/15),oc=Math.floor(base/2),ce=Math.floor(ms/2);for(i=0;i<oc;i++){var off=i+Math.floor(i/15);map[oc-i-1]=ce-off-1;map[oc+i]=ce+off+1}}
+  for(var L=0,ro=0;L<layers;L++){var rs=(layers-L)*4+(compact?9:12),lo=L*2,hi=base-1-lo;
+   for(var j=0;j<rs;j++){var co=j*2;for(var k=0;k<2;k++){raw[ro+co+k]=get(map[lo+k],map[lo+j]);raw[ro+2*rs+co+k]=get(map[lo+j],map[hi-k]);raw[ro+4*rs+co+k]=get(map[hi-k],map[hi-j]);raw[ro+6*rs+co+k]=get(map[hi-j],map[lo+k])}}ro+=rs*8}
+  var cw=layers<=2?6:layers<=8?8:layers<=22?10:12,ncw=Math.floor(total/cw);if(ncw<blocks)return null;
+  var offset=total%cw,words=[];for(i=0;i<ncw;i++,offset+=cw){var v=0;for(k=0;k<cw;k++)v=v*2+raw[offset+k];words.push(v)}
+  if(!rsDecode(words,ncw-blocks,cw))return null;
+  var mask=(1<<cw)-1,bits=[];for(i=0;i<blocks;i++){var d=words[i];if(d===0||d===mask)return null;
+   if(d===1||d===mask-1){for(k=0;k<cw-1;k++)bits.push(d>1?1:0)}else for(k=cw-1;k>=0;k--)bits.push((d>>k)&1)}
+  return highLevel(bits)}
+ function highLevel(b){var out=[],idx=0,end=b.length;function rd(n){var v=0;for(var i=0;i<n;i++)v=v*2+b[idx+i];idx+=n;return v}
+  var U=["PS"," "].concat("ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")).concat(["LL","ML","DL","BS"]),
+   Lo=["PS"," "].concat("abcdefghijklmnopqrstuvwxyz".split("")).concat(["US","ML","DL","BS"]),
+   Mx=["PS"," ","\x01","\x02","\x03","\x04","\x05","\x06","\x07","\b","\t","\n","\x0b","\f","\r","\x1b","\x1c","\x1d","\x1e","\x1f","@","\\","^","_","`","|","~","\x7f","LL","UL","PL","BS"],
+   P=["FLG","\r","\r\n",". ",", ",": ","!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/",":",";","<","=",">","?","[","]","{","}","UL"],
+   D=["PS"," ","0","1","2","3","4","5","6","7","8","9",",",".","UL","US"];
+  var TB={U:U,L:Lo,M:Mx,P:P,D:D},latch="U",sh="U";
+  while(idx<end){
+   if(sh==="B"){if(end-idx<5)break;var n=rd(5);if(n===0){if(end-idx<11)break;n=rd(11)+31}for(var c=0;c<n;c++){if(end-idx<8){idx=end;break}out.push(rd(8))}sh=latch;continue}
+   var size=sh==="D"?4:5;if(end-idx<size)break;var s=TB[sh][rd(size)];
+   if(s==="FLG"){if(end-idx<3)break;var f=rd(3);if(f===0)out.push(29);else if(f===7)return null;else{if(end-idx<4*f)break;idx+=4*f}sh=latch}
+   else if(s.length===2&&/^[A-Z]{2}$/.test(s)){latch=sh;sh=s.charAt(0);if(s.charAt(1)==="L")latch=sh}
+   else{for(var q=0;q<s.length;q++)out.push(s.charCodeAt(q));sh=latch}}
+  return new Uint8Array(out)}
+
+ var SEEN=false;
+ function decode(gray,w,h){try{SEEN=false;var r=decodeImage(binarize(gray,w,h),gray,w,h);if(r)return r;if(!SEEN)return null;
+   /* kleine modules: vergroot 2x en probeer opnieuw */
+   if(w*h<=1400000){var W2=w*2,H2=h*2,g2=new Uint8Array(W2*H2);for(var y=0;y<H2;y++){var sy=Math.min(h-1,(y-0.5)/2<0?0:(y-0.5)/2),y0=Math.floor(sy),fy=sy-y0,y1=Math.min(h-1,y0+1);
+     for(var x=0;x<W2;x++){var sx=Math.min(w-1,(x-0.5)/2<0?0:(x-0.5)/2),x0=Math.floor(sx),fx=sx-x0,x1=Math.min(w-1,x0+1);g2[y*W2+x]=(gray[y0*w+x0]*(1-fx)+gray[y0*w+x1]*fx)*(1-fy)+(gray[y1*w+x0]*(1-fx)+gray[y1*w+x1]*fx)*fy}}
+    return decodeImage(binarize(g2,W2,H2),g2,W2,H2)}return null}catch(e){return null}}
+ return{decode:decode}}
+var HSAZR=HSAZR_MAKE();
+</script>
+<script>
 var API="https://hs-trein.mitchell-middelbosch.workers.dev/";
 var $=function(i){return document.getElementById(i)},L={nl:true,fr:false};
 function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k));v===null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
@@ -1841,12 +2033,30 @@ var DET=null,JSQR=null,AZOK=false;
 /* Aztec lezen kan alleen met de ingebouwde lezer van de browser (Chrome op Android); jsQR is alleen een terugval voor QR */
 var DETP=("BarcodeDetector"in window&&BarcodeDetector.getSupportedFormats?BarcodeDetector.getSupportedFormats():Promise.resolve([])).then(function(f){
  AZOK=f.indexOf("aztec")>=0;var use=f.filter(function(x){return x==="aztec"||x==="qr_code"});try{if(use.length)DET=new BarcodeDetector({formats:use})}catch(e){}
- if(!AZOK)$("azw").hidden=false}).catch(function(){$("azw").hidden=false});
+ }).catch(function(){});
 function needJsQR(){return DETP.then(needJsQR2)}
 function needJsQR2(){if(DET||window.jsQR)return Promise.resolve();if(JSQR)return JSQR;JSQR=new Promise(function(res,rej){var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";s.onload=res;s.onerror=function(){JSQR=null;rej()};document.head.appendChild(s)});return JSQR}
 var cvs=document.createElement("canvas"),cx=cvs.getContext("2d",{willReadFrequently:true});
-function read(src,w,h){if(DET)return DET.detect(src).then(function(r){return r.length?r[0].rawValue:null});
- var sc=Math.min(1,900/Math.max(w,h));cvs.width=Math.round(w*sc);cvs.height=Math.round(h*sc);cx.drawImage(src,0,0,cvs.width,cvs.height);var d=cx.getImageData(0,0,cvs.width,cvs.height),r=window.jsQR(d.data,d.width,d.height,{inversionAttempts:"dontInvert"});return Promise.resolve(r?r.data:null)}
+/* Aztec: eigen lezer op het camerabeeld (de ingebouwde lezer geeft binaire inhoud niet altijd goed door), in een achtergrondtaak */
+var AZW=null,azLast=0,azMiss=0;
+function azWorker(){if(AZW!==null)return AZW;try{var src="var HSAZR=("+HSAZR_MAKE.toString()+")();onmessage=function(e){var r=null;try{r=HSAZR.decode(e.data.g,e.data.w,e.data.h)}catch(x){}postMessage(r)}";
+ AZW=new Worker(URL.createObjectURL(new Blob([src],{type:"text/javascript"})))}catch(e){AZW=false}return AZW}
+function frameGray(src,w,h,max){var sc=Math.min(1,max/Math.max(w,h)),W=Math.max(1,Math.round(w*sc)),H=Math.max(1,Math.round(h*sc));cvs.width=W;cvs.height=H;cx.drawImage(src,0,0,W,H);
+ var d=cx.getImageData(0,0,W,H).data,g=new Uint8Array(W*H);for(var i=0,j=0;i<g.length;i++,j+=4)g[i]=(d[j]*77+d[j+1]*150+d[j+2]*29)>>8;return{g:g,w:W,h:H}}
+function azDecode(f){var Wk=azWorker();if(!Wk)return Promise.resolve(HSAZR.decode(f.g,f.w,f.h));
+ return new Promise(function(res){var done=false,t=setTimeout(function(){if(!done){done=true;res(null)}},3000);Wk.onmessage=function(e){if(done)return;done=true;clearTimeout(t);res(e.data)};Wk.postMessage(f,[f.g.buffer])})}
+function bytesToLatin(b){var s="";for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return s}
+function read(src,w,h){
+ return(DET?DET.detect(src).catch(function(){return[]}):Promise.resolve([])).then(function(r){var hit=r&&r[0];
+  if(hit&&hit.format!=="aztec"&&hit.rawValue)return hit.rawValue;
+  var now=Date.now();
+  if(hit||now-azLast>450){azLast=now;return azDecode(frameGray(src,w,h,1280)).then(function(b){
+    if(b&&b.length){azMiss=0;return bytesToLatin(b)}
+    if(hit){azMiss++;if(azMiss>=8&&hit.rawValue){azMiss=0;return hit.rawValue}return null}
+    return qrFallback()})}
+  return qrFallback();
+  function qrFallback(){if(DET||!window.jsQR)return null;var sc=Math.min(1,900/Math.max(w,h));cvs.width=Math.round(w*sc);cvs.height=Math.round(h*sc);cx.drawImage(src,0,0,cvs.width,cvs.height);
+   var d=cx.getImageData(0,0,cvs.width,cvs.height),q=window.jsQR(d.data,d.width,d.height,{inversionAttempts:"dontInvert"});return q?q.data:null}})}
 var stream=null,scanning=false,busy=false;
 function scanErr(h){$("sce").innerHTML=h}
 $("cst").onclick=function(){if(stream){camStop();return}scanErr("");
