@@ -229,7 +229,9 @@ UICSUM.sncf=function(by){function A(a,b){var t="";for(var i=a;i<b&&i<by.length;i
   if(/^\d{2}\/\d{2}\/\d{4}$/.test(A(33,43))&&/^\d{2}\/\d{2}\/\d{4}$/.test(A(43,53))){var a=A(33,43).split("/"),b=A(43,53).split("/");
    out.docs.push({kind:["Kortingskaart","Carte de réduction"],product:"Carte Avantage",cls:cl(A(110,111)),validFrom:new Date(Date.UTC(+a[2],a[1]-1,+a[0])),validUntil:new Date(Date.UTC(+b[2],b[1]-1,+b[0],23,59)),info:A(53,70).trim()});return out}
   var dm=A(48,53).match(/^(\d{2})\/(\d{2})$/);if(!dm)return null;var d=near(+dm[1],+dm[2]);
-  function leg(f,t,tr,c){var o={kind:["Reis","Trajet"],from:A(f,f+5).trim(),to:A(t,t+5).trim(),train:+A(tr,tr+5)?String(+A(tr,tr+5)):"",cls:cl(c),validFrom:d,validUntil:day(d),product:A(111,115).trim()};return o}
+  var NM={FRPNO:"Paris-Nord",FRPLY:"Paris-Gare de Lyon",FRPMO:"Paris-Montparnasse",FRPST:"Paris-Est",FRLLE:"Lille-Europe",FRLPD:"Lyon-Part-Dieu",BEBMI:"Bruxelles-Midi / Brussel-Zuid"};
+  function stn(c){c=c.trim();return NM[c]?NM[c]+" ("+c+")":c}
+  function leg(f,t,tr,c){var o={kind:["Reis","Trajet"],from:stn(A(f,f+5)),to:stn(A(t,t+5)),noYear:true,train:+A(tr,tr+5)?String(+A(tr,tr+5)):"",cls:cl(c),validFrom:d,validUntil:day(d),product:A(111,115).trim()};return o}
   out.docs.push(leg(33,38,43,A(110,111)));if(A(116,121).trim())out.docs.push(leg(116,121,126,A(115,116)));
   if(tp)out.format="SNCF ("+tp+")";return out}
  /* Secutix (686 bytes) */

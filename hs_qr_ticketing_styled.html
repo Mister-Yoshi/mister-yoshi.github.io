@@ -125,6 +125,7 @@ body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
 .cam .vf i{width:min(62%,300px);aspect-ratio:1;border-radius:22px;box-shadow:0 0 0 9999px rgba(2,5,13,.45);
  background:linear-gradient(var(--yel),var(--yel)) 0 0/34px 4px,linear-gradient(var(--yel),var(--yel)) 0 0/4px 34px,linear-gradient(var(--yel),var(--yel)) 100% 0/34px 4px,linear-gradient(var(--yel),var(--yel)) 100% 0/4px 34px,
  linear-gradient(var(--yel),var(--yel)) 0 100%/34px 4px,linear-gradient(var(--yel),var(--yel)) 0 100%/4px 34px,linear-gradient(var(--yel),var(--yel)) 100% 100%/34px 4px,linear-gradient(var(--yel),var(--yel)) 100% 100%/4px 34px;background-repeat:no-repeat}
+.mut{color:var(--dim);font-weight:400;font-size:.9em}
 .ctl{display:flex;gap:8px;align-items:center;margin-top:12px}
 .ctl button{width:44px;height:44px;flex:0 0 44px;border-radius:14px;border:1px solid var(--line);background:var(--card,rgba(255,255,255,.06));color:inherit;display:grid;place-items:center;padding:0;cursor:pointer}
 .ctl button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -2007,10 +2008,11 @@ function foreignResult(x){var s=x.s||UICSUM(x.t,x.k&&x.k.n),C=s.issuerName?esc(s
  function pd(v,end){if(!v)return null;if(v instanceof Date)return isNaN(v)?null:v;if(/^\d{4}-/.test(v))return new Date(v);var m=String(v).match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);return m?new Date(Date.UTC(+m[3],+m[2]-1,+m[1],end?23:0,end?59:0)):null}
  var now=Date.now(),loc=new Date(now-new Date().getTimezoneOffset()*6e4).getTime(),vs=null;
  s.docs.forEach(function(d){var a,b;if(d.date){a=pd(d.date);b=a&&new Date(Date.UTC(a.getUTCFullYear(),a.getUTCMonth(),a.getUTCDate(),23,59))}else{a=pd(d.validFrom||d.validFromTxt);b=pd(d.validUntil||d.validUntilTxt,1)||a&&new Date(Date.UTC(a.getUTCFullYear(),a.getUTCMonth(),a.getUTCDate(),23,59))}
+  if(d.noYear&&a){var t0=new Date(loc);if(t0.getUTCDate()===a.getUTCDate()&&t0.getUTCMonth()===a.getUTCMonth()){vs="now"}else if(vs!=="now")vs="other";return}
   if(!a&&!b)return;var st=a&&loc<a.getTime()-12*36e5?"future":b&&loc>b.getTime()+6e4?"past":"now";if(!vs||st==="now"||(vs!=="now"&&st==="future"))vs=st});
- if(vs)h=h.replace(/<\/div>$/,'<span class="tag il '+(vs==="now"?"vok":"vbad")+'">'+(vs==="now"?T("Geldig op datum","Valable à la date"):vs==="past"?T("Verlopen","Expiré"):T("Nog niet geldig","Pas encore valable"))+'</span></div>');
+ if(vs)h=h.replace(/<\/div>$/,'<span class="tag il '+(vs==="now"?"vok":"vbad")+'">'+(vs==="now"?T("Geldig op datum","Valable à la date"):vs==="other"?T("Andere reisdag","Autre jour de voyage"):vs==="past"?T("Verlopen","Expiré"):T("Nog niet geldig","Pas encore valable"))+'</span></div>');
  function cell(nl,fr,v,mono){return v?'<div><small class="il">'+T(nl,fr)+'</small><span'+(mono?' class="mono"':'')+'>'+v+'</span></div>':""}
- s.docs.forEach(function(d,i){var when=d.validFrom?esc(fdt(d.validFrom,false))+(d.validUntil&&fdt(d.validUntil,false)!==fdt(d.validFrom,false)?" – "+esc(fdt(d.validUntil,false)):""):d.validFromTxt?esc(d.validFromTxt)+(d.validUntilTxt?" – "+esc(d.validUntilTxt):""):"";
+ s.docs.forEach(function(d,i){var when=d.noYear&&d.validFrom?esc(d.validFrom.toLocaleDateString(L.nl?"nl-NL":"fr-FR",{day:"numeric",month:"long",timeZone:"UTC"}))+' <span class="mut">'+T("(jaar staat niet in de code)","(année absente du code)")+'</span>':d.validFrom?esc(fdt(d.validFrom,false))+(d.validUntil&&fdt(d.validUntil,false)!==fdt(d.validFrom,false)?" – "+esc(fdt(d.validUntil,false)):""):d.validFromTxt?esc(d.validFromTxt)+(d.validUntilTxt?" – "+esc(d.validUntilTxt):""):"";
   if(d.date)when=esc(fdt(d.date,d.time));
   h+='<div class="'+(i?"doc":"")+'">'+(s.docs.length>1?'<h3 class="il">'+T(d.kind[0],d.kind[1])+'</h3>':'')+(d.from||d.to?'<div class="rt">'+esc(d.from||"?")+' <i>→</i> '+esc(d.to||"?")+'</div>':'')+
    '<div class="tkd">'+(i===0?cell("Reiziger","Voyageur",esc(s.travelers.join(", "))):"")+(s.docs.length===1?cell("Soort","Type",'<span class="il">'+T(d.kind[0],d.kind[1])+'</span>'):"")+cell("Product","Produit",esc(d.product||""))+
