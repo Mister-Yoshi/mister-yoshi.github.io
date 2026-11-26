@@ -78,6 +78,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 | [`HS_DMI.html`](HS_DMI.html) | **HS DMI**: simulator van een ETCS-cabinescherm, met snelheidsbewaking, remingrijpen, overgangen tussen ETCS en HTC (cabinesein), stroomafnemer en wisseling van tractiesysteem, geluiden, treintypes ICNG, TGV Réseau, TGV Duplex (tot 320 km/h) en ICMm (alleen HTC), Nederlands, Frans en Engels, en een cabinemodus voor het aanraakscherm |
 | [`hs_qr_ticketing_styled.html`](hs_qr_ticketing_styled.html) | **HS Ticketing**: maakt ondertekende kaartjes met een **QR-code** (link; met een gewone camera opent `kaartje.html`) of een **Aztec-code volgens UIC 918.9** (DOSIPAS `U2` + FCB3, ECDSA P-256, uitgever `HS` als tekst, gecontroleerd met de officiële [UIC-barcodebibliotheek](https://github.com/UnionInternationalCheminsdeFer/UIC-barcode)). De scanner leest beide. De hele pagina zit achter het Diensten-slot (code of passkey) |
 | [`hs_aztec.html`](hs_aztec.html) | Oude link, stuurt door naar HS Ticketing |
+| [`uic-lezer.js`](uic-lezer.js) | Lezer voor kaartjes van andere vervoerders (UIC 918.3 en 918.9, FCB v1.3/v2/v3, DB-record 0080BL, tekstlayout RCT2), met DSA- en ECDSA-controle. Schema's automatisch omgezet uit de officiële UIC ASN.1. Wordt pas geladen als de scanner een kaartje van een andere vervoerder ziet |
 | [`kaartje.html`](kaartje.html) | Foutpagina die opent als een HS-kaartje met een gewone camera wordt gescand |
 | [`HS_MentaleBijstand.html`](HS_MentaleBijstand.html) | **HS / CFH Mentale Bijstand**: pagina over mentaal welzijn |
 | [`hs_omloop_generator_v5.html`](hs_omloop_generator_v5.html) | **HS Omloop Generator v5**: maakt materieelomlopen |
@@ -107,6 +108,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 - De code van het tabblad **Diensten** staat ook in de Worker (secret `DIENSTEN_CODE`). Pas je die aan in Cloudflare, dan geldt de nieuwe code meteen op elk apparaat
 - **Diensten** kan ook met een passkey (vingerafdruk, gezicht of schermvergrendeling). De Worker controleert de handtekening en bewaart alleen de publieke sleutels, in een KV-namespace met de koppelnaam `HS_KV`. De code blijft werken als reserve
 - **HS Ticketing** laat kaartjes ondertekenen door de Worker (`?tsign`, ECDSA P-256). De privé-sleutel maakt de Worker zelf aan en bewaart hem in `HS_KV`; de pagina haalt alleen de publieke sleutel op (`?tpub`) en controleert daarmee, ook offline
+- Voor kaartjes van **andere vervoerders** haalt de Worker de publieke sleutel uit het UIC-sleutelregister (`?uickey=RICS:sleutel`, register een dag in de cache). De scanner controleert daarmee de handtekening; dat zegt alleen iets over de echtheid, niet of het kaartje al gebruikt is
 
 ---
 

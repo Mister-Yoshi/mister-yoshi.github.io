@@ -145,6 +145,15 @@ body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
 .scanacts{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
 .scanacts>*{flex:1 1 150px}
 .idle{color:var(--dim);text-align:center;padding:30px 10px}
+.car{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:14px;color:var(--dim);font-size:13.5px}
+.car b{color:var(--ink);font-size:16px}
+.car .tag{border:1px solid var(--line);border-radius:8px;padding:2px 8px}
+.res .doc{border-top:1px solid var(--line);margin-top:14px;padding-top:4px}
+.res .doc h3{margin:10px 0 0;font-size:14px;color:var(--dim);font-weight:600}
+.res details{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.res summary{cursor:pointer;font-weight:700}
+.lay{margin:10px 0 0;padding:12px;border-radius:12px;background:#f4f1e8;color:#1b1b1b;font:12px/1.35 "IBM Plex Mono",monospace;overflow-x:auto;white-space:pre}
+.note{margin:12px 0 0;color:var(--dim);font-size:13px}
 
 /* buiten de app */
 .out{max-width:560px;margin:8vh auto 0;text-align:center}
@@ -1770,6 +1779,39 @@ function judge(t){var d=today();if(t.d<d)return result("warn",T("Verlopen","Expi
  if(t.d>d)return result("warn",T("Nog niet geldig","Pas encore valable"),T("Dit kaartje geldt op "+esc(fdate(t.d))+".","Ce billet est valable le "+esc(fdate(t.d))+"."),t);
  result("ok",T("Geldig","Valable"),T("Echt HS-kaartje (UIC 918.9), geldig vandaag.","Billet CFH authentique (UIC 918.9), valable aujourd’hui."),t)}
 function keyMissing(){result("warn",T("Kan niet controleren","Contrôle impossible"),T("De sleutel om de handtekening te controleren is nog niet geladen. Maak één keer verbinding met internet.","La clé de vérification n’est pas encore chargée. Connectez-vous une fois à Internet."))}
+/* ---------- Kaartjes van andere vervoerders (UIC 918.3 en 918.9), lezer wordt pas geladen als het nodig is ---------- */
+var UICL=null;
+function needUIC(){if(window.UICR&&window.UICSUM)return Promise.resolve();if(UICL)return UICL;UICL=new Promise(function(res,rej){var s=document.createElement("script");s.src="uic-lezer.js";s.onload=res;s.onerror=function(){UICL=null;rej(new Error("lezer"))};document.head.appendChild(s)});return UICL}
+function inflateZ(u8){return new Response(new Blob([u8]).stream().pipeThrough(new DecompressionStream("deflate"))).arrayBuffer().then(function(b){return new Uint8Array(b)})}
+function uicKey(rics,id){var c=ls("hs_uickeys")||{},k=rics+":"+id;
+ return fetch(API+"?uickey="+encodeURIComponent(k),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw 0;c[k]={f:j.found,k:j.k||"",n:j.name||""};ls("hs_uickeys",c);return c[k]})
+ .catch(function(){if(c[k])return c[k];return null})}
+function foreign(by){$("sres").innerHTML='<div class="res idle"><p>'+T("Kaartje lezen…","Lecture du billet…")+'</p></div>';
+ needUIC().then(function(){return UICR.parse(by,inflateZ)}).then(function(t){
+  return uicKey(t.rics,t.keyId).then(function(k){if(!k)return{t:t,k:null,st:"offline"};if(!k.f||!k.k)return{t:t,k:k,st:"nokey"};
+   return UICR.check(t,k.k).then(function(ok){return{t:t,k:k,st:ok?"ok":"bad"}},function(){return{t:t,k:k,st:"unsup"}})})})
+ .then(foreignResult).catch(function(){if(by.length>20&&by[0]===35&&by[1]===85&&by[2]===84)return result("bad",T("Ongeldig","Invalide"),T("Dit lijkt een UIC-kaartje (918.3), maar de inhoud is beschadigd of aangepast.","Ce billet semble être un billet UIC (918.3), mais son contenu est endommagé ou modifié."));result("bad",T("Geen kaartje","Pas un billet"),T("Deze code is geen HS-kaartje en geen UIC-treinkaartje dat de scanner kan lezen.","Ce code n’est ni un billet CFH ni un billet UIC lisible par le scanner."))})}
+function fdt(d,time){try{return d.toLocaleString(L.nl?"nl-NL":"fr-FR",time?{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}:{day:"numeric",month:"short",year:"numeric"})}catch(e){return""}}
+function foreignResult(x){var s=UICSUM(x.t,x.k&&x.k.n),C=s.issuerName?esc(s.issuerName):(L.nl?"deze vervoerder":"ce transporteur");
+ var st={ok:["ok",T("Echt kaartje","Billet authentique"),T("De handtekening van "+C+" klopt. Alleen de echtheid is gecontroleerd, niet of het kaartje al gebruikt of geannuleerd is.","La signature de "+C+" est valable. Seule l’authenticité est contrôlée, pas l’utilisation ou l’annulation.")],
+  bad:["bad",T("Handtekening klopt niet","Signature invalide"),T("Dit kaartje is aangepast of nagemaakt, of hoort niet bij de sleutel van "+C+".","Ce billet est modifié ou falsifié, ou ne correspond pas à la clé de "+C+".")],
+  nokey:["warn",T("Echtheid onbekend","Authenticité inconnue"),T("De sleutel van "+C+" staat niet in het UIC-sleutelregister, dus de handtekening kan niet worden gecontroleerd.","La clé de "+C+" ne figure pas dans le registre UIC ; la signature ne peut pas être vérifiée.")],
+  offline:["warn",T("Echtheid nu niet te controleren","Contrôle impossible pour l’instant"),T("Geen verbinding met het UIC-sleutelregister. De inhoud staat hieronder.","Pas de connexion au registre UIC. Le contenu figure ci-dessous.")],
+  unsup:["warn",T("Echtheid niet te controleren","Authenticité non vérifiable"),T("Deze soort handtekening wordt (nog) niet ondersteund.","Ce type de signature n’est pas (encore) pris en charge.")]}[x.st];
+ var ic=st[0]==="ok"?CHK:st[0]==="bad"?XX:WW,h='<div class="res '+st[0]+'" role="status"><div class="st"><div class="ic">'+ic+'</div><div><h2 class="il">'+st[1]+'</h2><p>'+st[2]+'</p></div></div>';
+ h+='<div class="car"><b>'+(s.issuerName?C:'<span class="il">'+T("Onbekende vervoerder","Transporteur inconnu")+'</span>')+'</b><span class="tag mono">RICS '+esc(s.issuerCode)+'</span><span class="tag">'+esc(s.format)+'</span>'+(s.specimen?'<span class="tag il">'+T("Voorbeeld","Spécimen")+'</span>':'')+'</div>';
+ function cell(nl,fr,v,mono){return v?'<div><small class="il">'+T(nl,fr)+'</small><span'+(mono?' class="mono"':'')+'>'+v+'</span></div>':""}
+ s.docs.forEach(function(d,i){var when=d.validFrom?esc(fdt(d.validFrom,false))+(d.validUntil&&fdt(d.validUntil,false)!==fdt(d.validFrom,false)?" – "+esc(fdt(d.validUntil,false)):""):d.validFromTxt?esc(d.validFromTxt)+(d.validUntilTxt?" – "+esc(d.validUntilTxt):""):"";
+  if(d.date)when=esc(fdt(d.date,d.time));
+  h+='<div class="'+(i?"doc":"")+'">'+(s.docs.length>1?'<h3 class="il">'+T(d.kind[0],d.kind[1])+'</h3>':'')+(d.from||d.to?'<div class="rt">'+esc(d.from||"?")+' <i>→</i> '+esc(d.to||"?")+'</div>':'')+
+   '<div class="tkd">'+(i===0?cell("Reiziger","Voyageur",esc(s.travelers.join(", "))):"")+(s.docs.length===1?cell("Soort","Type",'<span class="il">'+T(d.kind[0],d.kind[1])+'</span>'):"")+cell("Product","Produit",esc(d.product||""))+
+   cell("Klasse","Classe",d.cls===1||d.cls===2?'<span class="il">'+cls(d.cls)+'</span>':esc(d.cls||""))+cell("Trein","Train",esc(d.train||""))+cell("Plaats","Place",esc(d.seat||""))+cell(d.date?"Vertrek":"Geldig",d.date?"Départ":"Valable",when)+cell("Info","Info",esc(d.info||""))+'</div></div>'});
+ h+='<div class="tkd">'+cell("Kaartnummer","N° de billet",esc(s.pnr),true)+'</div>';
+ if(s.layout)h+='<details'+(s.docs.length?'':' open')+'><summary class="il">'+T("Kaartje zoals gedrukt","Billet tel qu’imprimé")+'</summary><pre class="lay">'+esc(s.layout)+'</pre></details>';
+ if(s.extra.length)h+='<p class="note">'+T("Overige onderdelen","Autres éléments")+': '+esc(s.extra.join(", "))+'</p>';
+ h+='<p class="note il">'+T("Gegevens van dit kaartje worden niet bewaard.","Les données de ce billet ne sont pas conservées.")+'</p><div class="scanacts il"><button class="ghost" id="nxt">'+T("Volgende scannen","Scanner le suivant")+'</button></div></div>';
+ $("sres").innerHTML=h;$("nxt").onclick=function(){$("sres").innerHTML='<div class="res idle"><p>'+T("Klaar voor het volgende kaartje.","Prêt pour le billet suivant.")+'</p></div>';if(stream)scanning=true,loop()};
+ beep(x.st==="ok");if(innerWidth<820)$("sres").scrollIntoView({behavior:"smooth",block:"start"})}
 function beep(ok){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.value=ok?880:220;o.type=ok?"sine":"square";g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+(ok?.18:.45));o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.5)}catch(e){}
  try{navigator.vibrate&&navigator.vibrate(ok?60:[120,80,120])}catch(e){}}
 function result(kind,title,sub,t){var ic=kind==="ok"?CHK:kind==="bad"?XX:WW;
@@ -1780,8 +1822,8 @@ function result(kind,title,sub,t){var ic=kind==="ok"?CHK:kind==="bad"?XX:WW;
  beep(kind==="ok");if(innerWidth<820)$("sres").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
 function handle(txt){var q=parseQR(txt);
  if(!q){ /* UIC-kaartje: de lezer geeft de bytes als tekens 0..255 (ISO-8859-1) */
-  var s=String(txt||""),u=null;if(/^[\u0000-ÿ]+$/.test(s)){var by=new Uint8Array(s.length);for(var i=0;i<s.length;i++)by[i]=s.charCodeAt(i);try{u=HSUIC.read(by)}catch(e){}}
-  if(!u)return result("bad",T("Geen HS-kaartje","Pas un billet CFH"),T("Deze code is geen kaartje van de HS.","Ce code n’est pas un billet de la CFH."));
+  var s=String(txt||""),u=null;var by=null;if(/^[\u0000-ÿ]+$/.test(s)){by=new Uint8Array(s.length);for(var i=0;i<s.length;i++)by[i]=s.charCodeAt(i);try{u=HSUIC.read(by)}catch(e){}}
+  if(!u||u.provider!=="HS"){if(by)return foreign(by);return result("bad",T("Geen kaartje","Pas un billet"),T("Deze code is geen treinkaartje dat de scanner kan lezen.","Ce code n’est pas un billet de train lisible par le scanner."))}
   return verifyUIC(u).then(function(ok){if(!ok)return result("bad",T("Ongeldig","Invalide"),T("De handtekening klopt niet: dit kaartje is nagemaakt, aangepast of niet van de HS.","La signature ne correspond pas : ce billet est falsifié, modifié ou n’est pas de la CFH."));judge(u.t)}).catch(keyMissing)}
  if(q.old)return result("bad",T("Ongeldig","Invalide"),T("Oud kaartje zonder handtekening. Maak een nieuw kaartje.","Ancien billet sans signature. Créez un nouveau billet."));
  var t;try{t=dec(q.p)}catch(e){return result("bad",T("Ongeldig","Invalide"),T("Het kaartje is beschadigd.","Le billet est endommagé."))}
