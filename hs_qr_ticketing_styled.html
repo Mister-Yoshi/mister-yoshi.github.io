@@ -221,8 +221,7 @@ body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
      <div class="cam"><video id="vid" playsinline muted></video><div class="vf" id="vf" hidden><i></i></div>
       <div class="off" id="camoff"><div><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/></svg><p><span class="nl">Start de camera en houd de QR-code van het kaartje in het kader.</span><span class="fr">Démarrez la caméra et placez le code QR du billet dans le cadre.</span></p></div></div>
      </div>
-     <div class="scanacts il"><button class="go" id="cst" style="margin:0"><span class="nl">Camera starten</span><span class="fr">Démarrer la caméra</span></button><button class="ghost" id="cimg"><span class="nl">Foto kiezen</span><span class="fr">Choisir une photo</span></button></div>
-     <input type="file" id="fimg" accept="image/*" hidden>
+     <div class="scanacts il"><button class="go" id="cst" style="margin:0"><span class="nl">Camera starten</span><span class="fr">Démarrer la caméra</span></button></div>
      <p class="msg" id="sce" role="alert"></p>
     </div>
     <div id="sres"><div class="res idle"><p><span class="nl">Nog niets gescand.</span><span class="fr">Rien n’a encore été scanné.</span></p></div></div>
@@ -1598,10 +1597,6 @@ function camStop(){scanning=false;if(stream){stream.getTracks().forEach(function
 function loop(){if(!scanning||busy)return;var v=$("vid");if(v.readyState<2){setTimeout(loop,150);return}busy=true;
  read(v,v.videoWidth,v.videoHeight).then(function(txt){busy=false;if(txt&&scanning){scanning=false;handle(txt)}else if(scanning)setTimeout(loop,140)}).catch(function(){busy=false;if(scanning)setTimeout(loop,300)})}
 document.addEventListener("visibilitychange",function(){if(document.hidden&&stream)camStop()});
-$("cimg").onclick=function(){$("fimg").click()};
-$("fimg").onchange=function(){var f=this.files[0];this.value="";if(!f)return;scanErr("");
- needJsQR().then(function(){return createImageBitmap(f)}).then(function(bm){return read(bm,bm.width,bm.height)}).then(function(txt){txt?handle(txt):scanErr(T("Geen QR-code gevonden op deze foto.","Aucun code QR trouvé sur cette photo."))})
- .catch(function(){scanErr(T("De QR-lezer kon niet laden. Controleer je verbinding.","Le lecteur QR n’a pas pu se charger. Vérifiez votre connexion."))})};
 if("serviceWorker"in navigator&&isSecureContext)navigator.serviceWorker.register("sw.js").catch(function(){});
 </script>
 </body>
