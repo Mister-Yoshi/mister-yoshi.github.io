@@ -1,7 +1,7 @@
 // HS Startpagina – service worker
 // Pagina's: eerst netwerk, bij geen verbinding de laatst bewaarde versie.
 // Live data (Worker, NS, kaarttegels, weer) wordt nooit bewaard: alleen eigen bestanden.
-const CACHE = 'hs-v2';
+const CACHE = 'hs-v3';
 const SHELL = ['./', 'index.html', 'manifest.json', 'images/icon-192.png', 'images/icon-512.png', 'images/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
