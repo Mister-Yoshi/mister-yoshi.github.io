@@ -23,7 +23,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 
 ### 🚉 Vertrek
 - Drie onderdelen als knoppen bovenaan: **Trein**, **Bus** en **Storingen** (met het aantal storingen). Je laatste keuze wordt onthouden, en een storing rond Assen staat als balk boven de vertrekstaat
-- **Live vertrekstaat van station Assen**, met echte NS-data:
+- **Live vertrekstaat**, standaard station Assen. Met **📍 GPS** kies je het dichtstbijzijnde station, met **↺ Assen** ga je terug (keuze wordt onthouden). Echte NS-data:
   - tijd, vertraging, bestemming, spoor (met een opvallend bordje bij een spoorwijziging) en soort trein (IC of SPR)
   - **tik op een trein** voor alle tussenhaltes met tijden, vertraging en sporen
   - **materieel** per trein, zoals `VIRM-6` of `ICM-3 + ICM-4`, met een waarschuwing als de trein korter is dan normaal
