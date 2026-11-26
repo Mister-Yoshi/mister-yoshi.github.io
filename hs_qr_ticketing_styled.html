@@ -125,13 +125,13 @@ body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
 .cam .vf i{width:min(62%,300px);aspect-ratio:1;border-radius:22px;box-shadow:0 0 0 9999px rgba(2,5,13,.45);
  background:linear-gradient(var(--yel),var(--yel)) 0 0/34px 4px,linear-gradient(var(--yel),var(--yel)) 0 0/4px 34px,linear-gradient(var(--yel),var(--yel)) 100% 0/34px 4px,linear-gradient(var(--yel),var(--yel)) 100% 0/4px 34px,
  linear-gradient(var(--yel),var(--yel)) 0 100%/34px 4px,linear-gradient(var(--yel),var(--yel)) 0 100%/4px 34px,linear-gradient(var(--yel),var(--yel)) 100% 100%/34px 4px,linear-gradient(var(--yel),var(--yel)) 100% 100%/4px 34px;background-repeat:no-repeat}
-.cam .ctl{position:absolute;left:10px;right:10px;bottom:10px;display:flex;gap:8px;align-items:center;z-index:2}
-.cam .ctl button{width:44px;height:44px;flex:0 0 44px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(2,5,13,.62);color:#fff;display:grid;place-items:center;padding:0;cursor:pointer}
-.cam .ctl button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.cam .ctl button.on{background:var(--yel);color:#111;border-color:var(--yel)}
-.cam .ctl .zm{flex:1;display:flex;align-items:center;gap:8px;background:rgba(2,5,13,.62);border:1px solid rgba(255,255,255,.18);border-radius:14px;height:44px;padding:0 12px;color:#fff;font-size:13px}
-.cam .ctl input[type=range]{flex:1;accent-color:var(--yel)}
-.cam .ctl [hidden]{display:none}
+.ctl{display:flex;gap:8px;align-items:center;margin-top:12px}
+.ctl button{width:44px;height:44px;flex:0 0 44px;border-radius:14px;border:1px solid var(--line);background:var(--card,rgba(255,255,255,.06));color:inherit;display:grid;place-items:center;padding:0;cursor:pointer}
+.ctl button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ctl button.on{background:var(--yel);color:#111;border-color:var(--yel)}
+.ctl .zm{flex:1;display:flex;align-items:center;gap:8px;background:var(--card,rgba(255,255,255,.06));border:1px solid var(--line);border-radius:14px;height:44px;padding:0 12px;color:inherit;font-size:13px}
+.ctl input[type=range]{flex:1;accent-color:var(--yel)}
+.ctl[hidden],.ctl [hidden]{display:none}
 .cam .off{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--dim);padding:20px}
 .cam .off svg{width:46px;height:46px;fill:none;stroke:currentColor;stroke-width:1.6;margin-bottom:8px}
 .res{border-radius:24px;padding:22px;border:1px solid var(--line);background:var(--card)}
@@ -237,9 +237,9 @@ body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
    <div class="grid2">
     <div>
      <div class="cam"><video id="vid" playsinline muted></video><div class="vf" id="vf" hidden><i></i></div>
-      <div class="ctl" id="cctl" hidden><button id="ctorch" type="button" hidden aria-label="Zaklamp / Lampe"><svg viewBox="0 0 24 24"><path d="M8 2h8l-1 6H9zM9 8h6v3l-1.5 2v9h-3v-9L9 11z"/></svg></button><div class="zm" id="czoom" hidden><span>1×</span><input type="range" id="czr" min="1" max="1" step="0.1" value="1" aria-label="Zoom"><span id="czv">1×</span></div><button id="cflip" type="button" hidden aria-label="Andere camera / Autre caméra"><svg viewBox="0 0 24 24"><path d="M4 7h3l2-2h6l2 2h3v12H4z"/><path d="M9 13a3 3 0 015-2l1 1M15 13a3 3 0 01-5 2l-1-1"/></svg></button></div>
       <div class="off" id="camoff"><div><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/></svg><p><span class="nl">Start de camera en houd de QR- of Aztec-code van het kaartje in het kader.</span><span class="fr">Démarrez la caméra et placez le code QR ou Aztec du billet dans le cadre.</span></p></div></div>
      </div>
+     <div class="ctl" id="cctl" hidden><button id="ctorch" type="button" hidden aria-label="Zaklamp / Lampe"><svg viewBox="0 0 24 24"><path d="M8 2h8l-1 6H9zM9 8h6v3l-1.5 2v9h-3v-9L9 11z"/></svg></button><div class="zm" id="czoom" hidden><span>1×</span><input type="range" id="czr" min="1" max="1" step="0.1" value="1" aria-label="Zoom"><span id="czv">1×</span></div><button id="cflip" type="button" hidden aria-label="Andere camera / Autre caméra"><svg viewBox="0 0 24 24"><path d="M4 7h3l2-2h6l2 2h3v12H4z"/><path d="M9 13a3 3 0 015-2l1 1M15 13a3 3 0 01-5 2l-1-1"/></svg></button></div>
      <div class="scanacts il"><button class="go" id="cst" style="margin:0"><span class="nl">Camera starten</span><span class="fr">Démarrer la caméra</span></button></div>
      <p class="msg" id="azw" style="color:var(--yel)" hidden><span class="nl">Deze browser kan alleen QR-kaartjes lezen, geen Aztec. Gebruik Chrome op Android om ook Aztec-kaartjes te controleren.</span><span class="fr">Ce navigateur ne lit que les billets QR, pas les Aztec. Utilisez Chrome sur Android pour contrôler aussi les billets Aztec.</span></p>
      <p class="msg" id="sce" role="alert"></p>
