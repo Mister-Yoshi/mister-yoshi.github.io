@@ -103,6 +103,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 - De Worker accepteert alleen verzoeken van `https://mister-yoshi.github.io`. Open je `index.html` rechtstreeks vanaf je computer, dan zie je daarom "Geen live data"
 - In de HTML staat alleen het adres van de Worker, **nooit de NS-sleutel**
 - De code van het tabblad **Diensten** staat ook in de Worker (secret `DIENSTEN_CODE`). Pas je die aan in Cloudflare, dan geldt de nieuwe code meteen op elk apparaat
+- **Diensten** kan ook met een passkey (vingerafdruk, gezicht of schermvergrendeling). De Worker controleert de handtekening en bewaart alleen de publieke sleutels, in een KV-namespace met de koppelnaam `HS_KV`. De code blijft werken als reserve
 
 ---
 

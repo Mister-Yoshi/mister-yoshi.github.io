@@ -451,6 +451,31 @@ body.only-fr .vs th .fr{font-size:1em;opacity:1}
 body:not(.only-nl):not(.only-fr) .lkb .nl+.fr::before,body:not(.only-nl):not(.only-fr) #lkx .nl+.fr::before{content:" / "}
 body:not(.only-fr) .lkb .nl,body:not(.only-nl) .lkb .fr,body:not(.only-fr) #lkx .nl,body:not(.only-nl) #lkx .fr{display:inline}
 .lko{margin-top:16px}
+.lkp{grid-column:1/-1;display:flex;align-items:center;gap:12px}
+.lkor{color:var(--dim);font-size:14px}
+.lkpb{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-weight:700;font-size:16px;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:12px 16px;cursor:pointer}
+.lkpb svg{width:22px;height:22px;flex:none;fill:none;stroke:var(--yel);stroke-width:1.8;stroke-linecap:round}
+.lkpb:disabled{opacity:.6;cursor:default}
+.lock .lkpb{height:auto;min-height:48px;text-transform:none;letter-spacing:0;color:var(--ink);background:rgba(255,255,255,.06);box-shadow:none;border:1px solid var(--line);border-radius:12px;padding:10px 16px}
+.lock .lkpb:hover{background:rgba(255,255,255,.1)}
+body:not(.only-fr) #pka .nl,body:not(.only-nl) #pka .fr{display:inline}
+body:not(.only-nl):not(.only-fr) #pka .nl+.fr::before{content:" / "}
+body:not(.only-nl):not(.only-fr) #pka .nl+.fr{font-size:.8em;opacity:.75}
+@media (max-width:520px){.lkr{flex-wrap:wrap}#lkc{flex:1 1 100%}.lock .lkb{flex:1 1 100%;min-height:48px;padding:8px 16px;height:auto}.pkh .pbt{width:100%;white-space:normal}}
+body:not(.only-fr) .lkpb .nl,body:not(.only-nl) .lkpb .fr,body:not(.only-fr) .lkor .nl,body:not(.only-nl) .lkor .fr{display:inline}
+body:not(.only-nl):not(.only-fr) .lkpb .nl+.fr::before,body:not(.only-nl):not(.only-fr) .lkor .nl+.fr::before{content:" / "}
+body:not(.only-nl):not(.only-fr) .lkpb .nl+.fr{font-size:.8em;opacity:.75}
+.pkc{margin-top:16px;max-width:620px;padding:18px 20px}
+.pkc[hidden]{display:none!important}
+.pkh{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pkh b{font-size:17px}
+.pki{margin:6px 0 10px;color:var(--dim);font-size:14px}
+.pkr{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.pkr .pkn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pkr .pkd{color:var(--dim);font-size:12.5px}
+.pkr button{font:inherit;font-size:13px;color:var(--dim);background:none;border:1px solid var(--line);border-radius:9px;padding:5px 10px;cursor:pointer}
+.pkr button.sure{color:#fff;background:var(--red);border-color:var(--red)}
+.pkc .lke{margin:6px 0 0;color:var(--red);min-height:0}
 .lock[hidden],#g-diensten[hidden],.lko[hidden]{display:none!important}
 .main{display:flex;flex-direction:column;min-height:100vh;box-sizing:border-box}
 .main>*{flex-shrink:0}
@@ -561,8 +586,8 @@ body:not(.only-nl):not(.only-fr) .cta strong .fr{font-size:.7em;opacity:.8}
  <section class="panel" id="p-intl"><div class="ph"><h2><span class="nl">Internationale <em>kaartjes</em></span><span class="fr">Billets <em>internationaux</em></span></h2><p><span class="nl">Per operator: hogesnelheid, nachttrein of budget.</span><span class="fr">Par transporteur : grande vitesse, train de nuit ou petit prix.</span></p></div><div class="grid" id="g-intl"></div></section>
  <section class="panel" id="p-diensten"><div class="ph"><h2><span class="nl">HS <em>diensten</em></span><span class="fr">Services <em>CFH</em></span></h2><p><span class="nl">Ondersteuning, tools en beheer.</span><span class="fr">Soutien, outils et gestion.</span></p></div><form class="card lock" id="lk" autocomplete="off"><div class="lki" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg></div>
    <div><b><span class="nl">Diensten zijn beveiligd</span><span class="fr">Services protégés</span></b><p><span class="nl">Voer de code in om verder te gaan.</span><span class="fr">Saisissez le code pour continuer.</span></p></div>
-   <div class="lkr"><input id="lkc" type="password" inputmode="numeric" autocomplete="off" aria-label="Code" placeholder="••••"><button class="lkb"><span class="nl">Ontgrendel</span><span class="fr">Déverrouiller</span></button></div><p class="lke" id="lke" role="alert"></p></form>
-  <div class="grid" id="g-diensten" hidden></div><div class="lko" id="lko" hidden><button class="pbt" id="lkx"><span class="nl">Vergrendel</span><span class="fr">Verrouiller</span></button></div></section>
+   <div class="lkr"><input id="lkc" type="password" inputmode="numeric" autocomplete="off" aria-label="Code" placeholder="••••"><button class="lkb"><span class="nl">Ontgrendel</span><span class="fr">Déverrouiller</span></button></div><div class="lkp" id="lkpw" hidden><span class="lkor"><span class="nl">of</span><span class="fr">ou</span></span><button type="button" class="lkpb" id="lkp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 18.5c1-1.8 1.5-3.9 1.5-6.5a3 3 0 016 0c0 1.2-.1 2.4-.4 3.5M12 12c0 3.4-.8 6.2-2.4 8.4M17.6 17.8c.3-1.8.4-3.8.4-5.8a6 6 0 00-10.4-4.1M4.6 15.5c.3-1.1.4-2.3.4-3.5 0-1.1.2-2.1.6-3"/></svg><span><span class="nl">Passkey gebruiken</span><span class="fr">Utiliser une clé d’accès</span></span></button></div><p class="lke" id="lke" role="alert"></p></form>
+  <div class="grid" id="g-diensten" hidden></div><div class="lko" id="lko" hidden><button class="pbt" id="lkx"><span class="nl">Vergrendel</span><span class="fr">Verrouiller</span></button><div class="pkc card" id="pkc" hidden><div class="pkh"><b><span class="nl">Passkeys</span><span class="fr">Clés d’accès</span></b><button type="button" class="pbt" id="pka">+ <span class="nl">Passkey toevoegen</span><span class="fr">Ajouter une clé d’accès</span></button></div><p class="pki"><span class="nl">Ontgrendel Diensten met je vingerafdruk, gezicht of schermvergrendeling. De code blijft werken als reserve.</span><span class="fr">Déverrouillez les services avec votre empreinte, votre visage ou le verrouillage de l’écran. Le code reste valable en secours.</span></p><div id="pkl"></div><p class="lke" id="pke" role="alert"></p></div></div></section>
  <footer class="mono">© 2026 Hoggynesische Spoorwegen · Chemin de fer Hoggynésiens · Protocol HS-X · <span class="nl" style="display:inline">Gemaakt met Gemini &amp; Claude</span></footer>
 </div></div>
 <dialog id="dm"><h3><span class="nl">HS-storingen beheren</span><span class="fr">Gérer les perturbations CFH</span></h3><div class="tg" id="tg"></div>
@@ -661,7 +686,7 @@ var booted=0;
 /* De code staat centraal in de Worker (secret DIENSTEN_CODE). Aanpassen in Cloudflare = geldt op elk apparaat. */
 var unl=false,TOK="";try{TOK=sessionStorage.getItem("hs_tok")||""}catch(e){}
 if(TOK)fetch(TRAIN_API+"?check="+encodeURIComponent(TOK),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){unl=!!j.ok;if(!unl){try{sessionStorage.removeItem("hs_tok")}catch(e){}}if($("p-diensten").classList.contains("on"))lockUI()}).catch(function(){});
-function lockUI(){$("lk").hidden=unl;$("g-diensten").hidden=!unl;$("lko").hidden=!unl;if(unl&&!$("g-diensten").innerHTML)$("g-diensten").innerHTML=DIENST.map(tile).join("")}
+function lockUI(){$("lk").hidden=unl;$("g-diensten").hidden=!unl;$("lko").hidden=!unl;if(window.PKOK!==undefined){$("pkc").hidden=!(unl&&PKOK);if(unl&&PKOK&&!pkLoaded)pkList()}if(unl&&!$("g-diensten").innerHTML)$("g-diensten").innerHTML=DIENST.map(tile).join("")}
 function go(id){if(!document.getElementById("p-"+id))id="home";if(id==="diensten"){lockUI();if(!unl)setTimeout(function(){try{$("lkc").focus()}catch(e){}},50)}
  document.querySelectorAll(".panel").forEach(function(p){p.classList.toggle("on",p.id==="p-"+id)});
  document.querySelectorAll("#nv button").forEach(function(b){if(b.dataset.t===id)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
@@ -778,11 +803,47 @@ function aclk(){var n=new Date(),s=n.getSeconds(),m=n.getMinutes()+s/60,h=n.getH
 aclk();setInterval(aclk,1000);
 $("lk").onsubmit=function(e){e.preventDefault();var c=$("lkc").value.trim();if(!c)return;var b=$("lk").querySelector(".lkb");b.disabled=true;$("lke").innerHTML=T("Code controleren…","Vérification du code…");
  fetch(TRAIN_API+"?unlock=1",{method:"POST",body:c,cache:"no-store"}).then(function(r){return r.json().then(function(j){return{s:r.status,j:j}})}).then(function(x){b.disabled=false;
-  if(x.j.ok&&x.j.token){unl=true;TOK=x.j.token;try{sessionStorage.setItem("hs_tok",TOK)}catch(e){}$("lkc").value="";$("lke").textContent="";lockUI()}
+  if(x.j.ok&&x.j.token){unlockWith(x.j.token)}
   else if(x.j.error==="nocode"){$("lke").innerHTML=T("Er is nog geen code ingesteld in de Worker (DIENSTEN_CODE).","Aucun code n’est encore défini dans le Worker (DIENSTEN_CODE).")}
   else{$("lke").innerHTML=T("Onjuiste code. Probeer het opnieuw.","Code incorrect. Réessayez.");$("lkc").value="";$("lkc").focus()}})
  .catch(function(){b.disabled=false;$("lke").innerHTML=T("Kan de code nu niet controleren. Is de Worker bijgewerkt?","Impossible de vérifier le code. Le Worker est-il à jour ?")})};
-$("lkx").onclick=function(){unl=false;TOK="";try{sessionStorage.removeItem("hs_tok")}catch(e){}$("g-diensten").innerHTML="";lockUI()};
+$("lkx").onclick=function(){unl=false;TOK="";try{sessionStorage.removeItem("hs_tok")}catch(e){}$("g-diensten").innerHTML="";$("pkl").innerHTML="";pkLoaded=0;lockUI()};
+function unlockWith(t){unl=true;TOK=t;try{sessionStorage.setItem("hs_tok",TOK)}catch(e){}$("lkc").value="";$("lke").textContent="";lockUI()}
+/* ---------- Passkeys (WebAuthn): controle gebeurt in de Worker, sleutels in KV ---------- */
+var PKOK=!!(window.PublicKeyCredential&&navigator.credentials&&window.isSecureContext),pkLoaded=0,pkIds=[];
+function pkB(b){var a=new Uint8Array(b),t="";for(var i=0;i<a.length;i++)t+=String.fromCharCode(a[i]);return btoa(t).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function pkU(s){s=s.replace(/-/g,"+").replace(/_/g,"/");return Uint8Array.from(atob(s+"===".slice((s.length+3)%4)),function(c){return c.charCodeAt(0)})}
+function pkPost(a,o){return fetch(TRAIN_API+"?pk="+a,{method:"POST",body:JSON.stringify(o),cache:"no-store"}).then(function(r){return r.json()})}
+function pkOpts(){return fetch(TRAIN_API+"?pk=opts",{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};return j})}
+function pkMsg(e){var n=e&&(e.w||e.name);
+ if(n==="nokv")return T("Passkeys zijn nog niet ingesteld in de Worker (KV-koppeling HS_KV ontbreekt).","Les clés d’accès ne sont pas encore configurées dans le Worker (liaison KV HS_KV manquante).");
+ if(n==="unknown")return T("Deze passkey is niet (meer) bekend. Ontgrendel met de code en voeg hem opnieuw toe.","Cette clé d’accès n’est pas (plus) connue. Déverrouillez avec le code et ajoutez-la à nouveau.");
+ if(n==="NotAllowedError"||n==="AbortError")return T("Geannuleerd of geen passkey gekozen.","Annulé ou aucune clé d’accès choisie.");
+ if(n==="InvalidStateError")return T("Dit apparaat heeft al een passkey voor HS Diensten.","Cet appareil a déjà une clé d’accès pour les services CFH.");
+ if(n==="old")return T("Deze browser kan geen passkey toevoegen. Werk de browser bij.","Ce navigateur ne peut pas ajouter de clé d’accès. Mettez-le à jour.");
+ if(n==="TypeError"||!n)return T("Kan de Worker niet bereiken. Is hij bijgewerkt?","Impossible de joindre le Worker. Est-il à jour ?");
+ return T("Passkey lukte niet ("+esc(String(n))+").","La clé d’accès a échoué ("+esc(String(n))+").")}
+$("lkpw").hidden=!PKOK;
+$("lkp").onclick=function(){var b=this;b.disabled=true;$("lke").innerHTML=T("Passkey controleren…","Vérification de la clé d’accès…");
+ pkOpts().then(function(j){return navigator.credentials.get({publicKey:{challenge:new TextEncoder().encode(j.challenge),rpId:j.rpId,userVerification:"required",timeout:60000}})})
+ .then(function(c){var r=c.response;return pkPost("auth",{id:c.id,clientDataJSON:pkB(r.clientDataJSON),authenticatorData:pkB(r.authenticatorData),signature:pkB(r.signature)})})
+ .then(function(j){b.disabled=false;if(j.ok&&j.token)unlockWith(j.token);else throw{w:j.error}})
+ .catch(function(e){b.disabled=false;$("lke").innerHTML=pkMsg(e)})};
+function pkDev(){var u=navigator.userAgent;return /Android/.test(u)?"Android":/iPhone|iPad/.test(u)?"iPhone/iPad":/Windows/.test(u)?"Windows":/Mac/.test(u)?"Mac":/Linux/.test(u)?"Linux":"Apparaat"}
+function pkList(a,o){o=o||{};o.token=TOK;return pkPost(a||"list",o).then(function(j){if(!j.ok)throw{w:j.error};pkLoaded=1;pkIds=j.keys.map(function(k){return k.id});
+ $("pkl").innerHTML=j.keys.length?j.keys.sort(function(x,y){return(y.t||0)-(x.t||0)}).map(function(k){return'<div class="pkr"><span class="pkn">🔑 '+esc(k.name||"Passkey")+'</span><span class="pkd mono">'+(k.t?new Date(k.t).toLocaleDateString(L.nl?"nl-NL":"fr-FR"):"")+'</span><button type="button" data-id="'+esc(k.id)+'">'+T("Verwijder","Supprimer")+'</button></div>'}).join(""):'<p class="pki">'+T("Nog geen passkeys.","Aucune clé d’accès pour l’instant.")+'</p>';
+ $("pke").textContent=""}).catch(function(e){$("pke").innerHTML=pkMsg(e)})}
+$("pkl").onclick=function(e){var b=e.target.closest("button[data-id]");if(!b)return;
+ if(!b.classList.contains("sure")){b.classList.add("sure");b.innerHTML=T("Zeker?","Sûr ?");setTimeout(function(){if(b.isConnected){b.classList.remove("sure");b.innerHTML=T("Verwijder","Supprimer")}},4000);return}
+ b.disabled=true;pkList("del",{id:b.dataset.id})};
+$("pka").onclick=function(){var b=this;b.disabled=true;$("pke").innerHTML=T("Passkey aanmaken…","Création de la clé d’accès…");
+ pkOpts().then(function(j){return navigator.credentials.create({publicKey:{challenge:new TextEncoder().encode(j.challenge),rp:{name:"HS/CFH",id:j.rpId},user:{id:new TextEncoder().encode("hs-diensten"),name:"HS Diensten",displayName:"HS Diensten"},
+  pubKeyCredParams:[{type:"public-key",alg:-7},{type:"public-key",alg:-257}],authenticatorSelection:{residentKey:"required",requireResidentKey:true,userVerification:"required"},attestation:"none",timeout:60000,
+  excludeCredentials:pkIds.map(function(id){return{type:"public-key",id:pkU(id)}})}})})
+ .then(function(c){var r=c.response;if(!r.getPublicKey||!r.getAuthenticatorData||!r.getPublicKey())throw{w:"old"};
+  return pkPost("reg",{token:TOK,id:c.id,clientDataJSON:pkB(r.clientDataJSON),authenticatorData:pkB(r.getAuthenticatorData()),publicKey:pkB(r.getPublicKey()),alg:r.getPublicKeyAlgorithm(),name:pkDev()})})
+ .then(function(j){b.disabled=false;if(!j.ok)throw{w:j.error};pkList()})
+ .catch(function(e){b.disabled=false;$("pke").innerHTML=pkMsg(e)})};
 /* ---------- NS-storingen en werkzaamheden ---------- */
 var sdata=null,sAll=false;
 /* storingen: snel tonen uit de laatste bekende stand, met time-out en automatisch opnieuw proberen */
