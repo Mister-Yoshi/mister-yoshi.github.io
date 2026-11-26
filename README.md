@@ -76,7 +76,7 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 | [`hs_in_dienst.html`](hs_in_dienst.html) | **HS In dienst**: in en uit dienst melden, overstappen tellen, pauzes. Met GPS vind je het dichtstbijzijnde station en kies je de trein waarop je overstapt uit de live NS-vertrektijden |
 | [`hs_obis.html`](hs_obis.html) | **HS OBIS & RIS**: reizigersscherm in de trein (volgende halte, aankomst, spoor, aansluitingen, NL/FR). Met **NS live** vul je een treinnummer in en toont het scherm de echte rit: huidige halte, volgende haltes, eindstation en echte aansluitende treinen. Treinen van andere vervoerders krijgen ST (Stoptrein) of S (Sneltrein); bij een Arriva-trein verschijnt een eigen scherm in Arriva-stijl. Werkt ook als `hs_obis.html?trein=1634` |
 | [`HS_DMI.html`](HS_DMI.html) | **HS DMI**: simulator van een ETCS-cabinescherm, met snelheidsbewaking, remingrijpen, overgangen tussen ETCS en HTC (cabinesein), stroomafnemer en wisseling van tractiesysteem, geluiden, treintypes ICNG, TGV Réseau, TGV Duplex (tot 320 km/h) en ICMm (alleen HTC), Nederlands, Frans en Engels, en een cabinemodus voor het aanraakscherm |
-| [`hs_qr_ticketing_styled.html`](hs_qr_ticketing_styled.html) | **HS QR Ticketing**: maakt en scant QR-treinkaartjes |
+| [`hs_qr_ticketing_styled.html`](hs_qr_ticketing_styled.html) | **HS Ticketing**: maakt ondertekende QR-kaartjes (alleen met Diensten-toegang) en controleert ze. Gescand met een gewone camera geeft het kaartje een foutmelding |
 | [`HS_MentaleBijstand.html`](HS_MentaleBijstand.html) | **HS / CFH Mentale Bijstand**: pagina over mentaal welzijn |
 | [`hs_omloop_generator_v5.html`](hs_omloop_generator_v5.html) | **HS Omloop Generator v5**: maakt materieelomlopen |
 | `manifest.json`, `sw.js` | Onderdelen voor installatie als app (PWA) |
@@ -104,6 +104,7 @@ startpagina  →  Cloudflare Worker (met NS-sleutel als secret)  →  NS Reisinf
 - In de HTML staat alleen het adres van de Worker, **nooit de NS-sleutel**
 - De code van het tabblad **Diensten** staat ook in de Worker (secret `DIENSTEN_CODE`). Pas je die aan in Cloudflare, dan geldt de nieuwe code meteen op elk apparaat
 - **Diensten** kan ook met een passkey (vingerafdruk, gezicht of schermvergrendeling). De Worker controleert de handtekening en bewaart alleen de publieke sleutels, in een KV-namespace met de koppelnaam `HS_KV`. De code blijft werken als reserve
+- **HS Ticketing** laat kaartjes ondertekenen door de Worker (`?tsign`, ECDSA P-256). De privé-sleutel maakt de Worker zelf aan en bewaart hem in `HS_KV`; de pagina haalt alleen de publieke sleutel op (`?tpub`) en controleert daarmee, ook offline
 
 ---
 

@@ -1,619 +1,241 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HS QR Ticketing</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --yellow: #FFC917;
-            --yellow-dark: #e6b400;
-            --blue: #001a4d;
-            --blue-nav: #001233;
-            --blue-light: #0054a6;
-            --card-bg: #1e2330;
-            --bg: #141821;
-            --border: #2a2f3d;
-            --text: #e8edf5;
-            --text-dim: #9aa3b8;
-            --radius: 6px;
-            --shadow: 0 2px 12px rgba(0,0,0,0.4);
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#060b18">
+<title>HS Ticketing · Billetterie CFH</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="images/icon-192.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--red:#ff4136;--blue:#4d7cff;--grey:#a5a8ab;--yel:#ffc917;--grn:#1fd38a;--bg:#060b18;--ink:#eef3fc;--dim:#9aaec8;--line:rgba(255,255,255,.09);--card:rgba(14,20,38,.82)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:Outfit,system-ui,sans-serif;overflow-x:hidden;
+ background-image:radial-gradient(900px 500px at 110% -10%,rgba(77,124,255,.16),transparent 60%),radial-gradient(700px 420px at -10% 110%,rgba(255,65,54,.12),transparent 60%);background-attachment:scroll}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.nl,.fr{display:block}
+.fr{opacity:.72;font-size:.82em}
+body.only-nl .fr,body.only-fr .nl{display:none}
+.il .nl,.il .fr{display:inline}
+.il .fr{font-size:.85em}
+body:not(.only-nl):not(.only-fr) .il .nl+.fr::before{content:" / ";opacity:.6}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom))}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+/* kop */
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.back{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-weight:600}
+.back:hover{background:rgba(255,255,255,.1)}
+.lang{margin-left:auto;display:flex;gap:8px}
+.lang button{min-width:52px;height:42px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);font-weight:700;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:#0a1330;border-color:var(--ink)}
+.rail{height:10px;margin:16px 0 6px;background:linear-gradient(var(--red),var(--red)) 0 0/100% 2px no-repeat,linear-gradient(var(--blue),var(--blue)) 0 4px/100% 2px no-repeat,linear-gradient(var(--grey),var(--grey)) 0 8px/100% 2px no-repeat}
+.ph{margin:18px 0 22px}
+.ph h1{position:relative;margin:0;padding-left:1.18em;font-size:clamp(34px,6vw,60px);letter-spacing:-.04em;line-height:1;font-weight:800}
+.ph h1::before{content:"";position:absolute;left:0;top:.14em;width:.92em;height:.62em;background:linear-gradient(90deg,var(--red) 0 33.3%,var(--blue) 33.3% 66.6%,var(--grey) 66.6%);clip-path:polygon(22% 0,100% 0,78% 100%,0 100%)}
+.ph h1 em{font-style:normal;background:linear-gradient(90deg,var(--red),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+body:not(.only-nl):not(.only-fr) .ph h1 .fr{font-size:.5em;margin-top:8px;letter-spacing:-.02em}
+.ph p{color:var(--dim);margin:10px 0 0}
 
-        body {
-            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
+/* tabs */
+.seg{display:inline-flex;gap:6px;padding:6px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line);margin-bottom:18px}
+.seg button{border:0;background:none;border-radius:11px;padding:10px 18px;font-weight:700;cursor:pointer;color:var(--dim)}
+.seg button[aria-selected=true]{background:var(--ink);color:#0a1330}
+.seg svg{width:18px;height:18px;vertical-align:-3px;margin-right:6px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+[hidden]{display:none!important}
 
-        nav {
-            background: var(--blue-nav);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 32px;
-            height: 64px;
-            box-shadow: 0 2px 8px rgba(0,0,48,0.18);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 3px solid var(--yellow);
-        }
+.card{border-radius:24px;background:var(--card);border:1px solid var(--line);backdrop-filter:blur(8px);padding:24px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
 
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+/* formulier */
+.f{display:grid;grid-template-columns:1fr 1fr;gap:14px 14px}
+.f .w{grid-column:1/-1}
+.f label{display:block;font-size:13px;color:var(--dim);margin-bottom:6px;font-weight:600}
+.f input,.f select{width:100%;min-height:50px;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px;color-scheme:dark}
+.f input:focus,.f select:focus{outline:2px solid var(--yel);outline-offset:1px}
+.sw{display:flex;align-items:end}
+.swb{width:50px;height:50px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);cursor:pointer;font-size:20px}
+.route{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end}
+.cls{display:flex;gap:8px}
+.cls button{flex:1;min-height:50px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.35);cursor:pointer;font-weight:700}
+.cls button[aria-pressed=true]{background:rgba(77,124,255,.28);border-color:var(--blue)}
+.go{width:100%;min-height:54px;margin-top:18px;border:0;border-radius:14px;background:var(--red);color:#fff;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 10px 30px rgba(255,65,54,.25)}
+.go:disabled{opacity:.6;cursor:default}
+.ghost{min-height:46px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);padding:10px 16px;font-weight:700;cursor:pointer}
+.ghost:hover{background:rgba(255,255,255,.1)}
+.msg{min-height:1.3em;margin:10px 0 0;color:var(--red)}
+.msg.ok{color:var(--dim)}
+.hint{color:var(--dim);font-size:14px;margin:12px 0 0}
 
-        .nav-back {
-            background: transparent;
-            border: 1.5px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
+/* slot */
+.lock{display:grid;grid-template-columns:auto 1fr;gap:14px 18px;align-items:center}
+.lki{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:rgba(255,65,54,.15);color:var(--red)}
+.lki svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.lock b{font-size:19px}
+.lock p{margin:4px 0 0;color:var(--dim)}
+.lkr{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap}
+.lkr input{flex:1 1 160px;min-width:0;min-height:50px;font-size:22px;letter-spacing:.3em;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:12px;padding:10px 16px}
+.lkr .go{flex:1 1 160px;width:auto;margin:0}
+.lock .msg,.lock .hint{grid-column:1/-1;margin:0}
+.lock a{color:var(--ink)}
 
-        .nav-back:hover {
-            border-color: var(--yellow);
-            color: var(--yellow);
-            background: rgba(255,201,23,0.1);
-        }
+/* kaartje */
+.tk{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(160deg,#0f1a3f,#0a1230 55%,#0b0f22);border:1px solid rgba(255,255,255,.12);box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.tkh{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px dashed rgba(255,255,255,.16)}
+.blk{display:inline-block;width:46px;height:20px;flex:none;background:linear-gradient(90deg,var(--red) 0 33.3%,var(--blue) 33.3% 66.6%,var(--grey) 66.6%);clip-path:polygon(16% 0,100% 0,84% 100%,0 100%)}
+.tkh b{font-size:15px;letter-spacing:.02em;min-width:0}
+body:not(.only-nl):not(.only-fr) .tkh .cl .fr{display:none}
+.tkh .cl{margin-left:auto;white-space:nowrap;flex:none;font-weight:800;border-radius:9px;padding:5px 10px;background:rgba(255,201,23,.15);color:var(--yel);font-size:14px}
+.tkr{padding:18px 20px 6px}
+.tkr .rt{display:flex;align-items:center;gap:10px;font-size:clamp(22px,4.4vw,30px);font-weight:800;letter-spacing:-.02em;line-height:1.1;flex-wrap:wrap}
+.tkr .rt i{font-style:normal;color:var(--yel)}
+.tkd{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:12px 20px 18px}
+.tkd div{min-width:0}
+.tkd small{display:block;color:var(--dim);font-size:12px;margin-bottom:2px}
+.tkd span{font-weight:700;overflow-wrap:anywhere}
+.tkq{background:#fff;margin:0 20px;border-radius:18px;padding:16px;display:grid;place-items:center}
+.tkq img{width:100%;max-width:280px;height:auto;image-rendering:pixelated;display:block}
+.tkf{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:14px 20px 18px;color:var(--dim);font-size:12.5px}
+.sig{display:inline-flex;align-items:center;gap:6px;color:var(--grn);font-weight:700}
+.sig svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.acts{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.acts .ghost{flex:1 1 140px}
+.empty{display:grid;place-items:center;text-align:center;min-height:360px;color:var(--dim);border:1px dashed rgba(255,255,255,.14);border-radius:24px;padding:24px}
+.empty .blk{width:70px;height:30px;margin-bottom:14px;opacity:.7}
+.hist{margin-top:18px}
+.hist h3{margin:0 0 8px;font-size:15px;color:var(--dim);font-weight:600}
+.hr{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);cursor:pointer;margin-bottom:8px}
+.hr:hover{background:rgba(255,255,255,.08)}
+.hr b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr span{color:var(--dim);font-size:13px}
 
-        .nav-brand {
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
+/* scanner */
+.cam{position:relative;aspect-ratio:4/3;border-radius:24px;overflow:hidden;background:#02050d;border:1px solid var(--line)}
+.cam video{width:100%;height:100%;object-fit:cover;display:block}
+.cam .vf{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.cam .vf i{width:min(62%,300px);aspect-ratio:1;border-radius:22px;box-shadow:0 0 0 9999px rgba(2,5,13,.45);
+ background:linear-gradient(var(--yel),var(--yel)) 0 0/34px 4px,linear-gradient(var(--yel),var(--yel)) 0 0/4px 34px,linear-gradient(var(--yel),var(--yel)) 100% 0/34px 4px,linear-gradient(var(--yel),var(--yel)) 100% 0/4px 34px,
+ linear-gradient(var(--yel),var(--yel)) 0 100%/34px 4px,linear-gradient(var(--yel),var(--yel)) 0 100%/4px 34px,linear-gradient(var(--yel),var(--yel)) 100% 100%/34px 4px,linear-gradient(var(--yel),var(--yel)) 100% 100%/4px 34px;background-repeat:no-repeat}
+.cam .off{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--dim);padding:20px}
+.cam .off svg{width:46px;height:46px;fill:none;stroke:currentColor;stroke-width:1.6;margin-bottom:8px}
+.res{border-radius:24px;padding:22px;border:1px solid var(--line);background:var(--card)}
+.res .st{display:flex;align-items:center;gap:14px}
+.res .ic{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;flex:none}
+.res .ic svg{width:32px;height:32px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.res h2{margin:0;font-size:26px;letter-spacing:-.02em;line-height:1.1}
+.res p{margin:4px 0 0;color:var(--dim)}
+.res.ok{border-color:rgba(31,211,138,.5);background:linear-gradient(160deg,rgba(31,211,138,.16),var(--card) 60%)}
+.res.ok .ic{background:var(--grn)}
+.res.bad{border-color:rgba(255,65,54,.55);background:linear-gradient(160deg,rgba(255,65,54,.18),var(--card) 60%)}
+.res.bad .ic{background:var(--red)}
+.res.warn{border-color:rgba(255,201,23,.55);background:linear-gradient(160deg,rgba(255,201,23,.14),var(--card) 60%)}
+.res.warn .ic{background:#c99400}
+.res .tkd{padding:16px 0 0;grid-template-columns:repeat(2,minmax(0,1fr))}
+.res .rt{font-size:22px;font-weight:800;margin-top:16px}
+.res .rt i{font-style:normal;color:var(--yel)}
+.scanacts{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.scanacts>*{flex:1 1 150px}
+.idle{color:var(--dim);text-align:center;padding:30px 10px}
 
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .lang-btn {
-            background: transparent;
-            border: 1.5px solid rgba(255,255,255,0.3);
-            color: #ffffff;
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 7px 18px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .lang-btn:hover {
-            background: rgba(255,255,255,0.15);
-            border-color: rgba(255,255,255,0.7);
-        }
-
-        .lang-btn.active {
-            background: var(--yellow);
-            color: #000;
-            border-color: var(--yellow);
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 32px;
-        }
-
-        .header {
-            margin-bottom: 32px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 24px;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            color: var(--yellow);
-            margin-bottom: 8px;
-            font-weight: 800;
-        }
-
-        .header p {
-            color: var(--text-dim);
-        }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 32px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .tab-btn {
-            padding: 14px 24px;
-            background: transparent;
-            border: none;
-            color: var(--text-dim);
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
-            transition: all 0.3s;
-        }
-
-        .tab-btn:hover {
-            color: var(--text);
-        }
-
-        .tab-btn.active {
-            color: var(--yellow);
-            border-bottom-color: var(--yellow);
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text);
-            font-size: 0.9rem;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 0.95rem;
-            font-family: 'Outfit', sans-serif;
-            background: #0d1117;
-            color: var(--text);
-            transition: all 0.3s;
-        }
-
-        input:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--yellow);
-            box-shadow: 0 0 0 3px rgba(255,201,23,0.1);
-            background: #121820;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        button {
-            border: none;
-            padding: 12px 24px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 700;
-            transition: all 0.2s;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        .primary-btn {
-            background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-dark) 100%);
-            color: #000;
-            width: 100%;
-        }
-
-        .primary-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255,201,23,0.3);
-        }
-
-        .secondary-btn {
-            background: transparent;
-            color: var(--text-dim);
-            border: 1px solid var(--border);
-        }
-
-        .secondary-btn:hover {
-            border-color: var(--yellow);
-            color: var(--yellow);
-            background: rgba(255,201,23,0.08);
-        }
-
-        .button-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .qr-display {
-            text-align: center;
-            padding: 30px;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            margin-top: 20px;
-        }
-
-        #qrcode {
-            display: inline-block;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        #qrcode {
-            max-width: 100%;
-        }
-
-        #qrcode img {
-            display: block;
-            width: 300px;
-            max-width: 100%;
-            height: auto;
-            image-rendering: pixelated;
-        }
-
-        .qr-label {
-            color: var(--text-dim);
-            font-size: 0.9rem;
-            margin-bottom: 12px;
-        }
-
-        .ticket-info {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .info-item {
-            background: #0d1117;
-            padding: 12px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-        }
-
-        .info-label {
-            color: var(--text-dim);
-            font-weight: 600;
-            margin-bottom: 4px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
-
-        .info-value {
-            color: var(--yellow);
-            font-size: 0.95rem;
-            font-weight: 600;
-        }
-
-        video {
-            width: 100%;
-            max-width: 600px;
-            border-radius: var(--radius);
-            margin: 20px auto;
-            display: block;
-            border: 1px solid var(--border);
-            background: #000;
-        }
-
-        canvas {
-            display: none;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 32px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-        }
-
-        .modal-close {
-            float: right;
-            background: transparent;
-            border: none;
-            color: var(--text-dim);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-        }
-
-        .modal-close:hover {
-            color: var(--yellow);
-        }
-
-        .modal-header {
-            margin-top: 12px;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            color: var(--yellow);
-            font-size: 1.3rem;
-            margin-bottom: 8px;
-        }
-
-        .validation-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            animation: slideDown 0.4s ease-out;
-        }
-
-        .validation-checkmark {
-            display: inline-block;
-            margin-right: 8px;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes bounce {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            70% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .success-icon {
-            font-size: 3.5rem;
-            text-align: center;
-            margin: 20px 0;
-            animation: bounce 0.6s ease-out;
-        }
-
-        .file-input-wrapper {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .file-input-wrapper button {
-            flex: 1;
-            min-width: 120px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 16px;
-            }
-            nav { padding: 0 16px; }
-            .header h1 { font-size: 1.5rem; }
-            .tab-btn { padding: 12px 16px; font-size: 0.85rem; }
-        }
-    </style>
+/* buiten de app */
+.out{max-width:560px;margin:8vh auto 0;text-align:center}
+.out .ic{width:84px;height:84px;margin:0 auto 18px;border-radius:24px;display:grid;place-items:center;background:var(--red);box-shadow:0 16px 40px rgba(255,65,54,.35)}
+.out .ic svg{width:44px;height:44px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round}
+.out h1{margin:0 0 10px;font-size:clamp(28px,6vw,40px);letter-spacing:-.03em}
+.out p{color:var(--dim);margin:0 0 8px;line-height:1.5}
+.out .code{display:inline-block;margin-top:10px;padding:6px 12px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:13px;color:var(--dim)}
+.out .go{display:inline-block;width:auto;padding:16px 26px;text-decoration:none;margin-top:22px}
+@media (prefers-reduced-motion:no-preference){.res,.tk{animation:pop .28s ease-out}@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}}
+@media (max-width:520px){.wrap{padding-left:14px;padding-right:14px}.card{padding:18px}.f{grid-template-columns:1fr}.route{grid-template-columns:1fr}.sw{justify-content:center}.swb{transform:rotate(90deg)}.tkd{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head>
 <body>
-    <nav>
-        <div class="nav-left">
-            <button class="nav-back" onclick="goBack()" id="btn-back">← Terug</button>
-            <div class="nav-brand" id="brand">🚂 HS Ticketing QR</div>
-        </div>
-        <div class="nav-right">
-            <button class="lang-btn active" onclick="switchLang('nl')" id="lang-nl">NL</button>
-            <button class="lang-btn" onclick="switchLang('fr')" id="lang-fr">FR</button>
-        </div>
-    </nav>
+<div class="wrap">
+ <header class="top">
+  <a class="back il" href="index.html#diensten">← <span class="nl">Startpagina</span><span class="fr">Accueil</span></a>
+  <div class="lang"><button id="lnl" aria-pressed="true">NL</button><button id="lfr" aria-pressed="false">FR</button></div>
+ </header>
+ <div class="rail" aria-hidden="true"></div>
 
-    <div class="container">
-        <div class="header">
-            <h1 id="title">Treinkaartjes QR Generator</h1>
-            <p id="subtitle">Genereer en scan tickets voor Hoggynesische Spoorwegen</p>
-        </div>
+ <!-- Kaartje gescand buiten de HS-scanner -->
+ <main id="outside" hidden>
+  <div class="out">
+   <div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 7v6M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>
+   <h1><span class="nl">Ongeldige controle</span><span class="fr">Contrôle invalide</span></h1>
+   <p><span class="nl">Dit HS-kaartje is gescand met een gewone camera of QR-app. Een kaartje kan alleen gecontroleerd worden met de HS Ticketing-scanner.</span><span class="fr">Ce billet CFH a été scanné avec un appareil photo ou une application QR ordinaire. Un billet ne peut être contrôlé qu’avec le scanner Billetterie CFH.</span></p>
+   <span class="code mono">HS-T01 · <span id="outid"></span></span><br>
+   <a class="go il" href="hs_qr_ticketing_styled.html"><span class="nl">Open HS Ticketing</span><span class="fr">Ouvrir Billetterie CFH</span></a>
+  </div>
+ </main>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('generate')" id="tab-gen-label">
-                📱 <span id="tab-generate">Genereren</span>
-            </button>
-            <button class="tab-btn" onclick="switchTab('scan')" id="tab-scan-label">
-                📸 <span id="tab-scan">Scannen</span>
-            </button>
-        </div>
+ <main id="app">
+  <div class="ph">
+   <h1><span class="nl">HS <em>Ticketing</em></span><span class="fr">Billetterie <em>CFH</em></span></h1>
+   <p><span class="nl">Maak ondertekende kaartjes met QR-code en controleer ze met de scanner.</span><span class="fr">Créez des billets signés avec code QR et contrôlez-les avec le scanner.</span></p>
+  </div>
+  <div class="seg il" role="tablist">
+   <button role="tab" id="tb-make" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a2 2 0 000-4z"/></svg><span class="nl">Kaartje maken</span><span class="fr">Créer un billet</span></button>
+   <button role="tab" id="tb-scan" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3M7 12h10"/></svg><span class="nl">Controleren</span><span class="fr">Contrôler</span></button>
+  </div>
 
-        <!-- GENERATE TAB -->
-        <div id="generate" class="tab-content active">
-            <button class="primary-btn" onclick="fillSampleData()" id="sample-btn" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(255,201,23,0.3) 0%, rgba(255,201,23,0.1) 100%); color: var(--yellow); border: 1px solid var(--yellow);">📋 Voorbeeldgegevens laden</button>
+  <!-- MAKEN -->
+  <section id="p-make">
+   <form class="card lock" id="lk" hidden autocomplete="off">
+    <div class="lki" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg></div>
+    <div><b><span class="nl">Kaartjes maken is beveiligd</span><span class="fr">La création de billets est protégée</span></b><p><span class="nl">Voer de Diensten-code in. Controleren kan iedereen.</span><span class="fr">Saisissez le code des services. Tout le monde peut contrôler.</span></p></div>
+    <div class="lkr"><input id="lkc" type="password" inputmode="numeric" aria-label="Code" placeholder="••••"><button class="go il"><span class="nl">Ontgrendel</span><span class="fr">Déverrouiller</span></button></div>
+    <p class="msg" id="lke" role="alert"></p>
+    <p class="hint il"><a href="index.html#diensten"><span class="nl">Of ontgrendel op de startpagina met je passkey</span><span class="fr">Ou déverrouillez sur l’accueil avec votre clé d’accès</span></a></p>
+   </form>
 
-            <form id="ticketForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="passengerName" id="label-passenger">Passagier</label>
-                        <input type="text" id="passengerName" placeholder="Jan Jansen" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="ticketID" id="label-ticket">Ticket ID <span style="color: var(--text-dim); font-weight: 400;" id="ticket-id-label">(auto)</span></label>
-                        <input type="text" id="ticketID" placeholder="Wordt automatisch gegenereerd..." readonly style="background: #0a0f1a; cursor: not-allowed;">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="from" id="label-from">Vertrekstation</label>
-                        <input type="text" id="from" placeholder="Amsterdam" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="to" id="label-to">Bestemmingstation</label>
-                        <input type="text" id="to" placeholder="Rotterdam" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="date" id="label-date">Reisdatum</label>
-                        <input type="date" id="date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="trainNumber" id="label-train">Trein nummer</label>
-                        <input type="text" id="trainNumber" placeholder="IC1234" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="classType" id="label-class">Klasse</label>
-                        <select id="classType" required>
-                            <option value="" id="select-class">Selecteer klasse</option>
-                            <option value="1">1e klasse</option>
-                            <option value="2">2e klasse</option>
-                        </select>
-                    </div>
-                </div>
-
-                <button type="button" class="primary-btn" onclick="generateQR()" id="btn-generate">Genereer QR Code</button>
-            </form>
-
-            <div id="qrContainer" style="display: none;">
-                <div class="qr-display">
-                    <p class="qr-label" id="qr-label">QR Code:</p>
-                    <div id="qrcode"></div>
-                    <div class="ticket-info">
-                        <div class="info-item">
-                            <div class="info-label" id="info-passenger">Passagier</div>
-                            <div class="info-value" id="info-passenger-val">-</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label" id="info-ticket">Ticket</div>
-                            <div class="info-value" id="info-ticket-val">-</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label" id="info-route">Route</div>
-                            <div class="info-value" id="info-route-val">-</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label" id="info-train">Trein</div>
-                            <div class="info-value" id="info-train-val">-</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="button-group">
-                    <button class="secondary-btn" onclick="downloadQR()" id="btn-download">💾 Download</button>
-                    <button class="secondary-btn" onclick="resetForm()" id="btn-reset">🔄 Nieuw</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- SCAN TAB -->
-        <div id="scan" class="tab-content">
-            <div class="form-group">
-                <label id="label-camera-option">Kies scanmethode:</label>
-                <div class="file-input-wrapper">
-                    <button type="button" class="secondary-btn" onclick="startCamera()" id="btn-camera">📹 Camera</button>
-                    <button type="button" class="secondary-btn" onclick="openFileInput()" id="btn-upload">📁 Afbeelding</button>
-                </div>
-                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-            </div>
-
-            <div id="cameraContainer" style="display: none;">
-                <video id="video" autoplay playsinline></video>
-                <canvas id="canvas"></canvas>
-                <p style="text-align: center; color: var(--text-dim); margin: 16px 0; font-size: 0.9rem;">
-                    <span id="scanning-indicator">🔍 Scanning voor QR codes...</span>
-                </p>
-                <div class="button-group">
-                    <button class="secondary-btn" onclick="stopCamera()" id="btn-stop">Stop</button>
-                </div>
-            </div>
-        </div>
+   <div class="grid2" id="mk" hidden>
+    <form class="card" id="tf" autocomplete="off">
+     <div class="f">
+      <div class="w"><label for="fn" class="il"><span class="nl">Naam reiziger</span><span class="fr">Nom du voyageur</span></label><input id="fn" required maxlength="40" placeholder="Anna de Vries"></div>
+      <div class="w route">
+       <div><label for="ff" class="il"><span class="nl">Van</span><span class="fr">De</span></label><input id="ff" list="stl" required maxlength="40" placeholder="Assen"></div>
+       <div class="sw"><button type="button" class="swb" id="swp" aria-label="Wissel / Inverser">⇄</button></div>
+       <div><label for="ft" class="il"><span class="nl">Naar</span><span class="fr">À</span></label><input id="ft" list="stl" required maxlength="40" placeholder="Groningen"></div>
+      </div>
+      <div><label for="fd" class="il"><span class="nl">Reisdatum</span><span class="fr">Date du voyage</span></label><input id="fd" type="date" required></div>
+      <div><label for="ftr" class="il"><span class="nl">Trein (optioneel)</span><span class="fr">Train (facultatif)</span></label><input id="ftr" maxlength="12" placeholder="IC 512"></div>
+      <div class="w"><label class="il"><span class="nl">Klasse</span><span class="fr">Classe</span></label><div class="cls il"><button type="button" data-c="1" aria-pressed="false"><span class="nl">1e klas</span><span class="fr">1re classe</span></button><button type="button" data-c="2" aria-pressed="true"><span class="nl">2e klas</span><span class="fr">2e classe</span></button></div></div>
+     </div>
+     <datalist id="stl"></datalist>
+     <button class="go il" id="mkb"><span class="nl">Kaartje maken</span><span class="fr">Créer le billet</span></button>
+     <p class="msg" id="mke" role="alert"></p>
+    </form>
+    <div>
+     <div id="tkout"><div class="empty"><div><span class="blk"></span><p><span class="nl">Je kaartje verschijnt hier, met een ondertekende QR-code.</span><span class="fr">Votre billet apparaîtra ici, avec un code QR signé.</span></p></div></div></div>
+     <div class="acts il" id="tka" hidden><button class="ghost" id="shr"><span class="nl">Delen</span><span class="fr">Partager</span></button><button class="ghost" id="dl"><span class="nl">Opslaan als afbeelding</span><span class="fr">Enregistrer l’image</span></button></div>
+     <div class="hist" id="hist" hidden><h3><span class="nl">Laatst gemaakt</span><span class="fr">Créés récemment</span></h3><div id="hl"></div></div>
     </div>
+   </div>
+  </section>
 
-    <!-- SCAN RESULT MODAL -->
-    <div id="scanModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">✕</button>
-            <div class="modal-header">
-                <h2 id="modal-title">Ticket Gescanned</h2>
-            </div>
-            <div class="modal-body" id="modalBody">
-            </div>
-            <div class="button-group" style="margin-top: 24px;">
-                <button class="secondary-btn" onclick="closeModal()" id="modal-close-btn"></button>
-            </div>
-        </div>
+  <!-- CONTROLEREN -->
+  <section id="p-scan" hidden>
+   <div class="grid2">
+    <div>
+     <div class="cam"><video id="vid" playsinline muted></video><div class="vf" id="vf" hidden><i></i></div>
+      <div class="off" id="camoff"><div><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3"/></svg><p><span class="nl">Start de camera en houd de QR-code van het kaartje in het kader.</span><span class="fr">Démarrez la caméra et placez le code QR du billet dans le cadre.</span></p></div></div>
+     </div>
+     <div class="scanacts il"><button class="go" id="cst" style="margin:0"><span class="nl">Camera starten</span><span class="fr">Démarrer la caméra</span></button><button class="ghost" id="cimg"><span class="nl">Foto kiezen</span><span class="fr">Choisir une photo</span></button></div>
+     <input type="file" id="fimg" accept="image/*" hidden>
+     <p class="msg" id="sce" role="alert"></p>
     </div>
-
-    <script>
+    <div id="sres"><div class="res idle"><p><span class="nl">Nog niets gescand.</span><span class="fr">Rien n’a encore été scanné.</span></p></div></div>
+   </div>
+  </section>
+ </main>
+</div>
+<script>
 /* QR-codegenerator (in de pagina, geen externe server nodig).
    Gebaseerd op 'QRCode for JavaScript' (c) 2009 Kazuhiko Arase, MIT-licentie, http://www.d-project.com/ */
 var HSQR=(function(){
@@ -1842,463 +1464,137 @@ QRCodeModel.createBytes = function(buffer, rsBlocks) {
 
 return {Model:QRCodeModel,Level:QRErrorCorrectLevel};
 })();
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-    <script>
-        const translations = {
-            nl: {
-                'title': 'Treinkaartjes QR Generator',
-                'subtitle': 'Genereer en scan tickets voor Hoggynesische Spoorwegen',
-                'tab-generate': 'Genereren',
-                'tab-scan': 'Scannen',
-                'sample-btn': '📋 Voorbeeldgegevens laden',
-                'label-passenger': 'Passagier',
-                'label-ticket': 'Ticket ID',
-                'label-from': 'Vertrekstation',
-                'label-to': 'Bestemmingstation',
-                'label-date': 'Reisdatum',
-                'label-train': 'Trein nummer',
-                'label-class': 'Klasse',
-                'select-class': 'Selecteer klasse',
-                'btn-generate': 'Genereer QR Code',
-                'qr-label': 'QR Code:',
-                'info-passenger': 'Passagier',
-                'info-ticket': 'Ticket',
-                'info-route': 'Route',
-                'info-train': 'Trein',
-                'btn-download': '💾 Download',
-                'btn-reset': '🔄 Nieuw',
-                'label-camera-option': 'Kies scanmethode:',
-                'btn-camera': '📹 Camera',
-                'btn-upload': '📁 Afbeelding',
-                'btn-capture': '📸 Foto',
-                'btn-stop': 'Stop',
-                'btn-back': '← Terug',
-                'brand': '🚂 HS Ticketing QR',
-                'ticket-id-label': '(auto)',
-                'ticket-placeholder': 'Wordt automatisch gegenereerd...',
-                'modal-title-scanned': '✅ Ticket Gescanned',
-                'modal-title-valid': '✅ Ticket Gevalideerd',
-                'modal-validation-badge': '✓ GELDIG TICKET',
-                'modal-validation-message': 'Dit ticket is succesvol gescanned en gevalideerd.',
-                'modal-close-btn': 'Sluiten',
-                'scanning-indicator': '🔍 Scanning voor QR codes...',
-            },
-            fr: {
-                'title': 'Générateur QR de Billets',
-                'subtitle': 'Générez et scannez les billets des Chemins de Fer Hoggynésiens',
-                'tab-generate': 'Générer',
-                'tab-scan': 'Scanner',
-                'sample-btn': '📋 Charger les données d\'exemple',
-                'label-passenger': 'Passager',
-                'label-ticket': 'Numéro de billet',
-                'label-from': 'Gare de départ',
-                'label-to': 'Gare de destination',
-                'label-date': 'Date de voyage',
-                'label-train': 'Numéro de train',
-                'label-class': 'Classe',
-                'select-class': 'Sélectionnez la classe',
-                'btn-generate': 'Générer le code QR',
-                'qr-label': 'Code QR:',
-                'info-passenger': 'Passager',
-                'info-ticket': 'Billet',
-                'info-route': 'Trajet',
-                'info-train': 'Train',
-                'btn-download': '💾 Télécharger',
-                'btn-reset': '🔄 Nouveau',
-                'label-camera-option': 'Choisir la méthode:',
-                'btn-camera': '📹 Caméra',
-                'btn-upload': '📁 Image',
-                'btn-capture': '📸 Photo',
-                'btn-stop': 'Arrêter',
-                'btn-back': '← Retour',
-                'brand': '🚂 CFH Billetterie QR',
-                'ticket-id-label': '(auto)',
-                'ticket-placeholder': 'Sera généré automatiquement...',
-                'modal-title-scanned': '✅ Billet Scanné',
-                'modal-title-valid': '✅ Billet Validé',
-                'modal-validation-badge': '✓ BILLET VALIDE',
-                'modal-validation-message': 'Ce billet a été scanné et validé avec succès.',
-                'modal-close-btn': 'Fermer',
-                'scanning-indicator': '🔍 Scan en cours pour les codes QR...',
-            }
-        };
 
-        let currentLang = 'nl';
+</script>
+<script>
+var API="https://hs-trein.mitchell-middelbosch.workers.dev/";
+var $=function(i){return document.getElementById(i)},L={nl:true,fr:false};
+function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k));v===null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]})}
+function T(nl,fr){return'<span class="nl">'+nl+'</span><span class="fr">'+fr+'</span>'}
+function b64u(b){var a=new Uint8Array(b),t="";for(var i=0;i<a.length;i++)t+=String.fromCharCode(a[i]);return btoa(t).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function ub64u(s){s=String(s).replace(/-/g,"+").replace(/_/g,"/");return Uint8Array.from(atob(s+"===".slice((s.length+3)%4)),function(c){return c.charCodeAt(0)})}
+function enc(o){return b64u(new TextEncoder().encode(JSON.stringify(o)))}
+function dec(p){return JSON.parse(new TextDecoder().decode(ub64u(p)))}
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function fdate(d){try{var x=new Date(d+"T12:00:00");return x.toLocaleDateString(L.nl?"nl-NL":"fr-FR",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}catch(e){return d}}
+function cls(c){return c==1?T("1e klas","1re classe"):T("2e klas","2e classe")}
+var CHK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',XX='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',WW='<svg viewBox="0 0 24 24"><path d="M12 7v6M12 17h.01"/></svg>';
 
-        function switchLang(lang) {
-            currentLang = lang;
-            document.documentElement.lang = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('lang-' + lang).classList.add('active');
-            updateUI();
-        }
+/* taal: zelfde instelling als de startpagina */
+var s0=ls("hsstart4");if(s0&&(s0.nl||s0.fr))L=s0;
+function applyLang(){document.body.classList.toggle("only-nl",L.nl&&!L.fr);document.body.classList.toggle("only-fr",L.fr&&!L.nl);$("lnl").setAttribute("aria-pressed",L.nl);$("lfr").setAttribute("aria-pressed",L.fr);document.documentElement.lang=L.nl?"nl":"fr";var s=ls("hsstart4")||{};s.nl=L.nl;s.fr=L.fr;ls("hsstart4",s)}
+$("lnl").onclick=function(){if(L.nl&&!L.fr)return;L.nl=!L.nl;applyLang()};$("lfr").onclick=function(){if(L.fr&&!L.nl)return;L.fr=!L.fr;applyLang()};
+applyLang();
 
-        function updateUI() {
-            const t = translations[currentLang];
-            Object.keys(t).forEach(key => {
-                const el = document.getElementById(key);
-                if (el) {
-                    el.textContent = t[key];
-                }
-            });
-            // Update placeholder separately
-            document.getElementById('ticketID').placeholder = t['ticket-placeholder'];
-            // Update modal close button text
-            const modalCloseBtn = document.getElementById('modal-close-btn');
-            if (modalCloseBtn) {
-                modalCloseBtn.textContent = t['modal-close-btn'];
-            }
-        }
+/* QR-inhoud: link naar deze pagina met het kaartje in de #. Gescand met een gewone camera opent die link de foutmelding. */
+var BASE=location.origin+location.pathname;
+function ticketURL(p,s){return BASE+"#T="+p+"."+s}
+function parseQR(txt){txt=String(txt||"").trim();var m=txt.match(/#T=([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/);if(m)return{p:m[1],s:m[2]};
+ try{var j=JSON.parse(txt);if(j&&j.ticketID)return{old:j}}catch(e){}return null}
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
-            event.target.closest('.tab-btn').classList.add('active');
-            if (tabName === 'scan') stopCamera();
-        }
+/* Geopend via de QR-code (buiten de scanner): alleen een foutmelding */
+if(/^#T=/.test(location.hash)){$("app").hidden=true;$("outside").hidden=false;var pq=parseQR(location.href);try{$("outid").textContent=pq?dec(pq.p).id:"?"}catch(e){$("outid").textContent="?"}history.replaceState(null,"",location.pathname)}
 
-        function goBack() {
-            window.location.href = 'index.html';
-        }
+/* tabs */
+function tab(t){var m=t==="make";$("tb-make").setAttribute("aria-selected",m);$("tb-scan").setAttribute("aria-selected",!m);$("p-make").hidden=!m;$("p-scan").hidden=m;if(m)camStop();try{history.replaceState(null,"",m?location.pathname:"#controle")}catch(e){}}
+$("tb-make").onclick=function(){tab("make")};$("tb-scan").onclick=function(){tab("scan")};
+if(location.hash==="#controle")tab("scan");
 
-        function generateRandomTicketID() {
-            const year = new Date().getFullYear();
-            const random = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
-            return `HS-${year}-${random}`;
-        }
+/* ---------- Toegang (zelfde Diensten-slot als de startpagina) ---------- */
+var TOK="";try{TOK=sessionStorage.getItem("hs_tok")||""}catch(e){}
+function lockUI(on){$("lk").hidden=on;$("mk").hidden=!on;if(on)loadStations()}
+if(TOK){lockUI(true);fetch(API+"?check="+encodeURIComponent(TOK),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok){TOK="";try{sessionStorage.removeItem("hs_tok")}catch(e){}lockUI(false)}}).catch(function(){})}else lockUI(false);
+$("lk").onsubmit=function(e){e.preventDefault();var c=$("lkc").value.trim();if(!c)return;$("lke").innerHTML=T("Code controleren…","Vérification du code…");
+ fetch(API+"?unlock=1",{method:"POST",body:c,cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(j.ok&&j.token){TOK=j.token;try{sessionStorage.setItem("hs_tok",TOK)}catch(e){}$("lkc").value="";$("lke").textContent="";lockUI(true)}else{$("lke").innerHTML=T("Onjuiste code.","Code incorrect.");$("lkc").value=""}})
+ .catch(function(){$("lke").innerHTML=T("Kan de code nu niet controleren.","Impossible de vérifier le code.")})};
 
-        function fillSampleData() {
-            document.getElementById('passengerName').value = 'Anna de Vries';
-            document.getElementById('ticketID').value = generateRandomTicketID();
-            document.getElementById('from').value = 'Amsterdam Centraal';
-            document.getElementById('to').value = 'Rotterdam Centraal';
-            document.getElementById('date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('trainNumber').value = 'IC1234';
-            document.getElementById('classType').value = '1';
-            
-            setTimeout(() => generateQR(), 100);
-        }
+/* ---------- Stations (suggesties) ---------- */
+var stLoaded=0;function loadStations(){if(stLoaded)return;stLoaded=1;
+ fetch(API+"?stations=1").then(function(r){return r.json()}).then(function(j){var seen={};$("stl").innerHTML=(j.stations||[]).filter(function(s){if(seen[s.n])return false;seen[s.n]=1;return true}).sort(function(a,b){return(a.l==="NL"?0:1)-(b.l==="NL"?0:1)||a.n.localeCompare(b.n)}).map(function(s){return'<option value="'+esc(s.n)+'">'}).join("")}).catch(function(){})}
 
-        function generateQR() {
-            let ticketID = document.getElementById('ticketID').value;
-            
-            if (!ticketID) {
-                ticketID = generateRandomTicketID();
-                document.getElementById('ticketID').value = ticketID;
-            }
+/* ---------- Kaartje maken ---------- */
+var CL=2;document.querySelectorAll(".cls button").forEach(function(b){b.onclick=function(){CL=+b.dataset.c;document.querySelectorAll(".cls button").forEach(function(x){x.setAttribute("aria-pressed",x===b)})}});
+$("fd").value=today();
+$("swp").onclick=function(){var a=$("ff").value;$("ff").value=$("ft").value;$("ft").value=a};
+function newId(){var a=crypto.getRandomValues(new Uint8Array(4)),n=((a[0]<<16)|(a[1]<<8)|a[2])%1000000;return"HS-"+new Date().getFullYear()+"-"+String(n).padStart(6,"0")}
+var PUB=ls("hs_tkpub");
+function getPub(force){if(PUB&&!force)return Promise.resolve(PUB);return fetch(API+"?tpub=1",{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};PUB={kid:j.kid,jwk:j.jwk};ls("hs_tkpub",PUB);return PUB})}
+function errText(e){var w=e&&e.w;if(w==="nokv")return T("De Worker mist nog de KV-koppeling HS_KV.","Il manque la liaison KV HS_KV dans le Worker.");if(w==="token")return T("Je toegang is verlopen. Ontgrendel opnieuw.","Votre accès a expiré. Déverrouillez à nouveau.");return T("Kan de Worker nu niet bereiken. Probeer het later opnieuw.","Impossible de joindre le Worker. Réessayez plus tard.")}
+var CUR=null;
+$("tf").onsubmit=function(e){e.preventDefault();var b=$("mkb");b.disabled=true;$("mke").className="msg ok";$("mke").innerHTML=T("Kaartje ondertekenen…","Signature du billet…");
+ getPub(true).then(function(k){var t={v:1,k:k.kid,id:newId(),n:$("fn").value.trim(),f:$("ff").value.trim(),t:$("ft").value.trim(),d:$("fd").value,tr:$("ftr").value.trim(),c:CL,i:Date.now()};var p=enc(t);
+  return fetch(API+"?tsign=1",{method:"POST",body:JSON.stringify({token:TOK,p:p}),cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw{w:j.error};return{t:t,p:p,s:j.s}})})
+ .then(function(x){b.disabled=false;$("mke").textContent="";CUR=x;showTicket(x);var h=ls("hs_tickets")||[];h.unshift({p:x.p,s:x.s});ls("hs_tickets",h.slice(0,12));drawHist()})
+ .catch(function(e){b.disabled=false;$("mke").className="msg";$("mke").innerHTML=errText(e);if(e&&e.w==="token"){TOK="";try{sessionStorage.removeItem("hs_tok")}catch(_){}lockUI(false)}})};
 
-            const passenger = document.getElementById('passengerName').value;
-            const from = document.getElementById('from').value;
-            const to = document.getElementById('to').value;
-            const date = document.getElementById('date').value;
-            const train = document.getElementById('trainNumber').value;
-            const classType = document.getElementById('classType').value === '1' ? '1st Class' : '2nd Class';
+function qrImg(text){var q=new HSQR.Model(-1,HSQR.Level.M);q.addData(unescape(encodeURIComponent(text)));q.make();var n=q.getModuleCount(),sc=8,c=document.createElement("canvas");c.width=c.height=n*sc;var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.fillStyle="#0a1330";
+ for(var r=0;r<n;r++)for(var k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(k*sc,r*sc,sc,sc);return c}
+function ticketHTML(t){return'<div class="tkh"><span class="blk"></span><b class="il">'+T("Hoggynesische Spoorwegen","Chemin de Fer Hoggynesiéns")+'</b><span class="cl il">'+cls(t.c)+'</span></div>'+
+ '<div class="tkr"><div class="rt"><span>'+esc(t.f)+'</span><i>→</i><span>'+esc(t.t)+'</span></div></div>'+
+ '<div class="tkd"><div><small class="il">'+T("Reiziger","Voyageur")+'</small><span>'+esc(t.n)+'</span></div><div><small class="il">'+T("Datum","Date")+'</small><span>'+esc(fdate(t.d))+'</span></div><div><small class="il">'+T("Trein","Train")+'</small><span>'+(t.tr?esc(t.tr):"—")+'</span></div></div>'}
+function showTicket(x){var c=qrImg(ticketURL(x.p,x.s));$("tkout").innerHTML='<article class="tk">'+ticketHTML(x.t)+'<div class="tkq"><img alt="QR" src="'+c.toDataURL()+'"></div><div class="tkf"><span class="mono">'+esc(x.t.id)+'</span><span class="sig il">'+CHK+T("Ondertekend","Signé")+'</span></div></article>';$("tka").hidden=false;CUR=x;
+ $("shr").hidden=!(navigator.share);}
+function drawHist(){var h=ls("hs_tickets")||[];$("hist").hidden=!h.length;$("hl").innerHTML=h.map(function(x,i){var t;try{t=dec(x.p)}catch(e){return""}return'<button class="hr" data-i="'+i+'"><b>'+esc(t.f)+' → '+esc(t.t)+'</b><span>'+esc(t.n)+' · '+esc(fdate(t.d))+'</span></button>'}).join("")}
+$("hl").onclick=function(e){var b=e.target.closest("[data-i]");if(!b)return;var x=(ls("hs_tickets")||[])[+b.dataset.i];if(x){x.t=dec(x.p);showTicket(x);if(innerWidth<820)$("tkout").scrollIntoView({behavior:"smooth"})}};
+drawHist();
 
-            if (!passenger || !from || !to || !date || !train) {
-                alert(currentLang === 'nl' ? 'Vul alle velden in!' : 'Remplissez tous les champs!');
-                return;
-            }
+/* Kaartje als afbeelding (delen of opslaan) */
+function ticketPNG(x){return document.fonts.ready.then(function(){var W=720,H=1040,c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
+ var gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,"#0f1a3f");gr.addColorStop(1,"#0b0f22");g.fillStyle=gr;g.beginPath();g.roundRect(0,0,W,H,36);g.fill();
+ [["#ff4136",0],["#4d7cff",30],["#a5a8ab",60]].forEach(function(a){g.fillStyle=a[0];g.beginPath();g.moveTo(40+a[1]+8,40);g.lineTo(40+a[1]+30,40);g.lineTo(40+a[1]+22,66);g.lineTo(40+a[1],66);g.fill()});
+ g.fillStyle="#eef3fc";g.font="700 26px Outfit";g.fillText(L.nl?"Hoggynesische Spoorwegen":"Chemin de Fer Hoggynesiéns",146,62);
+ g.fillStyle="#ffc917";g.font="800 26px Outfit";g.textAlign="right";g.fillText(x.t.c==1?(L.nl?"1e klas":"1re classe"):(L.nl?"2e klas":"2e classe"),W-40,62);g.textAlign="left";
+ g.font="800 52px Outfit";g.fillStyle="#eef3fc";var r=x.t.f+"  →  "+x.t.t;while(g.measureText(r).width>W-80&&parseInt(g.font.split(" ")[1])>26)g.font="800 "+(parseInt(g.font.split(" ")[1])-2)+"px Outfit";g.fillText(r,40,150);
+ g.font="500 22px Outfit";g.fillStyle="#9aaec8";[[L.nl?"Reiziger":"Voyageur",x.t.n],[L.nl?"Datum":"Date",fdate(x.t.d)],[L.nl?"Trein":"Train",x.t.tr||"—"]].forEach(function(a,i){g.fillStyle="#9aaec8";g.font="500 21px Outfit";g.fillText(a[0],40+i*215,210);g.fillStyle="#eef3fc";g.font="700 25px Outfit";g.fillText(String(a[1]).slice(0,18),40+i*215,244)});
+ g.fillStyle="#fff";g.beginPath();g.roundRect(40,286,W-80,W-80,28);g.fill();var q=qrImg(ticketURL(x.p,x.s));g.imageSmoothingEnabled=false;g.drawImage(q,72,318,W-144,W-144);
+ g.fillStyle="#9aaec8";g.font="600 22px 'IBM Plex Mono'";g.fillText(x.t.id,40,H-46);g.fillStyle="#1fd38a";g.font="700 22px Outfit";g.textAlign="right";g.fillText("✓ "+(L.nl?"Ondertekend":"Signé"),W-40,H-46);
+ return new Promise(function(res){c.toBlob(res,"image/png")})})}
+$("dl").onclick=function(){if(!CUR)return;ticketPNG(CUR).then(function(b){var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=CUR.t.id+".png";a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},4000)})};
+$("shr").onclick=function(){if(!CUR)return;ticketPNG(CUR).then(function(b){var f=new File([b],CUR.t.id+".png",{type:"image/png"});var d={title:"HS "+CUR.t.id,files:[f]};if(navigator.canShare&&navigator.canShare(d))return navigator.share(d);return navigator.share({title:"HS "+CUR.t.id,text:CUR.t.f+" → "+CUR.t.t})}).catch(function(){})};
 
-            const passenger_info = passenger;
-            const ticket_info = ticketID;
-            const from_info = from;
-            const to_info = to;
-            const date_info = date;
-            const train_info = train;
-            const class_info = classType;
+/* ---------- Controleren ---------- */
+function verify(q){return getPub(false).then(function(k){var t=dec(q.p);if(t.k!==k.kid)return getPub(true).then(function(k2){return check(k2,t)});return check(k,t)});
+ function check(k,t){return crypto.subtle.importKey("jwk",k.jwk,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]).then(function(key){return crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,ub64u(q.s),new TextEncoder().encode(q.p))}).then(function(ok){return{ok:ok&&t.k===k.kid,t:t}})}}
+function beep(ok){try{var a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.value=ok?880:220;o.type=ok?"sine":"square";g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+(ok?.18:.45));o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.5)}catch(e){}
+ try{navigator.vibrate&&navigator.vibrate(ok?60:[120,80,120])}catch(e){}}
+function result(kind,title,sub,t){var ic=kind==="ok"?CHK:kind==="bad"?XX:WW;
+ $("sres").innerHTML='<div class="res '+kind+'" role="status"><div class="st"><div class="ic">'+ic+'</div><div><h2 class="il">'+title+'</h2><p>'+sub+'</p></div></div>'+
+ (t?'<div class="rt">'+esc(t.f)+' <i>→</i> '+esc(t.t)+'</div><div class="tkd"><div><small class="il">'+T("Reiziger","Voyageur")+'</small><span>'+esc(t.n)+'</span></div><div><small class="il">'+T("Datum","Date")+'</small><span>'+esc(fdate(t.d))+'</span></div><div><small class="il">'+T("Klasse","Classe")+'</small><span class="il">'+cls(t.c)+'</span></div><div><small class="il">'+T("Trein","Train")+'</small><span>'+(t.tr?esc(t.tr):"—")+'</span></div><div><small>Ticket</small><span class="mono">'+esc(t.id)+'</span></div></div>':'')+
+ '<div class="scanacts il"><button class="ghost" id="nxt">'+T("Volgende scannen","Scanner le suivant")+'</button></div></div>';
+ $("nxt").onclick=function(){$("sres").innerHTML='<div class="res idle"><p>'+T("Klaar voor het volgende kaartje.","Prêt pour le billet suivant.")+'</p></div>';if(stream)scanning=true,loop()};
+ beep(kind==="ok");if(innerWidth<820)$("sres").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"start"})}
+function handle(txt){var q=parseQR(txt);
+ if(!q)return result("bad",T("Geen HS-kaartje","Pas un billet CFH"),T("Deze QR-code is geen kaartje van HS Ticketing.","Ce code QR n’est pas un billet de la Billetterie CFH."));
+ if(q.old)return result("bad",T("Ongeldig","Invalide"),T("Oud kaartje zonder handtekening. Maak een nieuw kaartje.","Ancien billet sans signature. Créez un nouveau billet."));
+ var t;try{t=dec(q.p)}catch(e){return result("bad",T("Ongeldig","Invalide"),T("Het kaartje is beschadigd.","Le billet est endommagé."))}
+ verify(q).then(function(r){if(!r.ok)return result("bad",T("Ongeldig","Invalide"),T("De handtekening klopt niet: dit kaartje is nagemaakt of aangepast.","La signature ne correspond pas : ce billet est falsifié ou modifié."));
+  var d=today();if(t.d<d)return result("warn",T("Verlopen","Expiré"),T("Dit kaartje gold op "+esc(fdate(t.d))+".","Ce billet était valable le "+esc(fdate(t.d))+"."),t);
+  if(t.d>d)return result("warn",T("Nog niet geldig","Pas encore valable"),T("Dit kaartje geldt op "+esc(fdate(t.d))+".","Ce billet est valable le "+esc(fdate(t.d))+"."),t);
+  result("ok",T("Geldig","Valable"),T("Echt kaartje, geldig vandaag.","Billet authentique, valable aujourd’hui."),t)})
+ .catch(function(){result("warn",T("Kan niet controleren","Contrôle impossible"),T("De sleutel om de handtekening te controleren is nog niet geladen. Maak één keer verbinding met internet.","La clé de vérification n’est pas encore chargée. Connectez-vous une fois à Internet."))})}
 
-            // 1. Find the container
-            const qrContainer = document.getElementById('qrcode');
-            
-            // 2. Clear it
-            qrContainer.innerHTML = '';
-            
-            // 3. Create ticket data
-            const ticketData = JSON.stringify({
-                passenger: passenger_info,
-                ticketID: ticket_info,
-                from: from_info,
-                to: to_info,
-                date: date_info,
-                train: train_info,
-                class: class_info
-            });
-            
-            // 4. QR-code maken met de generator in deze pagina (geen externe server nodig)
-            try {
-                qrContainer.appendChild(makeQRImage(ticketData, 300));
-            } catch (e) {
-                console.error('QR-code maken mislukt:', e);
-                qrContainer.textContent = currentLang === 'nl' ? 'QR-code maken mislukt.' : 'Échec de la création du code QR.';
-            }
-
-            document.getElementById('qrContainer').style.display = 'block';
-
-            document.getElementById('info-passenger-val').textContent = passenger_info;
-            document.getElementById('info-ticket-val').textContent = ticket_info;
-            document.getElementById('info-route-val').textContent = `${from_info} → ${to_info}`;
-            document.getElementById('info-train-val').textContent = `${train_info} (${class_info})`;
-        }
-
-        // Tekst als UTF-8 in een QR-code (foutcorrectie H), getekend als scherpe afbeelding
-        function makeQRImage(text, size) {
-            const q = new HSQR.Model(-1, HSQR.Level.H);
-            q.addData(unescape(encodeURIComponent(text)));
-            q.make();
-            const n = q.getModuleCount(), scale = Math.max(4, Math.ceil(size * 2 / n)), c = document.createElement('canvas');
-            c.width = c.height = n * scale;
-            const ctx = c.getContext('2d');
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
-            ctx.fillStyle = '#000000';
-            for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) ctx.fillRect(k * scale, r * scale, scale, scale);
-            const img = document.createElement('img');
-            img.src = c.toDataURL('image/png');
-            img.alt = 'QR';
-            return img;
-        }
-
-        function downloadQR() {
-            const img = document.querySelector('#qrcode img');
-            if (img) {
-                const link = document.createElement('a');
-                link.href = img.src;
-                link.download = `HS-ticket-${document.getElementById('ticketID').value}.png`;
-                link.click();
-            }
-        }
-
-        function resetForm() {
-            document.getElementById('ticketForm').reset();
-            document.getElementById('qrContainer').style.display = 'none';
-        }
-
-        let videoStream = null;
-        let scanningActive = false;
-        let nativeBusy = false, nativeDet;
-        function nativeQR() {
-            if (nativeDet === undefined) {
-                try { nativeDet = ('BarcodeDetector' in window) ? new BarcodeDetector({ formats: ['qr_code'] }) : null; } catch (e) { nativeDet = null; }
-            }
-            return nativeDet;
-        }
-
-        async function startCamera() {
-            try {
-                videoStream = await navigator.mediaDevices.getUserMedia({
-                    video: { 
-                        facingMode: 'environment',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    },
-                    audio: false
-                });
-                
-                const video = document.getElementById('video');
-                video.srcObject = videoStream;
-                document.getElementById('cameraContainer').style.display = 'block';
-                
-                // Start scanning once video is ready
-                video.onloadedmetadata = () => {
-                    scanningActive = true;
-                    continuousScan();
-                };
-                
-                console.log('✓ Camera started');
-            } catch (error) {
-                console.error('Camera error:', error);
-                alert(currentLang === 'nl' ? 'Camera niet beschikbaar.' : 'Caméra non disponible.');
-            }
-        }
-
-        function continuousScan() {
-            if (!scanningActive) return;
-            
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            
-            if (!canvas || !video) return;
-            
-            try {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0);
-                
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                
-                // jsQR als die geladen is, anders de ingebouwde QR-lezer van de telefoon
-                if (typeof jsQR !== 'undefined' && jsQR) {
-                    const code = jsQR(imageData.data, canvas.width, canvas.height);
-                    if (code) {
-                        scanningActive = false;
-                        showTicket(code.data);
-                        return;
-                    }
-                } else if (nativeQR() && !nativeBusy) {
-                    nativeBusy = true;
-                    nativeQR().detect(canvas).then(r => {
-                        nativeBusy = false;
-                        if (r.length && scanningActive) { scanningActive = false; showTicket(r[0].rawValue); }
-                        else if (scanningActive) setTimeout(continuousScan, 200);
-                    }).catch(() => { nativeBusy = false; if (scanningActive) setTimeout(continuousScan, 400); });
-                    return;
-                }
-            } catch (err) {
-                // Silently continue
-            }
-            
-            requestAnimationFrame(continuousScan);
-        }
-
-        function stopCamera() {
-            scanningActive = false;
-            if (videoStream) {
-                videoStream.getTracks().forEach(track => track.stop());
-                document.getElementById('cameraContainer').style.display = 'none';
-            }
-        }
-
-        function captureFrame() {
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0);
-
-            decodeQR(canvas);
-        }
-
-        function openFileInput() {
-            document.getElementById('imageInput').click();
-        }
-
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.getElementById('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        decodeQR(canvas);
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function decodeQR(canvas) {
-            const notFound = () => alert(currentLang === 'nl' ? 'Geen QR code gevonden.' : 'Aucun code QR trouvé.');
-            if (typeof jsQR !== 'undefined' && jsQR) {
-                const ctx = canvas.getContext('2d');
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const code = jsQR(imageData.data, canvas.width, canvas.height);
-                code ? showTicket(code.data) : notFound();
-            } else if (nativeQR()) {
-                nativeQR().detect(canvas).then(r => r.length ? showTicket(r[0].rawValue) : notFound()).catch(notFound);
-            } else {
-                alert(currentLang === 'nl' ? 'De QR-lezer kon niet laden. Controleer je verbinding.' : 'Le lecteur QR n’a pas pu se charger. Vérifiez votre connexion.');
-            }
-        }
-
-        function escHTML(v) {
-            return String(v == null ? '' : v).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-        }
-
-        function showTicket(text) {
-            const code = { data: text };
-            {
-                try {
-                    const raw = JSON.parse(code.data);
-                    const data = {};
-                    Object.keys(raw || {}).forEach(k => data[k] = escHTML(raw[k]));
-                    
-                    const modalBody = document.getElementById('modalBody');
-                    const modalTitle = document.getElementById('modal-title');
-                    
-                    // Taal-bewuste titels
-                    modalTitle.textContent = currentLang === 'nl' 
-                        ? translations.nl['modal-title-valid']
-                        : translations.fr['modal-title-valid'];
-                    
-                    // Validatie badge
-                    const validationBadge = currentLang === 'nl'
-                        ? `<div class="validation-badge"><span class="validation-checkmark">✓</span>${translations.nl['modal-validation-badge']}</div>`
-                        : `<div class="validation-badge"><span class="validation-checkmark">✓</span>${translations.fr['modal-validation-badge']}</div>`;
-                    
-                    // Validatie bericht
-                    const validationMessage = currentLang === 'nl'
-                        ? translations.nl['modal-validation-message']
-                        : translations.fr['modal-validation-message'];
-                    
-                    const html = `
-                        <div class="success-icon">✅</div>
-                        ${validationBadge}
-                        <p style="color: var(--text-dim); margin-bottom: 20px; text-align: center;">${validationMessage}</p>
-                        <div class="ticket-info">
-                            <div class="info-item">
-                                <div class="info-label">${translations[currentLang]['info-passenger']}</div>
-                                <div class="info-value">${data.passenger}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">${translations[currentLang]['info-ticket']}</div>
-                                <div class="info-value">${data.ticketID}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">${translations[currentLang]['info-route']}</div>
-                                <div class="info-value">${data.from} → ${data.to}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">📅</div>
-                                <div class="info-value">${data.date}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">${translations[currentLang]['info-train']}</div>
-                                <div class="info-value">${data.train}</div>
-                            </div>
-                            <div class="info-item">
-                                <div class="info-label">🎫</div>
-                                <div class="info-value">${data.class}</div>
-                            </div>
-                        </div>
-                    `;
-                    modalBody.innerHTML = html;
-                    document.getElementById('scanModal').classList.add('active');
-                } catch(e) {
-                    const modalBody = document.getElementById('modalBody');
-                    const modalTitle = document.getElementById('modal-title');
-                    
-                    modalTitle.textContent = currentLang === 'nl' 
-                        ? translations.nl['modal-title-scanned']
-                        : translations.fr['modal-title-scanned'];
-                    
-                    modalBody.innerHTML = `<p style="color: var(--text); word-break: break-all;">${escHTML(code.data)}</p>`;
-                    document.getElementById('scanModal').classList.add('active');
-                }
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('scanModal').classList.remove('active');
-            // Resume scanning if camera is still active
-            if (videoStream && videoStream.getTracks().some(track => track.readyState === 'live')) {
-                scanningActive = true;
-                continuousScan();
-            }
-        }
-
-        document.getElementById('date').valueAsDate = new Date();
-        updateUI();
-    </script>
+/* QR lezen: ingebouwde lezer (BarcodeDetector) of anders jsQR, alleen geladen als het nodig is */
+var DET=null,JSQR=null;try{if("BarcodeDetector"in window)DET=new BarcodeDetector({formats:["qr_code"]})}catch(e){}
+function needJsQR(){if(DET||window.jsQR)return Promise.resolve();if(JSQR)return JSQR;JSQR=new Promise(function(res,rej){var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";s.onload=res;s.onerror=function(){JSQR=null;rej()};document.head.appendChild(s)});return JSQR}
+var cvs=document.createElement("canvas"),cx=cvs.getContext("2d",{willReadFrequently:true});
+function read(src,w,h){if(DET)return DET.detect(src).then(function(r){return r.length?r[0].rawValue:null});
+ var sc=Math.min(1,900/Math.max(w,h));cvs.width=Math.round(w*sc);cvs.height=Math.round(h*sc);cx.drawImage(src,0,0,cvs.width,cvs.height);var d=cx.getImageData(0,0,cvs.width,cvs.height),r=window.jsQR(d.data,d.width,d.height,{inversionAttempts:"dontInvert"});return Promise.resolve(r?r.data:null)}
+var stream=null,scanning=false,busy=false;
+function scanErr(h){$("sce").innerHTML=h}
+$("cst").onclick=function(){if(stream){camStop();return}scanErr("");
+ needJsQR().then(function(){return navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:1280},height:{ideal:720}},audio:false})})
+ .then(function(s){stream=s;var v=$("vid");v.srcObject=s;return v.play()}).then(function(){$("camoff").hidden=true;$("vf").hidden=false;$("cst").innerHTML=T("Camera stoppen","Arrêter la caméra");scanning=true;loop()})
+ .catch(function(e){camStop();scanErr(e&&e.name==="NotAllowedError"?T("Geen toegang tot de camera. Sta het toe in de browser.","Pas d’accès à la caméra. Autorisez-le dans le navigateur."):!stream&&!DET&&!window.jsQR?T("De QR-lezer kon niet laden. Controleer je verbinding.","Le lecteur QR n’a pas pu se charger. Vérifiez votre connexion."):T("Camera niet beschikbaar.","Caméra non disponible."))})};
+function camStop(){scanning=false;if(stream){stream.getTracks().forEach(function(t){t.stop()});stream=null}$("vid").srcObject=null;$("camoff").hidden=false;$("vf").hidden=true;$("cst").innerHTML=T("Camera starten","Démarrer la caméra")}
+function loop(){if(!scanning||busy)return;var v=$("vid");if(v.readyState<2){setTimeout(loop,150);return}busy=true;
+ read(v,v.videoWidth,v.videoHeight).then(function(txt){busy=false;if(txt&&scanning){scanning=false;handle(txt)}else if(scanning)setTimeout(loop,140)}).catch(function(){busy=false;if(scanning)setTimeout(loop,300)})}
+document.addEventListener("visibilitychange",function(){if(document.hidden&&stream)camStop()});
+$("cimg").onclick=function(){$("fimg").click()};
+$("fimg").onchange=function(){var f=this.files[0];this.value="";if(!f)return;scanErr("");
+ needJsQR().then(function(){return createImageBitmap(f)}).then(function(bm){return read(bm,bm.width,bm.height)}).then(function(txt){txt?handle(txt):scanErr(T("Geen QR-code gevonden op deze foto.","Aucun code QR trouvé sur cette photo."))})
+ .catch(function(){scanErr(T("De QR-lezer kon niet laden. Controleer je verbinding.","Le lecteur QR n’a pas pu se charger. Vérifiez votre connexion."))})};
+if("serviceWorker"in navigator&&isSecureContext)navigator.serviceWorker.register("sw.js").catch(function(){});
+</script>
 </body>
 </html>
