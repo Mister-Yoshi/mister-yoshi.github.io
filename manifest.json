@@ -1,16 +1,17 @@
 {
-  "name": "HS app",
-  "short_name": "HS app",
-  "start_url": "index.html", 
+  "name": "HS Startpagina",
+  "short_name": "HS",
+  "description": "Startpagina van de Hoggynesische Spoorwegen – Page d'accueil des Chemins de Fer Hoggynesiéns",
+  "lang": "nl",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#003366",
+  "orientation": "any",
+  "background_color": "#060b18",
+  "theme_color": "#060b18",
   "icons": [
-    {
-      "src": "images/hs.jpg",
-      "sizes": "192x192 512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
-    }
+    { "src": "images/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "images/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "images/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

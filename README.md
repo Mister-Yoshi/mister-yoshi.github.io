@@ -79,7 +79,6 @@ Je wisselt van tabblad via de zijbalk (op de telefoon een balk onderin) of met d
 | [`hs_qr_ticketing_styled.html`](hs_qr_ticketing_styled.html) | **HS QR Ticketing**: maakt en scant QR-treinkaartjes |
 | [`HS_MentaleBijstand.html`](HS_MentaleBijstand.html) | **HS / CFH Mentale Bijstand**: pagina over mentaal welzijn |
 | [`hs_omloop_generator_v5.html`](hs_omloop_generator_v5.html) | **HS Omloop Generator v5**: maakt materieelomlopen |
-| [`index2.html`](index2.html) | Oudere versie van de startpagina |
 | `manifest.json`, `sw.js` | Onderdelen voor installatie als app (PWA) |
 
 ---
