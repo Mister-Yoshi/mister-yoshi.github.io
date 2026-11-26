@@ -1,7 +1,7 @@
 // HS Startpagina – service worker
 // Pagina's: eerst netwerk, bij geen verbinding de laatst bewaarde versie.
 // Live data (Worker, NS, kaarttegels, weer) wordt nooit bewaard: alleen eigen bestanden.
-const CACHE = 'hs-v3';
+const CACHE = 'hs-v4';
 const SHELL = ['./', 'index.html', 'manifest.json', 'images/icon-192.png', 'images/icon-512.png', 'images/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -24,7 +24,8 @@ self.addEventListener('fetch', e => {
   if (r.method !== 'GET' || u.origin !== location.origin) return; // Worker, tegels, API's: gewoon netwerk
   const page = r.mode === 'navigate' || /\.html?$/.test(u.pathname) || u.pathname.endsWith('/');
   if (page) {
-    e.respondWith(fetch(r).then(res => {
+    // altijd bij de server navragen (GitHub Pages laat browsers pagina's anders 10 min bewaren)
+    e.respondWith(fetch(u.href, { cache: 'no-cache', credentials: 'same-origin' }).then(res => {
       if (res.ok) { const c = res.clone(); caches.open(CACHE).then(k => k.put(r, c)); }
       return res;
     }).catch(() => caches.match(r, { ignoreSearch: true })
