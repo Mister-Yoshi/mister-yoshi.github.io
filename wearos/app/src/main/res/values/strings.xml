@@ -32,4 +32,8 @@
     <string name="plus_one">+1</string>
     <string name="open_app">Open app</string>
     <string name="local_only">Gegevens blijven op dit horloge.</string>
+    <string name="nearby">Stations in de buurt</string>
+    <string name="use_location">Locatie gebruiken</string>
+    <string name="locating">Locatie zoeken…</string>
+    <string name="no_location">Locatie niet gevonden</string>
 </resources>

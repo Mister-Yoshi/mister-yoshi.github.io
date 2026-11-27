@@ -32,4 +32,8 @@
     <string name="plus_one">+1</string>
     <string name="open_app">Ouvrir l’app</string>
     <string name="local_only">Les données restent sur cette montre.</string>
+    <string name="nearby">Gares à proximité</string>
+    <string name="use_location">Utiliser la position</string>
+    <string name="locating">Recherche de la position…</string>
+    <string name="no_location">Position introuvable</string>
 </resources>

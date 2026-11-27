@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -167,11 +168,59 @@ fun StationScreen(store: Store, onPick: (String) -> Unit) {
         val v = RemoteInput.getResultsFromIntent(data)?.getCharSequence("st")?.toString()?.trim()
         if (!v.isNullOrEmpty()) onPick(v)
     }
+    val ctx = LocalContext.current
+    var granted by remember { mutableStateOf(Stations.hasPermission(ctx)) }
+    var near by remember { mutableStateOf<List<Near>?>(null) }
+    var searching by remember { mutableStateOf(false) }
+    val perm = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { res ->
+        granted = res.values.any { it }
+    }
+    DisposableEffect(granted) {
+        var sig: android.os.CancellationSignal? = null
+        if (granted && Stations.all(ctx).isNotEmpty()) {
+            searching = true
+            sig = Stations.locate(ctx) { loc ->
+                searching = false
+                near = if (loc == null) emptyList() else Stations.nearest(ctx, loc)
+            }
+        }
+        onDispose { try { sig?.cancel() } catch (_: Exception) {} }
+    }
     val recent = remember { store.recentStations() }
     val presets = listOf("Rutledge Centraal", "Adlersteen Centraal", "Assen")
     val list = (recent + presets.filter { it !in recent }).take(6)
     Page {
         item { Text(stringResource(R.string.station), style = MaterialTheme.typography.title3) }
+        if (!granted) {
+            item {
+                Chip(
+                    onClick = { perm.launch(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)) },
+                    label = { Text(stringResource(R.string.use_location)) },
+                    icon = { Text("📍") },
+                    colors = ChipDefaults.primaryChipColors(backgroundColor = HsBlue),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        } else if (searching) {
+            item { Text(stringResource(R.string.locating), style = MaterialTheme.typography.caption1, color = HsGrey) }
+        } else near?.let { nl ->
+            if (nl.isEmpty()) item { Text(stringResource(R.string.no_location), style = MaterialTheme.typography.caption2, color = HsGrey) }
+            else {
+                item { Text(stringResource(R.string.nearby), style = MaterialTheme.typography.caption1, color = HsGreen) }
+                nl.forEach { n ->
+                    item {
+                        Chip(
+                            onClick = { onPick(n.station.name) },
+                            label = { Text(n.station.name, maxLines = 2) },
+                            secondaryLabel = { Text(if (n.km < 1) "${(n.km * 1000).toInt()} m" else "%.1f km".format(n.km)) },
+                            icon = { Text("📍") },
+                            colors = ChipDefaults.primaryChipColors(backgroundColor = Color(0xFF123A2A)),
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
+            }
+        }
         list.forEach { s ->
             item {
                 Chip(
