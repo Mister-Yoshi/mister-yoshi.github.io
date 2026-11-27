@@ -1,0 +1,4 @@
+wearos/.gradle/
+wearos/build/
+wearos/app/build/
+wearos/local.properties

@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">CFH En service</string>
+    <string name="tile_label">CFH En service</string>
+    <string name="compl_label">Service CFH</string>
+    <string name="brand">CFH</string>
+    <string name="off_duty">Hors service</string>
+    <string name="on_duty">En service</string>
+    <string name="paused">Pause</string>
+    <string name="report_in">Prendre son service</string>
+    <string name="report_out">Fin de service</string>
+    <string name="tap_again">Touchez encore</string>
+    <string name="station">Gare de montée</string>
+    <string name="other_station">Autre gare…</string>
+    <string name="type_station">Tapez ou dictez la gare</string>
+    <string name="start_time">Heure de montée</string>
+    <string name="now">maintenant</string>
+    <string name="start">Commencer</string>
+    <string name="back">Retour</string>
+    <string name="transfers">Changements de train</string>
+    <string name="transfer_done">Changement fait</string>
+    <string name="undo">Annuler</string>
+    <string name="pause_start">Commencer la pause</string>
+    <string name="pause_end">Terminer la pause</string>
+    <string name="since">depuis %1$s</string>
+    <string name="from_station">Depuis %1$s</string>
+    <string name="worked">travaillé</string>
+    <string name="last_shift">Dernier service</string>
+    <string name="summary">%1$d changements · %2$s travaillé</string>
+    <string name="log">Journal</string>
+    <string name="log_transfer">Changement</string>
+    <string name="log_pause">Pause %1$s</string>
+    <string name="plus_one">+1</string>
+    <string name="open_app">Ouvrir l’app</string>
+    <string name="local_only">Les données restent sur cette montre.</string>
+</resources>

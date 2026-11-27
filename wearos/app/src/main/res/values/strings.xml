@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">HS In dienst</string>
+    <string name="tile_label">HS In dienst</string>
+    <string name="compl_label">HS dienst</string>
+    <string name="brand">HS</string>
+    <string name="off_duty">Niet in dienst</string>
+    <string name="on_duty">In dienst</string>
+    <string name="paused">Pauze</string>
+    <string name="report_in">In dienst melden</string>
+    <string name="report_out">Uit dienst melden</string>
+    <string name="tap_again">Tik nogmaals</string>
+    <string name="station">Station ingestapt</string>
+    <string name="other_station">Ander station…</string>
+    <string name="type_station">Typ of spreek het station in</string>
+    <string name="start_time">Tijd ingestapt</string>
+    <string name="now">nu</string>
+    <string name="start">Start dienst</string>
+    <string name="back">Terug</string>
+    <string name="transfers">Overstappen</string>
+    <string name="transfer_done">Overgestapt</string>
+    <string name="undo">Ongedaan maken</string>
+    <string name="pause_start">Pauze starten</string>
+    <string name="pause_end">Pauze beëindigen</string>
+    <string name="since">sinds %1$s</string>
+    <string name="from_station">Vanaf %1$s</string>
+    <string name="worked">gewerkt</string>
+    <string name="last_shift">Laatste dienst</string>
+    <string name="summary">%1$d overstappen · %2$s gewerkt</string>
+    <string name="log">Logboek</string>
+    <string name="log_transfer">Overstap</string>
+    <string name="log_pause">Pauze %1$s</string>
+    <string name="plus_one">+1</string>
+    <string name="open_app">Open app</string>
+    <string name="local_only">Gegevens blijven op dit horloge.</string>
+</resources>
