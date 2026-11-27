@@ -125,3 +125,7 @@ Live gegevens komen van de NS-API's (vertrektijden, materieel, reisadvies, stori
 ---
 
 © 2026 Hoggynesische Spoorwegen · Chemin de fer Hoggynésiens · Gemaakt met Gemini & Claude
+
+## HS In dienst voor Wear OS
+
+In de map `wearos/` staat een horloge-app (Kotlin, Compose for Wear OS) voor in en uit dienst melden, overstappen tellen en pauzes, met een tegel (+1 overstap) en een complicatie voor de wijzerplaat. Alles blijft op het horloge. GitHub Actions bouwt de APK bij elke wijziging; de nieuwste staat in de branch `wear-apk` (`HS-In-dienst-WearOS.apk`).
