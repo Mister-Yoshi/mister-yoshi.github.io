@@ -1,1209 +1,293 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HS / CFH — Mentale Bijstand</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --yellow: #FFC917;
-      --yellow-dark: #e6b400;
-      --blue: #001a4d;
-      --blue-nav: #001233;
-      --blue-light: #0054a6;
-      --card-bg: #1e2330;
-      --bg: #141821;
-      --border: #2a2f3d;
-      --text: #e8edf5;
-      --text-dim: #9aa3b8;
-      --radius: 6px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.4);
-      --green: #4CAF50;
-      --orange: #FF9800;
-      --red: #F44336;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    nav {
-      background: var(--blue-nav);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 32px;
-      height: 64px;
-      box-shadow: 0 2px 8px rgba(0,0,48,0.18);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .nav-logo-symbol {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--yellow);
-      font-style: italic;
-      letter-spacing: -0.05em;
-      transition: all 0.3s;
-    }
-
-    .nav-brand {
-      color: #ffffff;
-      font-weight: 700;
-      font-size: 1.1rem;
-      letter-spacing: 0.02em;
-    }
-
-    .nav-brand span {
-      display: block;
-      font-size: 0.68rem;
-      font-weight: 400;
-      color: rgba(255,255,255,0.6);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .lang-btn {
-      background: transparent;
-      border: 1.5px solid rgba(255,255,255,0.4);
-      color: #ffffff;
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 7px 18px;
-      border-radius: 20px;
-      cursor: pointer;
-      letter-spacing: 0.05em;
-      transition: all 0.2s;
-    }
-    .lang-btn:hover {
-      background: rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.7);
-    }
-
-    .hero {
-      background: linear-gradient(135deg, rgba(26,20,0,0.75) 0%, rgba(42,32,0,0.75) 60%, rgba(26,26,0,0.75) 100%);
-      border-bottom: 3px solid var(--yellow);
-      padding: 44px 32px 36px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      right: -60px;
-      top: -40px;
-      width: 380px;
-      height: 200px;
-      background: rgba(255,201,23,0.06);
-      transform: rotate(-18deg);
-      border-radius: 8px;
-      pointer-events: none;
-    }
-
-    .hero-inner {
-      max-width: 1260px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero h1 {
-      font-size: 2.1rem;
-      font-weight: 800;
-      color: var(--yellow);
-      line-height: 1.15;
-    }
-
-    .hero p {
-      color: rgba(255,201,23,0.6);
-      font-size: 1rem;
-      font-weight: 500;
-      margin-top: 4px;
-    }
-
-    .content {
-      max-width: 1260px;
-      margin: 0 auto;
-      padding: 36px 32px 60px;
-    }
-
-    .section-label {
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--yellow);
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .screen {
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-    .screen.active { display: block; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .checkin-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 40px;
-    }
-
-    .mood-card {
-      background: var(--card-bg);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .mood-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-    }
-
-    .mood-card.goed::before { background: var(--green); }
-    .mood-card.gaat-wel::before { background: var(--yellow); }
-    .mood-card.niet-goed::before { background: var(--red); }
-
-    .mood-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      border-color: var(--yellow);
-    }
-
-    .mood-icon {
-      font-size: 2.5rem;
-      margin-bottom: 12px;
-    }
-
-    .mood-label {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-
-    .mood-description {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      line-height: 1.5;
-    }
-
-    .info-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .info-card-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--yellow);
-      margin-bottom: 12px;
-    }
-
-    .info-card-content {
-      font-size: 0.95rem;
-      color: var(--text-dim);
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-
-    .breathing-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      padding: 20px 0;
-    }
-
-    .breath-circle {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      border: 3px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      font-weight: 700;
-      transition: all 0.1s linear;
-    }
-
-    .breath-text {
-      font-size: 0.85rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      text-align: center;
-    }
-
-    .btn-small {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-weight: 600;
-      padding: 10px 20px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-small:hover {
-      border-color: var(--yellow);
-      color: var(--yellow);
-      background: rgba(255,201,23,0.08);
-    }
-
-    .grounding-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .grounding-item {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    .grounding-num {
-      min-width: 32px;
-      height: 32px;
-      background: rgba(255,201,23,0.15);
-      border: 1.5px solid var(--yellow);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: var(--yellow);
-      flex-shrink: 0;
-      font-size: 0.85rem;
-    }
-
-    .grounding-text {
-      font-size: 0.92rem;
-      color: var(--text-dim);
-      line-height: 1.6;
-      padding-top: 4px;
-    }
-
-    .grounding-text strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .logbook-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .mood-picker {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .mood-radio {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      padding: 12px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      text-align: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .mood-radio-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-
-    .mood-radio.selected {
-      border-color: var(--yellow);
-      background: rgba(255,201,23,0.08);
-      color: var(--yellow);
-    }
-
-    .mood-radio:hover {
-      border-color: var(--yellow);
-    }
-
-    .log-textarea {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.92rem;
-      padding: 14px;
-      resize: vertical;
-      min-height: 110px;
-      outline: none;
-      transition: border-color 0.2s;
-      margin-bottom: 12px;
-    }
-
-    .log-textarea::placeholder {
-      color: var(--text-dim);
-      opacity: 0.5;
-    }
-
-    .log-textarea:focus {
-      border-color: var(--yellow);
-    }
-
-    .btn-save {
-      width: 100%;
-      background: var(--yellow);
-      color: #000;
-      border: none;
-      padding: 12px;
-      border-radius: var(--radius);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
-      letter-spacing: 0.04em;
-    }
-
-    .btn-save:hover {
-      background: var(--yellow-dark);
-    }
-
-    .btn-save:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .save-feedback {
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--green);
-      text-align: center;
-      margin-top: 10px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .entries-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .entries-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .entry-item {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px;
-      font-size: 0.88rem;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .entry-item::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-    }
-
-    .entry-item.goed::before { background: var(--green); }
-    .entry-item.gaat-wel::before { background: var(--yellow); }
-    .entry-item.niet-goed::before { background: var(--red); }
-
-    .entry-content {
-      flex: 1;
-    }
-
-    .entry-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-      font-size: 0.78rem;
-    }
-
-    .entry-mood-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-    }
-
-    .entry-mood-label {
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--text-dim);
-    }
-
-    .entry-time {
-      margin-left: auto;
-      color: var(--text-dim);
-      font-size: 0.72rem;
-    }
-
-    .entry-text {
-      color: var(--text-dim);
-      line-height: 1.5;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .entry-del {
-      background: none;
-      border: none;
-      color: var(--red);
-      cursor: pointer;
-      font-size: 0.85rem;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .entry-item:hover .entry-del {
-      opacity: 1;
-    }
-
-    .empty-entries {
-      text-align: center;
-      color: var(--text-dim);
-      padding: 20px;
-      font-size: 0.85rem;
-    }
-
-    .nav-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .btn-back {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 10px 16px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: all 0.2s;
-      flex: 1;
-    }
-
-    .btn-back:hover {
-      border-color: var(--yellow);
-      color: var(--yellow);
-    }
-
-    footer {
-      background: #0a0f1a;
-      color: rgba(255,255,255,0.5);
-      text-align: center;
-      padding: 28px 20px;
-      font-size: 0.82rem;
-      letter-spacing: 0.04em;
-      border-top: 1px solid var(--border);
-    }
-
-    footer strong { color: var(--yellow); }
-
-    @media (max-width: 680px) {
-      .hero h1 { font-size: 1.5rem; }
-      .content { padding: 24px 16px 40px; }
-      nav { padding: 0 16px; }
-      .hero { padding: 32px 16px 28px; }
-      .checkin-section {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#060b18">
+<title>HS Bijstand · Soutien CFH</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="images/icon-192.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#ff4136;--blue:#4d7cff;--grey:#a5a8ab;--yel:#ffc917;--grn:#1fd38a;--bg:#060b18;--ink:#eef3fc;--dim:#9aaec8;--line:rgba(255,255,255,.09);--card:rgba(14,20,38,.82)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:Outfit,system-ui,sans-serif;overflow-x:hidden;
+ background-image:radial-gradient(900px 500px at 110% -10%,rgba(77,124,255,.16),transparent 60%),radial-gradient(700px 420px at -10% 110%,rgba(255,65,54,.12),transparent 60%)}
+.nl,.fr{display:block}
+.fr{opacity:.72;font-size:.82em}
+body.only-nl .fr,body.only-fr .nl{display:none}
+body.only-nl .fr,body.only-fr .fr{opacity:1}
+body.only-fr .fr{font-size:1em}
+.il .nl,.il .fr{display:inline}
+.il .fr{font-size:.85em}
+body.only-fr .il .fr{font-size:1em}
+body:not(.only-nl):not(.only-fr) .il .nl+.fr::before{content:" / ";opacity:.6}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
+[hidden]{display:none!important}
+.wrap{max-width:980px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom))}
+
+/* kop */
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.back{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-weight:600}
+.back:hover{background:rgba(255,255,255,.1)}
+.lang{margin-left:auto;display:flex;gap:8px}
+.lang button{min-width:52px;height:42px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);font-weight:700;cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:#0a1330;border-color:var(--ink)}
+.rail{height:10px;margin:16px 0 6px;background:linear-gradient(var(--red),var(--red)) 0 0/100% 2px no-repeat,linear-gradient(var(--blue),var(--blue)) 0 4px/100% 2px no-repeat,linear-gradient(var(--grey),var(--grey)) 0 8px/100% 2px no-repeat}
+.ph{margin:18px 0 22px}
+.ph h1{position:relative;margin:0;padding-left:1.18em;font-size:clamp(34px,6vw,60px);letter-spacing:-.04em;line-height:1;font-weight:800}
+.ph h1::before{content:"";position:absolute;left:0;top:.14em;width:.92em;height:.62em;background:linear-gradient(90deg,var(--red) 0 33.3%,var(--blue) 33.3% 66.6%,var(--grey) 66.6%);clip-path:polygon(22% 0,100% 0,78% 100%,0 100%)}
+body:not(.only-nl):not(.only-fr) .ph h1 .fr{font-size:.5em;margin-top:8px;letter-spacing:-.02em}
+.ph p{color:var(--dim);margin:12px 0 0;font-size:17px}
+
+/* tabs */
+.seg{display:inline-flex;gap:6px;padding:6px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--line);margin-bottom:18px}
+.seg button{border:0;background:none;border-radius:11px;padding:10px 18px;font-weight:700;cursor:pointer;color:var(--dim)}
+.seg button[aria-selected=true]{background:var(--ink);color:#0a1330}
+.seg svg{width:18px;height:18px;vertical-align:-3px;margin-right:6px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.card{border-radius:24px;background:var(--card);border:1px solid var(--line);backdrop-filter:blur(8px);padding:24px}
+.stack{display:grid;gap:16px}
+.h2{margin:0 0 6px;font-size:22px;font-weight:700;letter-spacing:-.01em}
+.h2 .fr{font-size:.7em;margin-top:2px}
+.lead{color:var(--dim);margin:0 0 18px}
+.txt{color:#d5deee;font-size:17px;line-height:1.6;white-space:pre-line;margin:0}
+.txt .fr{font-size:.92em;margin-top:8px}
+
+/* check-in */
+.moods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:680px){.moods{grid-template-columns:1fr}}
+.mood{--c:var(--grn);position:relative;overflow:hidden;text-align:left;border-radius:22px;border:1px solid var(--line);background:var(--card);padding:22px 20px 20px;cursor:pointer;display:flex;flex-direction:column;gap:12px;transition:border-color .15s,background .15s}
+.mood:hover{border-color:var(--c);background:rgba(255,255,255,.05)}
+.mood::before{content:"";position:absolute;left:0;top:0;right:0;height:4px;background:var(--c)}
+.mood.gaat-wel{--c:var(--yel)}.mood.niet-goed{--c:var(--red)}
+.mood .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c)}
+.mood .ic svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mood b{font-size:22px}
+.mood b .fr{font-size:.72em;margin-top:2px;font-weight:600}
+.mood span.d{color:var(--dim);font-size:15px;line-height:1.45}
+.mood span.d .fr{margin-top:4px}
+
+.chip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 14px;font-weight:700;font-size:14px;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 45%,transparent)}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.c-goed{--c:var(--grn)}.c-gaat-wel{--c:var(--yel)}.c-niet-goed{--c:var(--red)}
+
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.06);padding:12px 18px;font-weight:700;cursor:pointer;text-decoration:none;color:var(--ink)}
+.btn:hover{background:rgba(255,255,255,.1)}
+.btn.go{background:var(--yel);color:#141000;border-color:var(--yel)}
+.btn.go:hover{filter:brightness(1.06)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ademhaling */
+.breath{display:grid;justify-items:center;gap:14px;padding:8px 0 4px}
+.orb{width:220px;height:220px;display:grid;place-items:center;position:relative}
+.orb::before{content:"";position:absolute;inset:0;border-radius:50%;border:2px dashed rgba(255,255,255,.12)}
+.orb .core{--c:var(--blue);width:118px;height:118px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--c) 70%,#fff),var(--c));box-shadow:0 0 0 10px color-mix(in srgb,var(--c) 14%,transparent);display:grid;place-items:center;font-size:40px;font-weight:800;color:#06102a;transition:transform 4s ease-in-out,background .6s}
+.orb.big .core{transform:scale(1.7)}
+.ph1{font-size:20px;font-weight:700;text-align:center;min-height:1.5em}
+.hint{color:var(--dim);font-size:14px;text-align:center}
+@media (prefers-reduced-motion:reduce){.orb .core{transition:background .6s}.orb.big .core{transform:none}}
+
+/* grounding */
+.gl{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.gl li{display:flex;gap:14px;align-items:flex-start}
+.gl .n{flex:0 0 40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:18px;color:#0a1330;background:var(--ink);transform:skewX(-12deg)}
+.gl .n span{transform:skewX(12deg)}
+.gl .t{padding-top:8px;line-height:1.5;color:#d5deee}
+.gl .t .fr{margin-top:2px}
+.gl b{color:var(--ink)}
+
+/* steun */
+.help{display:grid;gap:10px}
+.help div{display:flex;gap:14px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:16px;padding:14px 16px}
+.help svg{flex:0 0 26px;width:26px;height:26px;fill:none;stroke:var(--yel);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.help .fr{margin-top:2px}
+
+/* logboek */
+.picker{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.picker button{--c:var(--grn);min-height:54px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.25);font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.picker button i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.picker button[aria-pressed=true]{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--c)}
+.picker .gaat-wel{--c:var(--yel)}.picker .niet-goed{--c:var(--red)}
+textarea{width:100%;min-height:130px;resize:vertical;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:14px;padding:14px;font-size:16px;line-height:1.5;color-scheme:dark}
+textarea:focus{border-color:var(--yel);outline:none}
+.saved{color:var(--grn);font-weight:700;opacity:0;transition:opacity .3s;align-self:center}
+.saved.on{opacity:1}
+.lh{display:flex;justify-content:space-between;align-items:baseline;margin:6px 0 12px}
+.lh .cnt{color:var(--dim);font-size:14px}
+.entries{display:grid;gap:10px}
+.entry{--c:var(--grn);position:relative;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);padding:14px 14px 14px 20px}
+.entry::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:var(--c)}
+.entry.gaat-wel{--c:var(--yel)}.entry.niet-goed{--c:var(--red)}
+.entry .eh{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:14px}
+.entry .eh b{color:var(--c)}
+.entry .eh time{color:var(--dim);margin-left:auto}
+.entry p{margin:0;white-space:pre-wrap;word-break:break-word;line-height:1.5;color:#d5deee}
+.del{border:1px solid var(--line);background:none;border-radius:10px;height:32px;padding:0 10px;cursor:pointer;color:var(--dim);font-size:13px;font-weight:600}
+.del.sure{color:#fff;background:var(--red);border-color:var(--red)}
+.empty{color:var(--dim);text-align:center;padding:22px}
+.priv{color:var(--dim);font-size:13px;margin-top:14px;display:flex;gap:8px;align-items:center}
+.priv svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+
+.foot{margin-top:28px;color:var(--dim);font-size:13px;text-align:center}
+.foot .fr{font-size:1em}
+</style>
 </head>
 <body>
+<div class="wrap">
+ <header class="top">
+  <a class="back il" href="index.html#diensten">← <span class="nl">Startpagina</span><span class="fr">Accueil</span></a>
+  <div class="lang"><button id="lnl" aria-pressed="true">NL</button><button id="lfr" aria-pressed="false">FR</button></div>
+ </header>
+ <div class="rail" aria-hidden="true"></div>
 
-  <nav>
-    <div class="nav-logo">
-      <div class="nav-logo-symbol" id="nav-logo">HS</div>
-      <div class="nav-brand">
-        <span id="nav-subtitle">Nationale Spoorwegen</span>
-        <span id="nav-title">Hoggynesische Spoorwegen</span>
-      </div>
-    </div>
-    <div class="nav-right">
-      <button class="lang-btn" onclick="toggleLanguage()" id="langBtn">FRANÇAIS</button>
-      <a href="index.html" class="lang-btn" style="text-decoration: none; display: inline-block;" id="backBtn">← HOME</a>
-    </div>
-  </nav>
+ <div class="ph">
+  <h1><span class="nl">HS Bijstand</span><span class="fr">Soutien CFH</span></h1>
+  <p id="sub"></p>
+ </div>
 
-  <div class="hero">
-    <div class="hero-inner">
-      <h1 id="hero-title">Jouw Mentale Welzijn</h1>
-      <p id="hero-subtitle">Dagelijkse check-in & hulpmiddelen</p>
-    </div>
+ <div class="seg" role="tablist">
+  <button role="tab" id="t-check" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8L12 21.2l8.8-8.8a5.5 5.5 0 000-7.8z"/></svg><span class="il"><span class="nl">Check-in</span><span class="fr">Check-in</span></span></button>
+  <button role="tab" id="t-log" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 4h12a2 2 0 012 2v14H6a2 2 0 01-2-2z"/><path d="M8 8h6M8 12h6"/></svg><span class="il"><span class="nl">Logboek</span><span class="fr">Journal</span></span></button>
+ </div>
+
+ <!-- check-in -->
+ <section id="v-check">
+  <h2 class="h2" id="q"></h2>
+  <p class="lead" id="ql"></p>
+  <div class="moods" id="moods"></div>
+ </section>
+
+ <!-- resultaat per stemming -->
+ <section id="v-mood" hidden>
+  <div class="stack" id="mood-body"></div>
+  <div class="row">
+   <button class="btn" id="bk"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg><span id="bk-t"></span></button>
+   <button class="btn go" id="tolog"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg><span id="tolog-t"></span></button>
   </div>
+ </section>
 
-  <div class="content">
-
-    <div class="screen active" id="screen-checkin">
-      <div class="section-label" id="lbl-checkin">DAGELIJKSE CHECK-IN</div>
-      <div class="checkin-section" id="checkin-grid"></div>
-    </div>
-
-    <div class="screen" id="screen-goed">
-      <div class="section-label" id="lbl-goed">STATUS: GOED</div>
-      <div class="info-card">
-        <div class="info-card-label" id="goed-lbl1">Welkomstbericht</div>
-        <div class="info-card-content" id="goed-msg1"></div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label" id="goed-lbl2">Tip voor vandaag</div>
-        <div class="info-card-content" id="goed-tip"></div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label" id="goed-lbl3">Geniet ervan</div>
-        <div class="info-card-content" id="goed-msg3"></div>
-      </div>
-      <div class="nav-buttons">
-        <button class="btn-back" onclick="goScreen('screen-checkin')" id="goed-back">← Terug</button>
-        <button class="btn-small" onclick="openLogWith('goed')" id="goed-log-btn">📓 Logboek</button>
-      </div>
-    </div>
-
-    <div class="screen" id="screen-gaat-wel">
-      <div class="section-label" id="lbl-gw">STATUS: GAAT WEL</div>
-      <div class="info-card">
-        <div class="info-card-label" id="gw-lbl1">Welkomstbericht</div>
-        <div class="info-card-content" id="gw-msg1"></div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label" id="gw-lbl2">Kleine stap</div>
-        <div class="info-card-content" id="gw-msg2"></div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label" id="gw-lbl3">Onthoud dit</div>
-        <div class="info-card-content" id="gw-msg3"></div>
-      </div>
-      <div class="nav-buttons">
-        <button class="btn-back" onclick="goScreen('screen-checkin')" id="gw-back">← Terug</button>
-        <button class="btn-small" onclick="openLogWith('gaat-wel')" id="gw-log-btn">📓 Logboek</button>
-      </div>
-    </div>
-
-    <div class="screen" id="screen-niet-goed">
-      <div class="section-label" id="lbl-ng">HULPLIJN ACTIEF</div>
-      <div class="info-card">
-        <div class="info-card-label" id="ng-lbl1">Bericht voor jou</div>
-        <div class="info-card-content" id="ng-msg1"></div>
-      </div>
-
-      <div class="info-card">
-        <div class="info-card-label" id="breath-lbl">Ademhalingsoefening</div>
-        <div class="breathing-container">
-          <div class="breath-circle" id="breath-circle">4</div>
-          <div class="breath-text" id="breath-text">Druk start om te beginnen</div>
-          <button class="btn-small" id="breath-btn" onclick="toggleBreath()">Start</button>
-          <div class="breath-text" style="color: var(--text-dim); font-size: 0.75rem; margin-top: 8px;" id="breath-hint">Inademen 4s · Vasthouden 4s · Uitademen 4s · Wachten 4s</div>
-        </div>
-      </div>
-
-      <div class="info-card">
-        <div class="info-card-label" id="ground-lbl">Grounding · 5-4-3-2-1</div>
-        <ul class="grounding-list" id="ground-list"></ul>
-      </div>
-
-      <div class="info-card">
-        <div class="info-card-label" id="ng-lbl2">Onthoud dit</div>
-        <div class="info-card-content" id="ng-msg2"></div>
-      </div>
-
-      <div class="nav-buttons">
-        <button class="btn-back" onclick="goScreen('screen-checkin'); stopBreath();" id="ng-back">← Terug</button>
-        <button class="btn-small" onclick="openLogWith('niet-goed')" id="ng-log-btn">📓 Logboek</button>
-      </div>
-    </div>
-
-    <div class="screen" id="screen-logboek">
-      <div class="section-label" id="lbl-logboek">LOGBOEK</div>
-
-      <div class="logbook-card">
-        <div class="info-card-label" id="log-new-lbl">Nieuwe notitie</div>
-        <div class="mood-picker" id="mood-picker"></div>
-        <textarea class="log-textarea" id="log-textarea" oninput="checkSaveBtn()"></textarea>
-        <button class="btn-save" id="log-save-btn" onclick="saveEntry()" disabled>Opslaan</button>
-        <div class="save-feedback" id="save-feedback">Opgeslagen ✓</div>
-      </div>
-
-      <div class="entries-label">
-        <span id="lbl-entries">Eerdere notities</span>
-        <span id="entry-count">—</span>
-      </div>
-      <div class="entries-list" id="entries-list">
-        <div class="empty-entries" id="empty-state">Nog geen notities.</div>
-      </div>
-
-      <div class="nav-buttons">
-        <button class="btn-back" onclick="goScreen('screen-checkin')" id="log-back">← Terug naar check-in</button>
-      </div>
-    </div>
-
+ <!-- logboek -->
+ <section id="v-log" hidden>
+  <div class="card">
+   <h2 class="h2" id="nn"></h2>
+   <p class="lead" id="nnl"></p>
+   <div class="picker" id="picker"></div>
+   <textarea id="ta"></textarea>
+   <div class="row" style="margin-top:12px"><button class="btn go" id="save" disabled></button><span class="saved" id="saved"></span></div>
+   <div class="priv"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><span id="priv"></span></div>
   </div>
+  <div class="lh"><h2 class="h2" id="prev" style="margin:22px 0 0"></h2><span class="cnt" id="cnt"></span></div>
+  <div class="entries" id="entries"></div>
+ </section>
 
-  <footer>
-    <p id="footer-text">© 2026 <strong>HOGGYNESISCHE SPOORWEGEN</strong> — Mentale Bijstand</p>
-  </footer>
+ <div class="foot" id="foot"></div>
+</div>
 
-  <script>
-const translations = {
-  nl: {
-    navSubtitle: "Nationale Spoorwegen",
-    navTitle: "Hoggynesische Spoorwegen",
-    heroTitle: "Jouw Mentale Welzijn",
-    heroSubtitle: "Dagelijkse check-in & hulpmiddelen",
-    langBtn: "FRANÇAIS",
-    backBtn: "← HOME",
-    lblCheckin: "DAGELIJKSE CHECK-IN",
-    lblGoed: "STATUS: GOED",
-    lblGw: "STATUS: GAAT WEL",
-    lblNg: "HULPLIJN ACTIEF",
-    lblLogboek: "LOGBOEK",
+<script>
+function $(i){return document.getElementById(i)}
+function T(nl,fr){return'<span class="nl">'+nl+'</span><span class="fr">'+fr+'</span>'}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
 
-    moodGoed: "Goed",
-    moodGoedDesc: "Het gaat prima vandaag",
-    moodGw: "Gaat wel",
-    moodGwDesc: "Niet geweldig, maar ik red het",
-    moodNg: "Niet goed",
-    moodNgDesc: "Het is zwaar op dit moment",
+/* taal: zelfde instelling als de startpagina */
+var L={nl:true,fr:false},s0=ls("hsstart4");
+if(s0&&(s0.nl||s0.fr))L=s0;else{try{if(localStorage.getItem("hs_lang")==="fr")L={nl:false,fr:true}}catch(e){}}
+function applyLang(){document.body.classList.toggle("only-nl",L.nl&&!L.fr);document.body.classList.toggle("only-fr",L.fr&&!L.nl);$("lnl").setAttribute("aria-pressed",L.nl);$("lfr").setAttribute("aria-pressed",L.fr);document.documentElement.lang=L.nl?"nl":"fr";var s=ls("hsstart4")||{};s.nl=L.nl;s.fr=L.fr;ls("hsstart4",s);render()}
+$("lnl").onclick=function(){if(L.nl&&!L.fr)return;L.nl=!L.nl;applyLang()};
+$("lfr").onclick=function(){if(L.fr&&!L.nl)return;L.fr=!L.fr;applyLang()};
 
-    goedLbl1: "Welkomstbericht",
-    goedMsg1: "Fijn om te horen. Je hoeft vandaag niks te bewijzen — doe gewoon rustig aan en geniet van de kleine dingen. Je bent goed op weg. 🌿",
-    goedLbl2: "Tip voor vandaag",
-    goedLbl3: "Geniet ervan",
-    goedMsg3: "Op goede dagen hoef je niet alles te doen. Hou het licht. Geniet ervan dat het goed gaat — dat verdien je. 🌤️",
-    goedBack: "← Terug",
-    goedLogBtn: "📓 Logboek",
+var IC={
+ goed:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14.5c1 1.4 2.4 2 4 2s3-.6 4-2"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>',
+ "gaat-wel":'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 15h7"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>',
+ "niet-goed":'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 16.2c1-1.3 2.4-1.9 4-1.9s3 .6 4 1.9"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>'};
+var MOODS=[
+ {id:"goed",n:["Goed","Bien"],d:["Het gaat prima vandaag","Ça va bien aujourd’hui"]},
+ {id:"gaat-wel",n:["Gaat wel","Ça va"],d:["Niet geweldig, maar ik red het","Pas terrible, mais je m’en sors"]},
+ {id:"niet-goed",n:["Niet goed","Pas bien"],d:["Het is zwaar op dit moment","C’est difficile en ce moment"]}];
+function M(id){for(var i=0;i<MOODS.length;i++)if(MOODS[i].id===id)return MOODS[i];return MOODS[1]}
+var TIPS=[["Neem een moment voor iets wat je fijn vindt.","Prenez un moment pour quelque chose que vous aimez."],["Stuur iemand een berichtje.","Envoyez un message à quelqu’un."],["Ga even naar buiten.","Sortez un moment."],["Zet je favoriete muziek op.","Écoutez votre musique préférée."],["Schrijf iets op waar je blij mee bent.","Notez quelque chose qui vous rend heureux."],["Rust is ook productief.","Le repos est aussi productif."]];
+var tip=Math.floor(Math.random()*TIPS.length);
+var GROUND=[["5","Zie","vijf dingen om je heen. Beschrijf ze rustig.","Voyez","cinq choses autour de vous. Décrivez-les calmement."],["4","Voel","vier dingen die je kunt aanraken.","Touchez","quatre choses à portée de main."],["3","Hoor","drie geluiden om je heen.","Écoutez","trois sons autour de vous."],["2","Ruik","twee geuren.","Sentez","deux odeurs."],["1","Proef","één smaak. Neem een slokje water.","Goûtez","une saveur. Buvez une gorgée d’eau."]];
 
-    gwLbl1: "Welkomstbericht",
-    gwMsg1: "Het hoeft niet altijd top te zijn. \"Gaat wel\" is ook prima — je bent er, en dat telt. Geef jezelf de ruimte. 🌥️",
-    gwLbl2: "Kleine stap",
-    gwMsg2: "Probeer één klein ding te doen dat je energie geeft — een wandeling, iets lekkers eten, of uitrekken. Kleine stappen tellen.",
-    gwLbl3: "Onthoud dit",
-    gwMsg3: "Niet elke dag hoeft goed te zijn. Genoeg is genoeg — jij bent genoeg. 💛",
-    gwBack: "← Terug",
-    gwLogBtn: "📓 Logboek",
+function card(h,body){return'<div class="card"><h3 class="h2">'+h+'</h3><p class="txt">'+body+'</p></div>'}
+var cur=null,view="check";
 
-    ngLbl1: "Bericht voor jou",
-    ngMsg1: "Het is zwaar nu, en dat is oké. Je hoeft je gevoelens niet weg te stoppen.\n\nAdem. Je bent veilig. Dit gaat voorbij. 💛",
-    breathLbl: "Ademhalingsoefening",
-    breathIdle: "Druk start om te beginnen",
-    breathStart: "Start",
-    breathStop: "Stop",
-    breathHint: "Inademen 4s · Vasthouden 4s · Uitademen 4s · Wachten 4s",
-    breathPhases: ["Inademen ...", "Vasthouden", "Uitademen ...", "Wachten"],
-    groundLbl: "Grounding · 5-4-3-2-1",
-    groundSteps: [
-      {n: "5", word: "Zie", rest: "vijf dingen om je heen. Beschrijf ze rustig."},
-      {n: "4", word: "Voel", rest: "vier dingen die je kunt aanraken."},
-      {n: "3", word: "Hoor", rest: "drie geluiden om je heen."},
-      {n: "2", word: "Ruik", rest: "twee geuren."},
-      {n: "1", word: "Proef", rest: "één smaak. Neem een slokje water."}
-    ],
-    ngLbl2: "Onthoud dit",
-    ngMsg2: "Je bent niet je gedachten. Moeilijke gevoelens zijn als treinen — ze komen, ze gaan. Jij staat op het perron. 🚉\n\nJe hoeft dit niet alleen te dragen.",
-    ngBack: "← Terug",
-    ngLogBtn: "📓 Logboek",
-
-    logNewLbl: "Nieuwe notitie",
-    logGoed: "Goed",
-    logGw: "Gaat wel",
-    logNg: "Niet goed",
-    logPlaceholder: "Schrijf je gevoelens op...",
-    logSaveBtn: "Opslaan",
-    logSaved: "Opgeslagen ✓",
-    lblEntries: "Eerdere notities",
-    logEmpty: "Nog geen notities.",
-    logBack: "← Terug naar check-in",
-
-    footer: "© 2026 HOGGYNESISCHE SPOORWEGEN — Mentale Bijstand",
-    moodLabels: {goed: "Goed", "gaat-wel": "Gaat wel", "niet-goed": "Niet goed"},
-    nNotes: (n) => n === 1 ? "1 notitie" : n + " notities",
-    tips: [
-      "Neem een moment voor iets wat je fijn vindt.",
-      "Stuur iemand een berichtje.",
-      "Ga even naar buiten.",
-      "Zet je favoriete muziek op.",
-      "Schrijf iets waar je blij mee bent.",
-      "Rust is ook productief."
-    ],
-    tsFormat: (d) => {
-      const dg = ["zo", "ma", "di", "wo", "do", "vr", "za"];
-      const mn = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
-      return dg[d.getDay()] + " " + d.getDate() + " " + mn[d.getMonth()] + " · " +
-        String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
-    }
-  },
-  fr: {
-    navSubtitle: "Chemins de fer nationaux",
-    navTitle: "Chemin de fer Hoggynésiens",
-    heroTitle: "Votre Bien-être Mental",
-    heroSubtitle: "Check-in quotidien & ressources",
-    langBtn: "NEDERLANDS",
-    backBtn: "← ACCUEIL",
-    lblCheckin: "CHECK-IN QUOTIDIEN",
-    lblGoed: "STATUT : BIEN",
-    lblGw: "STATUT : ÇA VA",
-    lblNg: "LIGNE D'AIDE ACTIVE",
-    lblLogboek: "JOURNAL",
-
-    moodGoed: "Bien",
-    moodGoedDesc: "Ça va bien aujourd'hui",
-    moodGw: "Ça va",
-    moodGwDesc: "Pas terrible, mais je m'en sors",
-    moodNg: "Pas bien",
-    moodNgDesc: "C'est difficile en ce moment",
-
-    goedLbl1: "Message",
-    goedMsg1: "C'est agréable. Vous n'avez rien à prouver — prenez votre temps et savourez les petites choses. Vous êtes sur la bonne voie. 🌿",
-    goedLbl2: "Conseil du jour",
-    goedLbl3: "Profitez-en",
-    goedMsg3: "Les bons jours, vous n'avez pas besoin de tout faire. Gardez les choses légères. Profitez-en — vous le méritez. 🌤️",
-    goedBack: "← Retour",
-    goedLogBtn: "📓 Journal",
-
-    gwLbl1: "Message",
-    gwMsg1: "Ce n'est pas toujours parfait. \"Ça va\" c'est bien aussi — vous êtes là, et ça compte. Donnez-vous de l'espace. 🌥️",
-    gwLbl2: "Petit pas",
-    gwMsg2: "Essayez une petite chose qui vous donne de l'énergie — une promenade, quelque chose de bon, un étirement. Les petits pas comptent.",
-    gwLbl3: "Souvenez-vous",
-    gwMsg3: "Chaque jour ne doit pas être parfait. Assez, c'est assez — vous êtes assez. 💛",
-    gwBack: "← Retour",
-    gwLogBtn: "📓 Journal",
-
-    ngLbl1: "Message pour vous",
-    ngMsg1: "C'est difficile maintenant, c'est normal. Vous n'avez pas besoin de refouler vos émotions.\n\nRespirez. Vous êtes en sécurité. Ça va passer. 💛",
-    breathLbl: "Exercice de respiration",
-    breathIdle: "Appuyez pour commencer",
-    breathStart: "Démarrer",
-    breathStop: "Arrêter",
-    breathHint: "Inspirez 4s · Retenez 4s · Expirez 4s · Attendez 4s",
-    breathPhases: ["Inspirez ...", "Retenez", "Expirez ...", "Attendez"],
-    groundLbl: "Ancrage · 5-4-3-2-1",
-    groundSteps: [
-      {n: "5", word: "Voyez", rest: "cinq choses. Décrivez-les calmement."},
-      {n: "4", word: "Touchez", rest: "quatre choses que vous touchez."},
-      {n: "3", word: "Écoutez", rest: "trois sons autour de vous."},
-      {n: "2", word: "Sentez", rest: "deux odeurs."},
-      {n: "1", word: "Goûtez", rest: "une saveur. Gorgée d'eau."}
-    ],
-    ngLbl2: "Souvenez-vous",
-    ngMsg2: "Vous n'êtes pas vos pensées. Les émotions difficiles sont comme des trains — elles arrivent, elles repartent. Vous êtes sur le quai. 🚉\n\nVous n'avez pas à porter ça seul.",
-    ngBack: "← Retour",
-    ngLogBtn: "📓 Journal",
-
-    logNewLbl: "Nouvelle note",
-    logGoed: "Bien",
-    logGw: "Ça va",
-    logNg: "Pas bien",
-    logPlaceholder: "Écrivez vos sentiments...",
-    logSaveBtn: "Enregistrer",
-    logSaved: "Enregistré ✓",
-    lblEntries: "Notes précédentes",
-    logEmpty: "Aucune note pour le moment.",
-    logBack: "← Retour au check-in",
-
-    footer: "© 2026 CHEMIN DE FER HOGGYNÉSIENS — Bien-être Mental",
-    moodLabels: {goed: "Bien", "gaat-wel": "Ça va", "niet-goed": "Pas bien"},
-    nNotes: (n) => n === 1 ? "1 note" : n + " notes",
-    tips: [
-      "Prenez un moment pour quelque chose que vous aimez.",
-      "Envoyez un message à quelqu'un.",
-      "Sortez un moment.",
-      "Écoutez votre musique préférée.",
-      "Notez quelque chose dont vous êtes heureux.",
-      "Le repos est aussi productif."
-    ],
-    tsFormat: (d) => {
-      const dg = ["dim", "lun", "mar", "mer", "jeu", "ven", "sam"];
-      const mn = ["jan", "fév", "mar", "avr", "mai", "jun", "jui", "aoû", "sep", "oct", "nov", "déc"];
-      return dg[d.getDay()] + " " + d.getDate() + " " + mn[d.getMonth()] + " · " +
-        String(d.getHours()).padStart(2, "0") + "h" + String(d.getMinutes()).padStart(2, "0");
-    }
-  }
-};
-
-let currentLang = localStorage.getItem("hs_lang") || "nl";
-
-function updateUI() {
-  const t = translations[currentLang];
-  document.getElementById("nav-logo").textContent = currentLang === "nl" ? "HS" : "CFH";
-  document.getElementById("nav-subtitle").textContent = t.navSubtitle;
-  document.getElementById("nav-title").textContent = t.navTitle;
-  document.getElementById("langBtn").textContent = t.langBtn;
-  document.getElementById("backBtn").textContent = t.backBtn;
-  document.getElementById("hero-title").textContent = t.heroTitle;
-  document.getElementById("hero-subtitle").textContent = t.heroSubtitle;
-  document.getElementById("lbl-checkin").textContent = t.lblCheckin;
-  document.getElementById("lbl-goed").textContent = t.lblGoed;
-  document.getElementById("lbl-gw").textContent = t.lblGw;
-  document.getElementById("lbl-ng").textContent = t.lblNg;
-  document.getElementById("lbl-logboek").textContent = t.lblLogboek;
-
-  renderMoodCards();
-
-  document.getElementById("goed-lbl1").textContent = t.goedLbl1;
-  document.getElementById("goed-msg1").textContent = t.goedMsg1;
-  document.getElementById("goed-lbl2").textContent = t.goedLbl2;
-  document.getElementById("goed-lbl3").textContent = t.goedLbl3;
-  document.getElementById("goed-msg3").textContent = t.goedMsg3;
-  document.getElementById("goed-back").textContent = t.goedBack;
-  document.getElementById("goed-log-btn").textContent = t.goedLogBtn;
-
-  document.getElementById("gw-lbl1").textContent = t.gwLbl1;
-  document.getElementById("gw-msg1").textContent = t.gwMsg1;
-  document.getElementById("gw-lbl2").textContent = t.gwLbl2;
-  document.getElementById("gw-msg2").textContent = t.gwMsg2;
-  document.getElementById("gw-lbl3").textContent = t.gwLbl3;
-  document.getElementById("gw-msg3").textContent = t.gwMsg3;
-  document.getElementById("gw-back").textContent = t.gwBack;
-  document.getElementById("gw-log-btn").textContent = t.gwLogBtn;
-
-  document.getElementById("ng-lbl1").textContent = t.ngLbl1;
-  document.getElementById("ng-msg1").textContent = t.ngMsg1;
-  document.getElementById("breath-lbl").textContent = t.breathLbl;
-  document.getElementById("breath-hint").textContent = t.breathHint;
-  document.getElementById("ng-lbl2").textContent = t.ngLbl2;
-  document.getElementById("ng-msg2").textContent = t.ngMsg2;
-  document.getElementById("ng-back").textContent = t.ngBack;
-  document.getElementById("ng-log-btn").textContent = t.ngLogBtn;
-
-  renderGrounding();
-
-  if (!bRunning) {
-    document.getElementById("breath-btn").textContent = t.breathStart;
-    document.getElementById("breath-text").textContent = t.breathIdle;
-  }
-
-  document.getElementById("log-new-lbl").textContent = t.logNewLbl;
-  document.getElementById("log-textarea").placeholder = t.logPlaceholder;
-  document.getElementById("log-save-btn").textContent = t.logSaveBtn;
-  document.getElementById("save-feedback").textContent = t.logSaved;
-  document.getElementById("lbl-entries").textContent = t.lblEntries;
-  document.getElementById("log-back").textContent = t.logBack;
-  document.getElementById("footer-text").innerHTML = t.footer;
-
-  renderMoodPicker();
-  renderEntries();
-  updateCounts();
-  rotateTip();
-
-  document.documentElement.lang = currentLang;
-  localStorage.setItem("hs_lang", currentLang);
+function moodView(id){
+ var m=M(id),h='<div><span class="chip c-'+id+'"><i></i>'+T(m.n[0],m.n[1])+'</span></div>';
+ if(id==="goed")h+=card(T("Fijn om te horen","Ravi de l’entendre"),T("Je hoeft vandaag niks te bewijzen. Doe rustig aan en geniet van de kleine dingen. Je bent goed op weg. 🌿","Vous n’avez rien à prouver aujourd’hui. Prenez votre temps et savourez les petites choses. Vous êtes sur la bonne voie. 🌿"))
+  +card(T("Tip voor vandaag","Conseil du jour"),T(TIPS[tip][0],TIPS[tip][1]))
+  +card(T("Geniet ervan","Profitez-en"),T("Op goede dagen hoef je niet alles te doen. Hou het licht. Geniet ervan dat het goed gaat, dat verdien je. 🌤️","Les bons jours, inutile de tout faire. Restez léger. Profitez de ce que ça va bien, vous le méritez. 🌤️"));
+ else if(id==="gaat-wel")h+=card(T("Dat is ook prima","C’est bien aussi"),T("Het hoeft niet altijd top te zijn. “Gaat wel” is ook goed: je bent er, en dat telt. Geef jezelf de ruimte. 🌥️","Ce n’est pas toujours parfait. « Ça va », c’est bien aussi : vous êtes là, et ça compte. Accordez-vous de l’espace. 🌥️"))
+  +card(T("Kleine stap","Petit pas"),T("Probeer één klein ding te doen dat je energie geeft: een wandeling, iets lekkers eten of even uitrekken. Kleine stappen tellen.","Essayez une petite chose qui vous donne de l’énergie : une promenade, quelque chose de bon, un étirement. Les petits pas comptent."))
+  +card(T("Onthoud dit","Souvenez-vous"),T("Niet elke dag hoeft goed te zijn. Genoeg is genoeg, en jij bent genoeg. 💛","Chaque jour n’a pas à être parfait. Assez, c’est assez, et vous êtes assez. 💛"));
+ else{h+=card(T("Bericht voor jou","Un message pour vous"),T("Het is zwaar nu, en dat is oké. Je hoeft je gevoelens niet weg te stoppen.\nAdem. Je bent veilig. Dit gaat voorbij. 💛","C’est difficile en ce moment, et c’est normal. Vous n’avez pas à cacher vos émotions.\nRespirez. Vous êtes en sécurité. Cela va passer. 💛"))
+  +'<div class="card"><h3 class="h2">'+T("Ademhalingsoefening","Exercice de respiration")+'</h3><div class="breath"><div class="orb" id="orb"><div class="core" id="core">4</div></div><div class="ph1" id="bph"></div><button class="btn go" id="bbtn"></button><div class="hint">'+T("Inademen 4 s · Vasthouden 4 s · Uitademen 4 s · Wachten 4 s","Inspirez 4 s · Retenez 4 s · Expirez 4 s · Attendez 4 s")+'</div></div></div>'
+  +'<div class="card"><h3 class="h2">'+T("Grounding · 5-4-3-2-1","Ancrage · 5-4-3-2-1")+'</h3><p class="lead">'+T("Breng je aandacht terug naar het hier en nu.","Ramenez votre attention ici et maintenant.")+'</p><ul class="gl">'+GROUND.map(function(g){return'<li><div class="n"><span>'+g[0]+'</span></div><div class="t">'+T('<b>'+g[1]+'</b> '+g[2],'<b>'+g[3]+'</b> '+g[4])+'</div></li>'}).join("")+'</ul></div>'
+  +card(T("Onthoud dit","Souvenez-vous"),T("Je bent niet je gedachten. Moeilijke gevoelens zijn als treinen: ze komen en ze gaan. Jij staat op het perron. 🚉\nJe hoeft dit niet alleen te dragen.","Vous n’êtes pas vos pensées. Les émotions difficiles sont comme des trains : elles arrivent, elles repartent. Vous êtes sur le quai. 🚉\nVous n’avez pas à porter cela seul."))
+  +'<div class="card"><h3 class="h2">'+T("Praat erover","Parlez-en")+'</h3><div class="help">'
+  +'<div><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-2a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8"/></svg><span>'+T("Vertel het aan iemand die je vertrouwt: een collega, vriend of familielid.","Confiez-vous à quelqu’un de confiance : un collègue, un ami ou un proche.")+'</span></div>'
+  +'<div><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-10a7 7 0 0114 0c0 5.6-7 10-7 10z"/><path d="M12 8v5M9.5 10.5h5"/></svg><span>'+T("Blijft het zwaar? Neem contact op met je huisarts.","Si cela reste difficile, contactez votre médecin traitant.")+'</span></div>'
+  +'<div><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.4 1.8.7 2.7a2 2 0 01-.5 2.1L8 9.8a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.7.7a2 2 0 011.7 2z"/></svg><span>'+T("Ben je in acuut gevaar? Bel 112.","En cas de danger immédiat, appelez le 112.")+'</span></div>'
+  +'</div></div>'}
+ $("mood-body").innerHTML=h;
+ if(id==="niet-goed"){$("bbtn").onclick=function(){bRun?bStop():bStart()};bIdle()}
 }
 
-function toggleLanguage() {
-  currentLang = currentLang === "nl" ? "fr" : "nl";
-  updateUI();
+/* ademhaling (box breathing) */
+var bRun=false,bT=null,bP=0,bC=4,BPH=[["Inademen …","Inspirez …","#4d7cff",1],["Vasthouden","Retenez","#ffc917",1],["Uitademen …","Expirez …","#1fd38a",0],["Wachten","Attendez","#a5a8ab",0]];
+function bIdle(){if(!$("bph"))return;$("bph").innerHTML=T("Druk op start om te beginnen","Appuyez sur démarrer pour commencer");$("bbtn").innerHTML=T("Start","Démarrer");$("orb").classList.remove("big");$("core").textContent="4";$("core").style.setProperty("--c","#4d7cff")}
+function bStart(){bRun=true;bP=0;bC=4;$("bbtn").innerHTML=T("Stop","Arrêter");bTick()}
+function bStop(){bRun=false;clearTimeout(bT);bIdle()}
+function bTick(){if(!bRun||!$("core"))return;var p=BPH[bP];if(bC===4){$("bph").innerHTML=T(p[0],p[1]);$("core").style.setProperty("--c",p[2]);$("orb").classList.toggle("big",!!p[3])}
+ $("core").textContent=bC;if(bC>1)bC--;else{bP=(bP+1)%4;bC=4}bT=setTimeout(bTick,1000)}
+
+/* logboek */
+var KEY="hs_log_entries",sel="gaat-wel",delAsk=null;
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return[]}}
+function store(a){try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
+function fts(iso){var d=new Date(iso);try{return d.toLocaleString(L.nl?"nl-NL":"fr-FR",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}catch(e){return iso}}
+function renderLog(){
+ $("nn").innerHTML=T("Nieuwe notitie","Nouvelle note");$("nnl").innerHTML=T("Hoe voel je je? Schrijf op wat er speelt.","Comment vous sentez-vous ? Notez ce qui se passe.");
+ $("picker").innerHTML=MOODS.map(function(m){return'<button type="button" class="'+m.id+'" data-m="'+m.id+'" aria-pressed="'+(m.id===sel)+'"><i></i><span class="il">'+T(m.n[0],m.n[1])+'</span></button>'}).join("");
+ [].forEach.call($("picker").children,function(b){b.onclick=function(){sel=b.dataset.m;renderLog()}});
+ $("ta").placeholder=L.nl?"Schrijf je gevoelens op…":"Écrivez ce que vous ressentez…";
+ $("save").innerHTML=T("Opslaan","Enregistrer");$("saved").innerHTML=T("Opgeslagen ✓","Enregistré ✓");
+ $("priv").innerHTML=T("Je notities blijven alleen op dit toestel.","Vos notes restent uniquement sur cet appareil.");
+ $("prev").innerHTML=T("Eerdere notities","Notes précédentes");
+ var e=load();$("cnt").textContent=L.nl?(e.length===1?"1 notitie":e.length+" notities"):(e.length===1?"1 note":e.length+" notes");
+ $("entries").innerHTML=e.length?e.map(function(x){var m=M(x.mood);return'<div class="entry '+esc(x.mood)+'"><div class="eh"><b class="il">'+T(m.n[0],m.n[1])+'</b><time>'+esc(fts(x.ts))+'</time><button class="del'+(delAsk===x.id?' sure':'')+'" data-id="'+x.id+'">'+(delAsk===x.id?T("Zeker?","Sûr ?"):"×")+'</button></div><p>'+esc(x.text)+'</p></div>'}).join(""):'<div class="empty">'+T("Nog geen notities.","Aucune note pour le moment.")+'</div>';
+ [].forEach.call(document.querySelectorAll(".del"),function(b){b.onclick=function(){var id=+b.dataset.id;if(delAsk===id){store(load().filter(function(x){return x.id!==id}));delAsk=null}else{delAsk=id;setTimeout(function(){if(delAsk===id){delAsk=null;renderLog()}},4000)}renderLog()}});
 }
+$("ta").oninput=function(){$("save").disabled=!this.value.trim()};
+$("save").onclick=function(){var t=$("ta").value.trim();if(!t)return;var e=load();e.unshift({id:Date.now(),mood:sel,text:t,ts:new Date().toISOString()});store(e);$("ta").value="";$("save").disabled=true;$("saved").classList.add("on");setTimeout(function(){$("saved").classList.remove("on")},2200);renderLog()};
 
-function renderMoodCards() {
-  const t = translations[currentLang];
-  const grid = document.getElementById("checkin-grid");
-  grid.innerHTML = '';
-  const moods = [
-    {id: "goed", emoji: "😊", label: t.moodGoed, desc: t.moodGoedDesc},
-    {id: "gaat-wel", emoji: "😐", label: t.moodGw, desc: t.moodGwDesc},
-    {id: "niet-goed", emoji: "😔", label: t.moodNg, desc: t.moodNgDesc}
-  ];
-  moods.forEach(m => {
-    const card = document.createElement("div");
-    card.className = "mood-card " + m.id;
-    card.onclick = () => goScreen("screen-" + m.id);
-    card.innerHTML = `
-      <div class="mood-icon">${m.emoji}</div>
-      <div class="mood-label">${m.label}</div>
-      <div class="mood-description">${m.desc}</div>
-    `;
-    grid.appendChild(card);
-  });
+/* navigatie */
+function show(v,id){view=v;if(v!=="mood"&&bRun)bStop();$("v-check").hidden=v!=="check";$("v-mood").hidden=v!=="mood";$("v-log").hidden=v!=="log";
+ $("t-check").setAttribute("aria-selected",v!=="log");$("t-log").setAttribute("aria-selected",v==="log");
+ if(v==="mood"){cur=id;moodView(id)}if(v==="log")renderLog();window.scrollTo(0,0)}
+$("t-check").onclick=function(){show("check")};$("t-log").onclick=function(){show("log")};
+$("bk").onclick=function(){show("check")};
+$("tolog").onclick=function(){sel=cur||"gaat-wel";show("log");setTimeout(function(){$("ta").focus()},100)};
+
+function render(){
+ $("sub").innerHTML=T("Dagelijkse check-in en hulpmiddelen voor collega’s van HS.","Check-in quotidien et ressources pour les collègues des CFH.");
+ $("q").innerHTML=T("Hoe gaat het vandaag?","Comment ça va aujourd’hui ?");
+ $("ql").innerHTML=T("Kies wat het best past. Er is geen goed of fout antwoord.","Choisissez ce qui vous correspond le mieux. Il n’y a pas de bonne ou de mauvaise réponse.");
+ $("moods").innerHTML=MOODS.map(function(m){return'<button class="mood '+m.id+'" data-m="'+m.id+'"><div class="ic">'+IC[m.id]+'</div><b>'+T(m.n[0],m.n[1])+'</b><span class="d">'+T(m.d[0],m.d[1])+'</span></button>'}).join("");
+ [].forEach.call($("moods").children,function(b){b.onclick=function(){show("mood",b.dataset.m)}});
+ $("bk-t").innerHTML='<span class="il">'+T("Terug","Retour")+'</span>';$("tolog-t").innerHTML='<span class="il">'+T("Schrijf in je logboek","Écrire dans le journal")+'</span>';
+ $("foot").innerHTML=T("© 2026 Hoggynesische Spoorwegen · HS Bijstand","© 2026 Chemin de Fer Hoggynesiéns · Soutien CFH");
+ if(view==="mood"&&cur){var r=bRun;if(r)bStop();moodView(cur)}
+ if(view==="log")renderLog();
 }
-
-function renderGrounding() {
-  const t = translations[currentLang];
-  const list = document.getElementById("ground-list");
-  list.innerHTML = '';
-  t.groundSteps.forEach(s => {
-    const li = document.createElement("li");
-    li.className = "grounding-item";
-    li.innerHTML = `
-      <div class="grounding-num">${s.n}</div>
-      <div class="grounding-text"><strong>${s.word}</strong> ${s.rest}</div>
-    `;
-    list.appendChild(li);
-  });
-}
-
-function renderMoodPicker() {
-  const t = translations[currentLang];
-  const picker = document.getElementById("mood-picker");
-  picker.innerHTML = '';
-  const moods = [
-    {id: "goed", label: t.logGoed},
-    {id: "gaat-wel", label: t.logGw},
-    {id: "niet-goed", label: t.logNg}
-  ];
-  moods.forEach(m => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "mood-radio" + (m.id === "gaat-wel" ? " selected" : "");
-    btn.id = "mp-" + m.id;
-    btn.onclick = () => selectMood(m.id);
-    btn.innerHTML = `<div class="mood-radio-dot"></div>${m.label}`;
-    picker.appendChild(btn);
-  });
-}
-
-function goScreen(screenId) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(screenId).classList.add("active");
-  if (screenId === "screen-logboek") renderEntries();
-  window.scrollTo(0, 0);
-}
-
-function openLogWith(mood) {
-  selectMood(mood);
-  goScreen("screen-logboek");
-  setTimeout(() => document.getElementById("log-textarea").focus(), 100);
-}
-
-let bRunning = false, bTimer = null, bPhase = 0, bCount = 4;
-const bColors = [
-  {color: "#4CAF50", size: "140px", border: "#4CAF50"},
-  {color: "#FF9800", size: "140px", border: "#FF9800"},
-  {color: "#F44336", size: "140px", border: "#F44336"},
-  {color: "var(--border)", size: "120px", border: "var(--border)"}
-];
-
-function toggleBreath() { bRunning ? stopBreath() : startBreath(); }
-function startBreath() {
-  bRunning = true;
-  const t = translations[currentLang];
-  document.getElementById("breath-btn").textContent = t.breathStop;
-  bPhase = 0; bCount = 4; runPhase();
-}
-function stopBreath() {
-  bRunning = false; clearTimeout(bTimer);
-  const t = translations[currentLang];
-  document.getElementById("breath-btn").textContent = t.breathStart;
-  document.getElementById("breath-text").textContent = t.breathIdle;
-  document.getElementById("breath-circle").style.width = "140px";
-  document.getElementById("breath-circle").style.height = "140px";
-}
-function runPhase() {
-  if (!bRunning) return;
-  const t = translations[currentLang];
-  const p = bColors[bPhase];
-  const circle = document.getElementById("breath-circle");
-  document.getElementById("breath-text").textContent = t.breathPhases[bPhase];
-  document.getElementById("breath-text").style.color = p.color;
-  document.getElementById("breath-circle").textContent = bCount;
-  circle.style.transition = bCount === 4 ? "all 0.8s ease" : "all 0.1s";
-  circle.style.width = p.size;
-  circle.style.height = p.size;
-  circle.style.borderColor = p.border;
-  if (bCount > 1) {
-    bCount--; bTimer = setTimeout(runPhase, 1000);
-  } else {
-    bPhase = (bPhase + 1) % 4; bCount = 4; bTimer = setTimeout(runPhase, 1000);
-  }
-}
-
-const STORE_KEY = "hs_log_entries";
-let selectedMood = "gaat-wel";
-
-function selectMood(mood) {
-  selectedMood = mood;
-  ["goed", "gaat-wel", "niet-goed"].forEach(m => {
-    const el = document.getElementById("mp-" + m);
-    if (el) el.classList.toggle("selected", m === mood);
-  });
-}
-
-function checkSaveBtn() {
-  document.getElementById("log-save-btn").disabled = document.getElementById("log-textarea").value.trim().length < 1;
-}
-
-function loadEntries() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); }
-  catch { return []; }
-}
-
-function saveEntries(arr) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(arr));
-}
-
-function saveEntry() {
-  const txt = document.getElementById("log-textarea").value.trim();
-  if (!txt) return;
-  const entries = loadEntries();
-  entries.unshift({id: Date.now(), mood: selectedMood, text: txt, ts: new Date().toISOString()});
-  saveEntries(entries);
-  document.getElementById("log-textarea").value = "";
-  checkSaveBtn();
-  const fb = document.getElementById("save-feedback");
-  fb.style.opacity = "1";
-  setTimeout(() => { fb.style.opacity = "0"; }, 2200);
-  renderEntries();
-  updateCounts();
-}
-
-function deleteEntry(id) {
-  saveEntries(loadEntries().filter(e => e.id !== id));
-  renderEntries();
-  updateCounts();
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-function renderEntries() {
-  const t = translations[currentLang];
-  const entries = loadEntries();
-  const list = document.getElementById("entries-list");
-  list.innerHTML = "";
-  if (entries.length === 0) {
-    list.innerHTML = "<div class=\"empty-entries\">" + escHtml(t.logEmpty) + "</div>";
-    return;
-  }
-  entries.forEach(e => {
-    const d = new Date(e.ts);
-    const ts = t.tsFormat(d);
-    const moodLbl = t.moodLabels[e.mood] || e.mood;
-    const div = document.createElement("div");
-    div.className = "entry-item " + e.mood;
-    div.innerHTML = `
-      <div class="entry-content">
-        <div class="entry-header">
-          <div class="entry-mood-dot"></div>
-          <span class="entry-mood-label">${escHtml(moodLbl)}</span>
-          <span class="entry-time">${escHtml(ts)}</span>
-        </div>
-        <div class="entry-text">${escHtml(e.text)}</div>
-      </div>
-      <button class="entry-del" onclick="deleteEntry(${e.id})">×</button>
-    `;
-    list.appendChild(div);
-  });
-}
-
-function updateCounts() {
-  const t = translations[currentLang];
-  const n = loadEntries().length;
-  document.getElementById("entry-count").textContent = t.nNotes(n);
-}
-
-function rotateTip() {
-  const t = translations[currentLang];
-  const tips = t.tips;
-  document.getElementById("goed-tip").textContent = tips[Math.floor(Math.random() * tips.length)];
-}
-
-updateUI();
-  </script>
-
+applyLang();
+</script>
 </body>
 </html>
