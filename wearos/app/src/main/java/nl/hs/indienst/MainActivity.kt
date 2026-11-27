@@ -186,8 +186,9 @@ fun StationScreen(store: Store, onPick: (String) -> Unit) {
         }
         onDispose { try { sig?.cancel() } catch (_: Exception) {} }
     }
-    val recent = remember { store.recentStations() }
-    val presets = listOf("Rutledge Centraal", "Adlersteen Centraal", "Assen")
+    val hidden = setOf("Rutledge Centraal", "Adlersteen Centraal")
+    val recent = remember { store.recentStations().filter { it !in hidden } }
+    val presets = listOf("Assen")
     val list = (recent + presets.filter { it !in recent }).take(6)
     Page {
         item { Text(stringResource(R.string.station), style = MaterialTheme.typography.title3) }
